@@ -1,114 +1,115 @@
 /**
  * Mangalam Catering Services – Node.js/Express Server
  * ----------------------------------------------------
- * Serves the frontend (public/) and handles image uploads.
- * Images are saved to public/uploads/ and served as static files.
- *
- * Usage:
- *   node server.js          (port 3000 by default)
- *   PORT=8080 node server.js
+ * Modified for Deployment on Render.com with Cloudinary Storage.
+ * Handles menu item image uploads securely without ephemeral data loss.
  */
 
-const express  = require('express');
-const multer   = require('multer');
-const path     = require('path');
-const fs       = require('fs');
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-/* ── Ensure uploads folder exists ─────────────────────────────── */
-const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-}
+// Serve static assets from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
-/* ── Multer storage config ─────────────────────────────────────── */
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, UPLOADS_DIR);
-  },
-  filename: function (req, file, cb) {
-    // e.g.  1716123456789-idli-sambar.jpg
-    const ext      = path.extname(file.originalname).toLowerCase();
-    const safeName = path.basename(file.originalname, ext)
-                       .replace(/[^a-z0-9_\-]/gi, '-')
-                       .slice(0, 60)
-                       .toLowerCase();
-    cb(null, Date.now() + '-' + safeName + ext);
-  }
+// ── Cloudinary Configuration ───────────────────────────────────
+// These parameters will be securely extracted via Environment Variables on Render
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_SIZE_MB   = 5;
-
-const upload = multer({
-  storage,
-  limits: { fileSize: MAX_SIZE_MB * 1024 * 1024 },
-  fileFilter: function (req, file, cb) {
-    if (ALLOWED_TYPES.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only JPG, PNG, WebP and GIF images are allowed.'));
+// ── Cloudinary Storage Engine for Multer ───────────────────────
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'mangalam_catering', // Target folder name inside your Cloudinary Media Library
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+    public_id: (req, file) => {
+      // Create a clean, url-friendly file descriptor prefixing timestamps to prevent duplicates
+      const ext = path.extname(file.originalname).toLowerCase();
+      const safeName = path.basename(file.originalname, ext)
+                         .replace(/[^a-z0-9_\-]/gi, '-')
+                         .slice(0, 60)
+                         .toLowerCase();
+      return Date.now() + '-' + safeName;
     }
   }
 });
 
-/* ── Serve static frontend files ───────────────────────────────── */
-app.use(express.static(path.join(__dirname, 'public')));
+const MAX_SIZE_MB = 5;
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: MAX_SIZE_MB * 1024 * 1024 }
+});
 
 /* ── POST /api/upload-image ─────────────────────────────────────
-   Accepts:  multipart/form-data  field name: "image"
-   Returns:  { success: true, url: "/uploads/filename.jpg" }
-             { success: false, error: "..." }
+   Intercepts files and pushes them securely to the Cloudinary network.
 ─────────────────────────────────────────────────────────────── */
 app.post('/api/upload-image', function (req, res) {
   upload.single('image')(req, res, function (err) {
     if (err) {
-      const msg = err.code === 'LIMIT_FILE_SIZE'
-        ? 'File too large (max ' + MAX_SIZE_MB + ' MB).'
-        : err.message || 'Upload failed.';
-      return res.status(400).json({ success: false, error: msg });
+      return res.status(400).json({ success: false, error: err.message });
     }
     if (!req.file) {
-      return res.status(400).json({ success: false, error: 'No file received.' });
+      return res.status(400).json({ success: false, error: 'No file uploaded.' });
     }
-    const url = '/uploads/' + req.file.filename;
-    res.json({ success: true, url });
+    
+    // req.file.path contains the direct web url (https://res.cloudinary.com/...)
+    // req.file.filename keeps track of the public_id identifier needed for deletions
+    res.json({
+      success: true,
+      filename: req.file.filename,
+      url: req.file.path 
+    });
   });
 });
 
 /* ── DELETE /api/delete-image ───────────────────────────────────
-   Body (JSON):  { "filename": "1716123456789-idli.jpg" }
-   Only deletes files that live inside public/uploads/ (safe).
+   Deletes target assets straight from your Cloudinary storage media account.
 ─────────────────────────────────────────────────────────────── */
-app.use(express.json());
-
 app.delete('/api/delete-image', function (req, res) {
   const filename = (req.body && req.body.filename) ? req.body.filename : '';
-  if (!filename || filename.includes('/') || filename.includes('\\')) {
+  if (!filename) {
     return res.status(400).json({ success: false, error: 'Invalid filename.' });
   }
-  const filePath = path.join(UPLOADS_DIR, filename);
-  fs.unlink(filePath, function (err) {
-    if (err) {
-      return res.status(404).json({ success: false, error: 'File not found.' });
+
+  // Uses Cloudinary's uploader interface to instantly clear the remote asset
+  cloudinary.uploader.destroy(filename, function (err, result) {
+    if (err || result.result !== 'ok') {
+      return res.status(404).json({ success: false, error: 'Asset not found or already deleted.' });
     }
     res.json({ success: true });
   });
 });
 
 /* ── GET /api/images ────────────────────────────────────────────
-   Returns list of all uploaded images (for image picker).
+   Fetches uploaded image paths from your active Cloudinary media index.
 ─────────────────────────────────────────────────────────────── */
 app.get('/api/images', function (req, res) {
-  fs.readdir(UPLOADS_DIR, function (err, files) {
-    if (err) return res.json({ images: [] });
-    const images = files
-      .filter(f => /\.(jpe?g|png|webp|gif)$/i.test(f))
-      .map(f => ({ filename: f, url: '/uploads/' + f }));
-    res.json({ images });
-  });
+  cloudinary.search
+    .expression('folder:mangalam_catering')
+    .sort_by('public_id', 'desc')
+    .max_results(50)
+    .execute()
+    .then(result => {
+      const images = result.resources.map(file => ({
+        filename: file.public_id,
+        url: file.secure_url
+      }));
+      res.json({ images });
+    })
+    .catch(err => {
+      // Safely fall back to an empty library slice if things fail or credentials change
+      res.json({ images: [] });
+    });
 });
 
 /* ── Catch-all: serve index.html for any unknown route ─────────── */
@@ -116,8 +117,6 @@ app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-/* ── Start ─────────────────────────────────────────────────────── */
-app.listen(PORT, function () {
-  console.log('✅  Mangalam server running at http://localhost:' + PORT);
-  console.log('📁  Images stored in: ' + UPLOADS_DIR);
+app.listen(PORT, function() {
+  console.log('Mangalam Catering Application listening on port ' + PORT);
 });
