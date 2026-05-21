@@ -3,465 +3,886 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Mangalam Catering Services</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=DM+Sans:wght@300;400;500&display=swap\" rel="stylesheet">
+<title>Mangalam Catering Services, Kumbakonam</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-/* ── RESET & ROOT ─────────────────────────────────────────────── */
-:root{
-  --saffron:#E8871A; --deep-red:#8B1A1A; --gold:#D4A82A;
-  --cream:#FDF6EC;   --ivory:#FAF3E0;    --charcoal:#2C2C2C;
-  --muted:#7A6A5A;   --white:#FFFFFF;    --border:#E8D8C0;
-  --success:#2E7D32; --danger:#C62828;
-  --shadow:0 4px 24px rgba(139,26,26,.10);
-  --shadow-lg:0 8px 48px rgba(139,26,26,.15);
+/* ── THEME CONFIGURATION ──────────────────────────────────────── */
+:root {
+  --saffron: #E8871A;
+  --deep-red: #8B1A1A;
+  --gold: #D4A82A;
+  --leaf-green: #4CAF50;
+  --charcoal: #2C2C2C;
+  --white: #FFFFFF;
+  --border: rgba(139, 26, 26, 0.15);
+  --success: #2E7D32;
+  --danger: #C62828;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;color:var(--charcoal);background:var(--cream);line-height:1.5;}
 
-/* ── LAYOUT & PAGES ───────────────────────────────────────────── */
-header{background:var(--deep-red);color:var(--white);padding:1rem 2rem;display:flex;justify-content:between;align-items:center;box-shadow:var(--shadow);}
-header h1{font-family:'Playfair Display',serif;color:var(--gold);}
-nav button{background:transparent;border:none;color:var(--ivory);padding:0.5rem 1rem;cursor:pointer;font-size:1rem;font-weight:500;}
-nav button:hover, nav button.active{color:var(--saffron);}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--charcoal);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Use attached banana asset running alongside local directory context routing */
+  background: url('banana.jpg') no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
+}
 
-.container{max-width:1200px;margin:2rem auto;padding:0 1rem;}
-.page{display:none;}
-.page.active{display:block;}
+/* Mild Green Overlay to ensure optimal contrast readability */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(244, 249, 244, 0.92);
+  z-index: 1;
+}
 
-/* ── MENU CARD GRID ───────────────────────────────────────────── */
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2rem;margin-top:2rem;}
-.menu-card{background:var(--white);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);transition:transform 0.2s;}
-.menu-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
-.menu-card img{width:100%;height:200px;object-fit:cover;background:var(--ivory);}
-.menu-card-body{padding:1.5rem;}
-.menu-card-title{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--deep-red);margin-bottom:0.5rem;}
-.menu-card-price{color:var(--saffron);font-weight:600;font-size:1.1rem;margin-bottom:0.5rem;}
-.menu-card-desc{color:var(--muted);font-size:0.9rem;}
+header, main, footer, .modal { z-index: 2; position: relative; }
 
-/* ── FORMS & BUTTONS ──────────────────────────────────────────── */
-.form-group{margin-bottom:1.25rem;}
-.form-group label{display:block;margin-bottom:0.5rem;font-weight:500;color:var(--muted);font-size:0.9rem;}
-input, select, textarea{width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:4px;font-family:inherit;font-size:1rem;}
-input:focus, select:focus, textarea:focus{outline:none;border-color:var(--saffron);}
+/* ── HEADER NAVIGATION ────────────────────────────────────────── */
+header {
+  background: var(--deep-red);
+  color: var(--white);
+  padding: 1.25rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+header h1 {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  font-size: 1.75rem;
+}
+.nav-buttons { display: flex; gap: 0.5rem; }
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: #FAF3E0;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: rgba(255,255,255,0.1);
+  color: var(--gold);
+}
 
-.btn{display:inline-block;padding:0.75rem 1.5rem;background:var(--saffron);color:var(--white);border:none;border-radius:4px;cursor:pointer;font-weight:500;font-size:1rem;text-align:center;}
-.btn:hover{opacity:0.9;}
-.btn-danger{background:var(--danger);}
-.btn-secondary{background:var(--muted);}
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  flex: 1;
+}
+.page { display: none; }
+.page.active { display: block; }
 
-/* ── TABS INSIDE MODAL ────────────────────────────────────────── */
-.tab-header{display:flex;border-bottom:1px solid var(--border);margin-bottom:1rem;}
-.tab-btn{flex:1;padding:0.75rem;background:transparent;border:none;cursor:pointer;text-align:center;font-weight:500;color:var(--muted);}
-.tab-btn.active{color:var(--saffron);border-bottom:2px solid var(--saffron);}
-.tab-content{display:none;}
-.tab-content.active{display:block;}
+/* ── DASHBOARD BOARDS & CARDS ─────────────────────────────────── */
+.welcome-panel {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+  margin-top: 3rem;
+}
+.welcome-panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: var(--deep-red);
+  margin-bottom: 1rem;
+}
+.welcome-panel p { color: #555; font-size: 1.2rem; margin-bottom: 2rem; }
 
-/* ── MODAL STRUCTURE ──────────────────────────────────────────── */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:1000;padding:1rem;}
-.modal.open{display:flex;}
-.modal-wrapper{background:var(--white);padding:2rem;border-radius:8px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0.5rem;}
-.modal-header h3{font-family:'Playfair Display',serif;color:var(--deep-red);}
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+.menu-card { overflow: hidden; padding: 0; display: flex; flex-direction: column; }
+.menu-card img { width: 100%; height: 180px; object-fit: cover; background: #f0f0f0; }
+.menu-card-content { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
 
-/* ── IMAGE PICKER LIBRARY GALLERY ──────────────────────────────── */
-.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:0.5rem;max-height:200px;overflow-y:auto;border:1px solid var(--border);padding:0.5rem;border-radius:4px;}
-.library-item{width:100%;height:80px;object-fit:cover;cursor:pointer;border:2px solid transparent;border-radius:4px;}
-.library-item:hover{border-color:var(--saffron);}
-.library-item.selected{border-color:var(--success);box-shadow:0 0 8px rgba(46,125,50,0.5);}
-.img-preview-box{margin-top:1rem;text-align:center;}
-.img-preview-box img{max-width:100%;max-height:120px;border-radius:4px;border:1px solid var(--border);}
+/* ── FORMS & INTERACTION ELEMENTS ─────────────────────────────── */
+.form-box {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--white);
+  padding: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+.form-box h2, .page h2 {
+  font-family: 'Playfair Display', serif;
+  color: var(--deep-red);
+  margin-bottom: 1.5rem;
+}
+.form-group { margin-bottom: 1.25rem; }
+.form-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem; color: #555; }
+input, select, textarea {
+  width: 100%; padding: 0.75rem; border: 1px solid #CCC; border-radius: 4px;
+  font-family: inherit; font-size: 0.95rem; color: var(--charcoal);
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--deep-red); }
+
+.btn {
+  display: inline-block; padding: 0.75rem 1.5rem; background: var(--deep-red); color: var(--white);
+  border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 1rem; text-align: center;
+}
+.btn:hover { background: #701414; }
+.btn-saffron { background: var(--saffron); }
+.btn-saffron:hover { background: #d47610; }
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #a81c1c; }
+.btn-secondary { background: #7A6A5A; color: white; }
+
+/* ── USER SELECTION VIEW COMPONENTS ──────────────────────────── */
+.badge-type {
+  display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: bold;
+  border-radius: 4px; margin-bottom: 0.5rem; text-transform: uppercase;
+}
+.badge-breakfast { background: #FFF3E0; color: #E65100; }
+.badge-lunch { background: #E8F5E9; color: #2E7D32; }
+.badge-dinner { background: #E3F2FD; color: #1565C0; }
+.badge-combo { background: #F3E5F5; color: #4A148C; }
+
+.qty-control { display: flex; align-items: center; gap: 0.5rem; margin-top: auto; padding-top: 1rem; }
+.qty-btn { width: 32px; height: 32px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; background: #fff; }
+
+/* ── MODALS & TABLES ─────────────────────────────────────────── */
+.modal {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); justify-content: center; align-items: center; padding: 1rem;
+}
+.modal.open { display: flex; }
+.modal-wrapper { background: var(--white); padding: 2rem; border-radius: 8px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #EEE; font-size: 0.9rem; }
+th { background: #F9F5F0; color: var(--deep-red); font-weight: 600; }
+
+.status-flag { display: inline-block; padding: 0.2rem 0.5rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; }
+.flag-pending { background: #FFF3E0; color: #E65100; }
+.flag-done { background: #E8F5E9; color: #2E7D32; }
+
+/* ── FOOTER ──────────────────────────────────────────────────── */
+footer {
+  background: var(--charcoal); color: #BBB; text-align: center; padding: 1.5rem; margin-top: auto; font-size: 0.9rem;
+}
+footer strong { color: var(--white); }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Mangalam Catering</h1>
-  <nav>
-    <button onclick="switchPage('page-menu')" id="nav-menu" class="active">Our Menu</button>
-    <button onclick="switchPage('page-admin')" id="nav-admin">Admin Panel</button>
-  </nav>
+  <h1 onclick="routeHome()" style="cursor:pointer;">Mangalam Catering Services, Kumbakonam</h1>
+  <div class="nav-buttons" id="header-nav">
+    </div>
 </header>
 
 <div class="container">
-  <main id="page-menu" class="page active">
-    <div class="menu-grid" id="customer-menu-grid"></div>
+  
+  <main id="page-home" class="page active">
+    <div class="welcome-panel">
+      <h2>Authentic Traditional Catering</h2>
+      <p>Experience exquisite South Indian culinary traditions curated for your special occasions.</p>
+      <div style="display:flex; justify-content:center; gap:1rem;">
+        <button class="btn" onclick="switchPage('page-login')">User Login</button>
+        <button class="btn btn-saffron" onclick="switchPage('page-register')">Register New Account</button>
+        <button class="btn btn-secondary" onclick="switchPage('page-admin-login')">Admin Portal</button>
+      </div>
+    </div>
   </main>
 
-  <section id="page-admin" class="page">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-      <h2>Menu Management Dashboard</h2>
-      <button class="btn" onclick="openAddModal()">+ Add New Menu Item</button>
+  <section id="page-register" class="page">
+    <div class="form-box">
+      <h2>Create Account</h2>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" required></div>
+        <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone" required></div>
+        <div class="form-group"><label>Address</label><textarea id="reg-address" rows="2" required></textarea></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" required></div>
+        <div class="form-group"><label>Set Password</label><input type="password" id="reg-password" required></div>
+        <button type="submit" class="btn w-100" style="width:100%;">Register & Log In</button>
+      </form>
     </div>
-    <div class="menu-grid" id="admin-menu-grid"></div>
+  </section>
+
+  <section id="page-login" class="page">
+    <div class="form-box">
+      <h2>User Login</h2>
+      <form onsubmit="handleUserLogin(event)">
+        <div class="form-group"><label>Email Address</label><input type="email" id="login-email" required></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-password" required></div>
+        <button type="submit" class="btn" style="width:100%;">Sign In</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="page-admin-login" class="page">
+    <div class="form-box">
+      <h2>Admin Authentication</h2>
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group"><label>Admin Access Password</label><input type="password" id="admin-pass" required></div>
+        <button type="submit" class="btn" style="width:100%;">Verify Password</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="page-user-dashboard" class="page">
+    <div style="background:white; padding:1.5rem; border-radius:8px; border:1px solid var(--border); margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h3>Welcome back, <span id="user-display-name">Guest</span>!</h3>
+        <p style="font-size:0.85rem; color:#666;">Select your menu items/combo packs, choose meal parameters, and check out.</p>
+      </div>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        <div style="width:160px;"><label style="font-size:0.8rem; font-weight:bold;">Occasion Date</label><input type="date" id="order-date"></div>
+        <div style="width:140px;"><label style="font-size:0.8rem; font-weight:bold;">Occasion Type</label>
+          <select id="order-occasion">
+            <option value="Wedding">Wedding</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Corporate">Corporate</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div style="width:140px;"><label style="font-size:0.8rem; font-weight:bold;">Meal Type</label>
+          <select id="order-meal-type">
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <h2>Select Catering Options</h2>
+      <button class="btn btn-saffron" onclick="proceedToCheckout()">Proceed to Checkout (<span id="cart-count">0</span>)</button>
+    </div>
+
+    <div class="grid-3" id="user-menu-grid"></div>
+  </section>
+
+  <section id="page-checkout" class="page">
+    <h2>Order Verification & Checkout</h2>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem; margin-top:1.5rem;" id="checkout-layout">
+      <div class="card">
+        <h3>Selected Catering Items</h3>
+        <div id="checkout-summary-list" style="margin:1rem 0;"></div>
+        <hr style="border:none; border-top:1px solid #eee; margin:1rem 0;">
+        <div style="display:flex; justify-content:space-between; font-size:1.25rem; font-weight:bold; color:var(--deep-red);">
+          <span>Total Estimated Cost:</span>
+          <span id="checkout-total">₹0.00</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Final Submission Form</h3>
+        <form onsubmit="submitFinalOrder(event)" style="margin-top:1rem;">
+          <div class="form-group"><label>Special Remarks / Requests</label><textarea id="order-remarks" rows="3" placeholder="Spice levels, serving layouts, extra requirements..."></textarea></div>
+          <div class="form-group">
+            <label>Preferred Payment Method</label>
+            <select id="order-payment-method">
+              <option value="Advance Token Cash">Advance Token Cash</option>
+              <option value="Bank NEFT / IMPS Transfer">Bank NEFT / IMPS Transfer</option>
+              <option value="UPI Pay / QR code scan">UPI Pay / QR code scan</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-top:1.5rem;">
+            <input type="checkbox" id="order-callback" style="width:auto; cursor:pointer;">
+            <label for="order-callback" style="margin:0; cursor:pointer; font-weight:bold; color:var(--deep-red);">Request Call-Back verification from Mangalam Representative</label>
+          </div>
+          <div style="display:flex; gap:1rem; margin-top:2rem;">
+            <button type="button" class="btn btn-secondary" style="flex:1;" onclick="switchPage('page-user-dashboard')">Back to Selection</button>
+            <button type="submit" class="btn btn-saffron" style="flex:1;">Submit Catering Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-admin-dashboard" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+      <h2>Admin Control Center</h2>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-secondary" onclick="openPasswordModal()">Change Password</button>
+        <button class="btn" onclick="openMenuModal()">+ Add Menu/Combo Item</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:2.5rem;">
+      <h3>Received Catering Orders (<span id="admin-order-count">0</span>)</h3>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Client Contact Details</th>
+              <th>Occasion Parameters</th>
+              <th>Selected Menu Allocation</th>
+              <th>Financial Summary</th>
+              <th>Flags & Requests</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-orders-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Active Asset & Service Grid</h3>
+      <div class="grid-3" id="admin-menu-grid"></div>
+    </div>
   </section>
 </div>
 
-<div class="modal" id="menu-item-modal">
+<div class="modal" id="item-modal">
   <div class="modal-wrapper">
     <div class="modal-header">
-      <h3 id="modal-title">Add Menu Item</h3>
-      <button style="background:transparent; border:none; font-size:1.5rem; cursor:pointer;" onclick="closeModal('menu-item-modal')">&times;</button>
+      <h3 id="modal-item-title">Add Catering Listing</h3>
+      <button style="background:transparent; border:none; font-size:1.5rem; cursor:pointer;" onclick="closeModal('item-modal')">&times;</button>
     </div>
-    
-    <form id="menu-form" onsubmit="handleFormSubmit(event)">
-      <input type="hidden" id="edit-item-id" value="">
-      
+    <form onsubmit="handleItemFormSubmit(event)">
+      <input type="hidden" id="item-edit-id">
+      <div class="form-group"><label>Dish / Combo Name</label><input type="text" id="item-name" required></div>
       <div class="form-group">
-        <label for="mi-name">Dish Name</label>
-        <input type="text" id="mi-name" placeholder="e.g., Special Masala Dosa" autocorrect="off" autocapitalize="words" spellcheck="false" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="mi-price">Price (₹)</label>
-        <input type="number" id="mi-price" placeholder="0.00" inputmode="decimal" pattern="[0-9]*" step="0.01" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="mi-category">Category</label>
-        <select id="mi-category">
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch / Meals</option>
-          <option value="Sweets">Sweets & Desserts</option>
-          <option value="Beverages">Beverages</option>
+        <label>Configuration Type</label>
+        <select id="item-type">
+          <option value="Breakfast">Breakfast Single Item</option>
+          <option value="Lunch">Lunch Single Item</option>
+          <option value="Dinner">Dinner Single Item</option>
+          <option value="Combo">Curated Combo Meal (Multiple combined items)</option>
         </select>
       </div>
-
+      <div class="form-group"><label>Base Value Cost (₹ / Numbers)</label><input type="number" id="item-price" step="0.01" required></div>
+      <div class="form-group"><label>Description / Curated Package Items</label><textarea id="item-description" rows="2" placeholder="List items or describe dish details..."></textarea></div>
+      
       <div class="form-group">
-        <label for="mi-description">Description / Key Ingredients</label>
-        <textarea id="mi-description" rows="2" placeholder="Briefly describe the catering option..."></textarea>
+        <label>Optional Image Upload File</label>
+        <input type="file" id="item-file" accept="image/*">
+        <input type="hidden" id="item-fallback-url">
       </div>
-
-      <div class="form-group" style="margin-top:1.5rem;">
-        <label style="font-weight:600; color:var(--charcoal);">Item Banner Image</label>
-        
-        <div class="tab-header">
-          <div class="tab-btn active" id="tab-btn-upload" onclick="switchImgTab('upload')">Upload File</div>
-          <div class="tab-btn" id="tab-btn-library" onclick="switchImgTab('library')">Cloud Library</div>
-        </div>
-
-        <div class="tab-content active" id="tab-content-upload">
-          <input type="file" id="mi-img-file" accept="image/*" onchange="handleFileSelect(event)">
-          <p style="font-size:0.8rem; color:var(--muted); margin-top:0.25rem;">Max Size: 5MB (JPG, PNG, WebP, GIF)</p>
-        </div>
-
-        <div class="tab-content" id="tab-content-library">
-          <div class="library-grid" id="modal-library-grid">
-            </div>
-        </div>
-
-        <input type="hidden" id="mi-selected-url" value="">
-        <input type="hidden" id="mi-selected-filename" value="">
-
-        <div class="img-preview-box" id="preview-box" style="display:none;">
-          <p style="font-size:0.8rem; color:var(--muted); margin-bottom:0.25rem;">Selected Image Preview:</p>
-          <img id="img-preview-element" src="" alt="Preview">
-        </div>
-      </div>
-
+      
       <div style="display:flex; gap:1rem; margin-top:2rem;">
-        <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal('menu-item-modal')">Cancel</button>
-        <button type="submit" class="btn" style="flex:1;" id="save-btn">Save Changes</button>
+        <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal('item-modal')">Cancel</button>
+        <button type="submit" class="btn" style="flex:1;" id="item-save-btn">Save Listing</button>
       </div>
     </form>
   </div>
 </div>
 
-<script>
-let menuItems = [];
-let targetUploadedFile = null;
+<div class="modal" id="password-modal">
+  <div class="modal-wrapper" style="max-width:400px;">
+    <div class="modal-header">
+      <h3>Modify Admin Password</h3>
+      <button style="background:transparent; border:none; font-size:1.5rem; cursor:pointer;" onclick="closeModal('password-modal')">&times;</button>
+    </div>
+    <form onsubmit="handlePasswordChange(event)">
+      <div class="form-group"><label>New Access Password</label><input type="password" id="new-admin-pass" required></div>
+      <button type="submit" class="btn" style="width:100%;">Commit System Update</button>
+    </form>
+  </div>
+</div>
 
-// ── APP ROUTING ────────────────────────────────────────────────
+<footer>
+  <p>Contact Us: <strong id="contact-email">sairamkumarmr@gosssysas.in</strong> | Mangalam Catering Services, Kumbakonam</p>
+</footer>
+
+<script>
+// ── SYSTEM STATE ENGINE ───────────────────────────────────────
+let rawCloudCatalog = []; 
+let menuItems = [];
+let receivedOrders = [];
+let currentCart = {};
+let authenticatedUser = null;
+let currentAdminPass = "admin123"; // Initial Default Boot Password
+
+// ── APP ROUTING AND INITIALIZATION ────────────────────────────
 function switchPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  
   const targetPage = document.getElementById(pageId);
   if(targetPage) targetPage.classList.add('active');
-  
-  if(pageId === 'page-menu') document.getElementById('nav-menu').classList.add('active');
-  if(pageId === 'page-admin') {
-    document.getElementById('nav-admin').classList.add('active');
-    loadSyncMenuFromServer(); // Pull data fresh whenever admin logs in
+  renderNavigation();
+}
+
+function routeHome() {
+  if (authenticatedUser) switchPage('page-user-dashboard');
+  else if (sessionStorage.getItem('isAdmin') === 'true') switchPage('page-admin-dashboard');
+  else switchPage('page-home');
+}
+
+function renderNavigation() {
+  const container = document.getElementById('header-nav');
+  if (authenticatedUser) {
+    container.innerHTML = `
+      <button class="nav-btn active" onclick="switchPage('page-user-dashboard')">Catering Selection</button>
+      <button class="nav-btn" onclick="handleLogout()">Sign Out (${authenticatedUser.name})</button>
+    `;
+  } else if (sessionStorage.getItem('isAdmin') === 'true') {
+    container.innerHTML = `
+      <button class="nav-btn active" onclick="switchPage('page-admin-dashboard')">Admin Dashboard</button>
+      <button class="nav-btn" onclick="handleLogout()">Exit Portal</button>
+    `;
+  } else {
+    container.innerHTML = `
+      <button class="nav-btn" onclick="switchPage('page-login')">Login</button>
+      <button class="nav-btn" onclick="switchPage('page-register')">Register</button>
+    `;
   }
 }
 
-function switchImgTab(tabId) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  
-  document.getElementById(`tab-btn-${tabId}`).classList.add('active');
-  document.getElementById(`tab-content-${tabId}`).classList.add('active');
-  
-  if (tabId === 'library') {
-    fetchCloudLibrary();
-  }
+function handleLogout() {
+  authenticatedUser = null;
+  sessionStorage.removeItem('isAdmin');
+  currentCart = {};
+  updateCartIndicators();
+  switchPage('page-home');
 }
 
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); resetFormFields(); }
-
-// ── FETCH / RENDER MASTER DATA ─────────────────────────────────
-function loadSyncMenuFromServer() {
+// ── SYNC LAYER VIA CLOUDINARY CONTENT EXTRACTION ───────────────
+function loadSystemStateFromCloud() {
   fetch('/api/menu')
     .then(res => res.json())
     .then(data => {
       if (data.success && data.menuItems) {
-        menuItems = data.menuItems;
-        renderCustomerMenu();
-        renderAdminMenu();
+        rawCloudCatalog = data.menuItems;
+        parseCloudCatalogObjects();
       }
     })
-    .catch(err => console.error("Could not fetch sync data:", err));
+    .catch(err => console.error("Could not sync cloud data:", err));
 }
 
-function renderCustomerMenu() {
-  const container = document.getElementById('customer-menu-grid');
-  if (!container) return;
-  if (menuItems.length === 0) {
-    container.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--muted);">No catering options found. Add items via the Admin Panel.</p>`;
+function parseCloudCatalogObjects() {
+  menuItems = [];
+  receivedOrders = [];
+  
+  rawCloudCatalog.forEach(resource => {
+    const category = resource.category || '';
+    
+    // Categorize Cloudinary data tags dynamically based on configuration headers
+    if (category === 'Catering-Item' || category === 'Breakfast' || category === 'Lunch' || category === 'Dinner' || category === 'Combo') {
+      menuItems.push({
+        id: resource.id,
+        name: resource.name,
+        price: parseFloat(resource.price) || 0,
+        category: category === 'Catering-Item' ? 'Breakfast' : category, // backward fallback
+        description: resource.description || '',
+        image: resource.image,
+        cloudinary_id: resource.cloudinary_id
+      });
+    } else if (category === 'System-Order') {
+      try {
+        const d = JSON.parse(resource.description || '{}');
+        receivedOrders.push({
+          id: resource.id,
+          client: d.client || {},
+          params: d.params || {},
+          items: d.items || [],
+          remarks: d.remarks || '',
+          total: d.total || 0,
+          payment: d.payment || 'Unspecified',
+          callbackFlag: d.callbackFlag || false,
+          paymentReceived: d.paymentReceived || false
+        });
+      } catch(e) {}
+    } else if (category === 'System-Config' && resource.name === 'AdminPassword') {
+      currentAdminPass = resource.description || 'admin123';
+    }
+  });
+
+  renderCustomerSelectionView();
+  renderAdminWorkspaceView();
+}
+
+// ── USER MANAGEMENT SIGN IN LOGIC ─────────────────────────────
+function handleRegister(e) {
+  e.preventDefault();
+  const userObj = {
+    name: document.getElementById('reg-name').value,
+    phone: document.getElementById('reg-phone').value,
+    address: document.getElementById('reg-address').value,
+    email: document.getElementById('reg-email').value.toLowerCase(),
+    pass: document.getElementById('reg-password').value
+  };
+  
+  // Quick browser container mock registry emulation
+  let users = JSON.parse(localStorage.getItem('m_users') || '[]');
+  if(users.find(u => u.email === userObj.email)){
+    alert("Account email already registered online.");
     return;
   }
-  container.innerHTML = menuItems.map(item => `
-    <div class="menu-card">
-      <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" alt="${item.name}">
-      <div class="menu-card-body">
-        <div class="menu-card-title">${item.name}</div>
-        <div class="menu-card-price">₹${parseFloat(item.price).toFixed(2)}</div>
-        <p style="font-size:0.8rem; font-weight:bold; color:var(--saffron); margin-bottom:0.5rem;">${item.category}</p>
-        <div class="menu-card-desc">${item.description || 'No description provided.'}</div>
+  users.push(userObj);
+  localStorage.setItem('m_users', JSON.stringify(users));
+  
+  authenticatedUser = userObj;
+  document.getElementById('user-display-name').textContent = userObj.name;
+  currentCart = {};
+  updateCartIndicators();
+  switchPage('page-user-dashboard');
+}
+
+function handleUserLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.toLowerCase();
+  const pass = document.getElementById('login-password').value;
+  
+  let users = JSON.parse(localStorage.getItem('m_users') || '[]');
+  const match = users.find(u => u.email === email && u.pass === pass);
+  
+  if (match) {
+    authenticatedUser = match;
+    document.getElementById('user-display-name').textContent = match.name;
+    currentCart = {};
+    updateCartIndicators();
+    switchPage('page-user-dashboard');
+  } else {
+    alert("Invalid user credentials provided.");
+  }
+}
+
+function handleAdminLogin(e) {
+  e.preventDefault();
+  const pass = document.getElementById('admin-pass').value;
+  if (pass === currentAdminPass) {
+    sessionStorage.setItem('isAdmin', 'true');
+    switchPage('page-admin-dashboard');
+    document.getElementById('admin-pass').value = '';
+  } else {
+    alert("Unauthorized access denied: Invalid password.");
+  }
+}
+
+// ── USER BOOKING WORKFLOW INTERFACES ──────────────────────────
+function renderCustomerSelectionView() {
+  const grid = document.getElementById('user-menu-grid');
+  if(!grid) return;
+  
+  if(menuItems.length === 0) {
+    grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No menu configurations deployed yet. Admin needs to add items.</p>`;
+    return;
+  }
+
+  grid.innerHTML = menuItems.map(item => {
+    const qty = currentCart[item.id] || 0;
+    const badgeClass = `badge-${item.category.toLowerCase()}`;
+    return `
+      <div class="card menu-card">
+        <img src="${item.image || 'banana.jpg'}" alt="${item.name}">
+        <div class="menu-card-content">
+          <span class="badge-type ${badgeClass}">${item.category}</span>
+          <h4 style="font-family:'Playfair Display', serif; font-size:1.2rem; margin-bottom:0.25rem;">${item.name}</h4>
+          <p style="color:var(--deep-red); font-weight:700; margin-bottom:0.5rem;">₹${item.price.toFixed(2)}</p>
+          <p style="font-size:0.85rem; color:#666; margin-bottom:1rem;">${item.description || 'Traditional catering configuration choice.'}</p>
+          
+          <div class="qty-control">
+            <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)">-</button>
+            <strong style="width:30px; text-align:center;" id="qty-lbl-${item.id}">${qty}</strong>
+            <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)">+</button>
+          </div>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
-function renderAdminMenu() {
-  const container = document.getElementById('admin-menu-grid');
-  if (!container) return;
-  if (menuItems.length === 0) {
-    container.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--muted);">No dashboard items found.</p>`;
-    return;
-  }
-  container.innerHTML = menuItems.map(item => `
-    <div class="menu-card">
-      <img src="${item.image}" alt="${item.name}">
-      <div class="menu-card-body">
-        <div class="menu-card-title">${item.name}</div>
-        <div class="menu-card-price">₹${parseFloat(item.price).toFixed(2)}</div>
-        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-          <button class="btn btn-secondary" style="flex:1; padding:0.5rem;" onclick="openEditModal('${item.id}')">Edit</button>
-          <button class="btn btn-danger" style="flex:1; padding:0.5rem;" onclick="deleteCloudItem('${item.id}')">Delete</button>
+function updateCartQty(id, change) {
+  let current = currentCart[id] || 0;
+  current += change;
+  if (current <= 0) delete currentCart[id];
+  else currentCart[id] = current;
+  
+  const label = document.getElementById(`qty-lbl-${id}`);
+  if(label) label.textContent = currentCart[id] || 0;
+  updateCartIndicators();
+}
+
+function updateCartIndicators() {
+  let totalCount = 0;
+  Object.values(currentCart).forEach(q => totalCount += q);
+  document.getElementById('cart-count').textContent = totalCount;
+}
+
+function proceedToCheckout() {
+  const dateVal = document.getElementById('order-date').value;
+  if(!dateVal) { alert("Please provide a valid Occasion Date using the calendar selection selector."); return; }
+  
+  let itemIds = Object.keys(currentCart);
+  if(itemIds.length === 0) { alert("Please allocate items before checking out."); return; }
+  
+  switchPage('page-checkout');
+  
+  // Render checkout allocation metrics matrix summary info
+  const listContainer = document.getElementById('checkout-summary-list');
+  let runningTotal = 0;
+  
+  let html = itemIds.map(id => {
+    const item = menuItems.find(i => i.id === id);
+    if(!item) return '';
+    const lineCost = item.price * currentCart[id];
+    runningTotal += lineCost;
+    return `
+      <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.95rem;">
+        <span>${item.name} <strong>&times; ${currentCart[id]}</strong></span>
+        <span>₹${lineCost.toFixed(2)}</span>
+      </div>
+    `;
+  }).join('');
+  
+  listContainer.innerHTML = html;
+  document.getElementById('checkout-total').textContent = `₹${runningTotal.toFixed(2)}`;
+}
+
+function submitFinalOrder(e) {
+  e.preventDefault();
+  const saveBtn = e.target.querySelector('button[type="submit"]');
+  saveBtn.disabled = true; saveBtn.textContent = "Transmitting Order...";
+
+  let orderPayload = {
+    client: authenticatedUser,
+    params: {
+      date: document.getElementById('order-date').value,
+      occasion: document.getElementById('order-occasion').value,
+      mealType: document.getElementById('order-meal-type').value
+    },
+    items: Object.keys(currentCart).map(id => {
+      const target = menuItems.find(i => i.id === id);
+      return { id: id, name: target.name, qty: currentCart[id], unitPrice: target.price };
+    }),
+    remarks: document.getElementById('order-remarks').value,
+    total: Object.keys(currentCart).reduce((sum, id) => sum + (menuItems.find(i => i.id === id).price * currentCart[id]), 0),
+    payment: document.getElementById('order-payment-method').value,
+    callbackFlag: document.getElementById('order-callback').checked,
+    paymentReceived: false
+  };
+
+  // Convert Payload structural definitions directly into MultiPart data streams for cloud parsing
+  const formData = new FormData();
+  formData.append('name', `Order-${Date.now()}`);
+  formData.append('price', '0');
+  formData.append('category', 'System-Order');
+  formData.append('description', JSON.stringify(orderPayload));
+  
+  // Use a generic placeholder image to hold the metadata payload context
+  fetch('banana.jpg').then(r => r.blob()).then(blob => {
+    formData.append('image', blob, 'order.jpg');
+    return fetch('/api/upload-image', { method: 'POST', body: formData });
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.success) {
+      alert("Catering request submitted directly to Mangalam Admin control center cleanly.");
+      currentCart = {};
+      document.getElementById('order-remarks').value = '';
+      document.getElementById('order-callback').checked = false;
+      loadSystemStateFromCloud();
+      switchPage('page-user-dashboard');
+    }
+  })
+  .catch(() => alert("Network sync delivery interruption."))
+  .finally(() => { saveBtn.disabled = false; saveBtn.textContent = "Submit Catering Order"; });
+}
+
+// ── ADMIN PANEL LOGIC & ACTIONS ───────────────────────────────
+function renderAdminWorkspaceView() {
+  // 1. Render Orders Table
+  const ordersTable = document.getElementById('admin-orders-table');
+  document.getElementById('admin-order-count').textContent = receivedOrders.length;
+  
+  ordersTable.innerHTML = receivedOrders.map(order => `
+    <tr>
+      <td>
+        <strong>${order.client?.name || 'Guest User'}</strong><br>
+        Ph: ${order.client?.phone || 'N/A'}<br>
+        Addr: ${order.client?.address || 'N/A'}
+      </td>
+      <td>
+        Date: <strong>${order.params?.date}</strong><br>
+        Occasion: ${order.params?.occasion}<br>
+        Meal: ${order.params?.mealType}
+      </td>
+      <td>
+        ${order.items.map(i => `&bull; ${i.name} (${i.qty})<br>`).join('')}
+      </td>
+      <td>
+        <strong style="color:var(--deep-red);">₹${parseFloat(order.total).toFixed(2)}</strong><br>
+        <small>${order.payment}</small>
+      </td>
+      <td>
+        Callback Request: <span class="status-flag ${order.callbackFlag ? 'flag-pending' : 'flag-done'}">${order.callbackFlag ? 'REQUIRED' : 'NO'}</span><br>
+        Payment State: <span class="status-flag ${order.paymentReceived ? 'flag-done' : 'flag-pending'}">${order.paymentReceived ? 'RECEIVED' : 'PENDING'}</span>
+      </td>
+      <td>
+        <button class="btn btn-saffron" style="padding:0.4rem 0.8rem; font-size:0.75rem; margin-bottom:0.25rem; width:100%;" onclick="togglePaymentFlag('${order.id}')">Toggle Pay</button>
+        <button class="btn btn-danger" style="padding:0.4rem 0.8rem; font-size:0.75rem; width:100%;" onclick="deleteCloudResource('${order.id}')">Delete Order</button>
+      </td>
+    </tr>
+  `).join('');
+
+  // 2. Render Menu Grid
+  const menuGrid = document.getElementById('admin-menu-grid');
+  menuGrid.innerHTML = menuItems.map(item => `
+    <div class="card menu-card">
+      <img src="${item.image || 'banana.jpg'}" alt="${item.name}">
+      <div class="menu-card-content">
+        <span class="badge-type badge-${item.category.toLowerCase()}">${item.category}</span>
+        <h4 style="font-family:'Playfair Display', serif; font-size:1.1rem;">${item.name}</h4>
+        <p style="font-weight:bold; color:var(--deep-red); margin-bottom:0.5rem;">₹${item.price.toFixed(2)}</p>
+        <div style="display:flex; gap:0.5rem; margin-top:auto;">
+          <button class="btn btn-secondary" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="openEditItemModal('${item.id}')">Edit</button>
+          <button class="btn btn-danger" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="deleteCloudResource('${item.id}')">Delete</button>
         </div>
       </div>
     </div>
   `).join('');
 }
 
-// ── FETCH EXISTING CLOUDINARY MEDIA IMAGES ─────────────────────
-function fetchCloudLibrary() {
-  const grid = document.getElementById('modal-library-grid');
-  grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem;">Loading library images...</p>';
-  
-  fetch('/api/images')
-    .then(res => res.json())
-    .then(data => {
-      if (!data.images || data.images.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem;">Library folder empty.</p>';
-        return;
-      }
-      grid.innerHTML = data.images.map(img => `
-        <img class="library-item" src="${img.url}" data-filename="${img.filename}" onclick="selectLibraryImage(this)">
-      `).join('');
-    })
-    .catch(() => grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem; color:var(--danger);">Failed to query library.</p>');
+function openMenuModal() {
+  document.getElementById('modal-item-title').textContent = "Add Service Item";
+  document.getElementById('item-edit-id').value = "";
+  document.getElementById('item-fallback-url').value = "";
+  document.getElementById('item-name').value = "";
+  document.getElementById('item-price').value = "";
+  document.getElementById('item-description').value = "";
+  openModal('item-modal');
 }
 
-function selectLibraryImage(imgElement) {
-  document.querySelectorAll('.library-item').forEach(el => el.classList.remove('selected'));
-  imgElement.classList.add('selected');
-  
-  // Clear local file choice if library tab is selected
-  document.getElementById('mi-img-file').value = '';
-  targetUploadedFile = null;
-
-  updatePreview(imgElement.src, imgElement.dataset.filename);
+function openEditItemModal(id) {
+  const match = menuItems.find(i => i.id === id);
+  if(!match) return;
+  document.getElementById('modal-item-title').textContent = "Modify Asset / Combo Pack";
+  document.getElementById('item-edit-id').value = match.id;
+  document.getElementById('item-fallback-url').value = match.image;
+  document.getElementById('item-name').value = match.name;
+  document.getElementById('item-type').value = match.category;
+  document.getElementById('item-price').value = match.price;
+  document.getElementById('item-description').value = match.description;
+  openModal('item-modal');
 }
 
-function handleFileSelect(e) {
-  if (e.target.files && e.target.files[0]) {
-    targetUploadedFile = e.target.files[0];
-    
-    // Clear library selections if a fresh local file is loaded
-    document.querySelectorAll('.library-item').forEach(el => el.classList.remove('selected'));
-    
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      updatePreview(event.target.result, '');
-    }
-    reader.readAsDataURL(targetUploadedFile);
-  }
-}
-
-function updatePreview(url, filename) {
-  document.getElementById('mi-selected-url').value = url;
-  document.getElementById('mi-selected-filename').value = filename;
-  
-  const previewBox = document.getElementById('preview-box');
-  const previewImg = document.getElementById('img-preview-element');
-  previewBox.style.display = 'block';
-  previewImg.src = url;
-}
-
-// ── MUTATION CORE LOGIC ────────────────────────────────────────
-function openAddModal() {
-  document.getElementById('modal-title').textContent = "Add Menu Item";
-  document.getElementById('edit-item-id').value = "";
-  openModal('menu-item-modal');
-}
-
-function openEditModal(itemId) {
-  const item = menuItems.find(i => i.id === itemId);
-  if (!item) return;
-  
-  document.getElementById('modal-title').textContent = "Edit Menu Item";
-  document.getElementById('edit-item-id').value = item.id;
-  document.getElementById('mi-name').value = item.name;
-  document.getElementById('mi-price').value = item.price;
-  document.getElementById('mi-category').value = item.category;
-  document.getElementById('mi-description').value = item.description || '';
-  
-  updatePreview(item.image, item.cloudinary_id || item.id);
-  openModal('menu-item-modal');
-}
-
-function handleFormSubmit(e) {
+function handleItemFormSubmit(e) {
   e.preventDefault();
-  const saveBtn = document.getElementById('save-btn');
-  saveBtn.disabled = true;
-  saveBtn.textContent = "Saving to Cloud...";
+  const saveBtn = document.getElementById('item-save-btn');
+  saveBtn.disabled = true; saveBtn.textContent = "Streaming payload variables...";
 
-  const editId = document.getElementById('edit-item-id').value;
-  const name = document.getElementById('mi-name').value;
-  const price = document.getElementById('mi-price').value;
-  const category = document.getElementById('mi-category').value;
-  const description = document.getElementById('mi-description').value;
-  const selectedUrl = document.getElementById('mi-selected-url').value;
-  const selectedFilename = document.getElementById('mi-selected-filename').value;
+  const editId = document.getElementById('item-edit-id').value;
+  const name = document.getElementById('item-name').value;
+  const price = document.getElementById('item-price').value;
+  const category = document.getElementById('item-type').value;
+  const description = document.getElementById('item-description').value;
+  const fileInput = document.getElementById('item-file');
+  const fallbackUrl = document.getElementById('item-fallback-url').value;
 
-  // SCENARIO A: User picked a brand new local file layout, stream immediately
-  if (targetUploadedFile) {
-    const formData = new FormData();
-    formData.append('image', targetUploadedFile);
-    formData.append('name', name);
-    formData.append('price', price);
-    formData.append('category', category);
-    formData.append('description', description);
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('price', price);
+  formData.append('category', category);
+  formData.append('description', description);
 
-    // If updating an existing item but replacing its image file, delete the old file first
-    if (editId) {
-      fetch('/api/delete-image', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: editId })
-      }).catch(err => console.log("Old file clear fallback:", err));
+  // Execution Flow Closure
+  const executeUpload = (imageBlob) => {
+    if(imageBlob) formData.append('image', imageBlob, 'item.jpg');
+    
+    if(editId) {
+      // Purge matching item index block before re-writing context
+      fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: editId }) })
+        .then(() => fetch('/api/upload-image', { method: 'POST', body: formData }))
+        .then(() => { closeModal('item-modal'); loadSystemStateFromCloud(); });
+    } else {
+      fetch('/api/upload-image', { method: 'POST', body: formData })
+        .then(() => { closeModal('item-modal'); loadSystemStateFromCloud(); });
     }
+  };
 
-    fetch('/api/upload-image', {
-      method: 'POST',
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) finalizeSave();
-      else alert("Cloudinary connection failed: " + data.error);
-    })
-    .catch(() => alert("Network exception uploading asset."));
-  } 
-  // SCENARIO B: Re-linking existing image library choice or updating text metadata fields
-  else if (editId && selectedUrl) {
-    // To update text variables when the image asset isn't modified, we remove the existing cloud record
-    // and recreate its metadata signature inside Cloudinary instantly.
-    fetch('/api/delete-image', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename: selectedFilename || editId })
-    })
-    .then(() => {
-      // Re-upload proxy payload mapping text structures back into cloud records
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('price', price);
-      formData.append('category', category);
-      formData.append('description', description);
-      
-      // Pass standard placeholder image if the client cache lacks an active file stream
-      return fetch(selectedUrl)
-        .then(res => res.blob())
-        .then(blob => {
-          formData.append('image', blob, 'menu-item.jpg');
-          return fetch('/api/upload-image', { method: 'POST', body: formData });
-        });
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) finalizeSave();
-    });
+  if(fileInput.files.length > 0) {
+    executeUpload(fileInput.files[0]);
+  } else if(editId && fallbackUrl) {
+    fetch(fallbackUrl).then(r => r.blob()).then(blob => executeUpload(blob));
   } else {
-    alert("Please upload a file or select an image asset from the library archive tab.");
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save Changes";
+    fetch('banana.jpg').then(r => r.blob()).then(blob => executeUpload(blob));
   }
 }
 
-function finalizeSave() {
-  loadSyncMenuFromServer();
-  closeModal('menu-item-modal');
+function togglePaymentFlag(orderId) {
+  const match = rawCloudCatalog.find(r => r.id === orderId);
+  if(!match) return;
+  try {
+    let orderDetails = JSON.parse(match.description);
+    orderDetails.paymentReceived = !orderDetails.paymentReceived;
+    
+    const formData = new FormData();
+    formData.append('name', match.name);
+    formData.append('price', '0');
+    formData.append('category', 'System-Order');
+    formData.append('description', JSON.stringify(orderDetails));
+
+    fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: orderId }) })
+      .then(() => fetch('banana.jpg').then(r => r.blob()))
+      .then(blob => {
+        formData.append('image', blob, 'order.jpg');
+        return fetch('/api/upload-image', { method: 'POST', body: formData });
+      })
+      .then(() => loadSystemStateFromCloud());
+  } catch(e) {}
 }
 
-function deleteCloudItem(itemId) {
-  if (!confirm("Are you sure you want to permanently delete this menu item from all network devices?")) return;
-  
+function deleteCloudResource(id) {
+  if(!confirm("Are you sure you want to permanently delete this resource from the server storage layer?")) return;
   fetch('/api/delete-image', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ filename: itemId })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      loadSyncMenuFromServer();
-    } else {
-      alert("Failed to delete item from cloud storage.");
-    }
-  })
-  .catch(() => alert("Network error deleting item."));
+    body: JSON.stringify({ filename: id })
+  }).then(() => loadSystemStateFromCloud());
 }
 
-function resetFormFields() {
-  document.getElementById('menu-form').reset();
-  document.getElementById('edit-item-id').value = '';
-  document.getElementById('mi-selected-url').value = '';
-  document.getElementById('mi-selected-filename').value = '';
-  document.getElementById('preview-box').style.display = 'none';
-  document.getElementById('img-preview-element').src = '';
-  document.querySelectorAll('.library-item').forEach(el => el.classList.remove('selected'));
-  targetUploadedFile = null;
+function openPasswordModal()  { openModal('password-modal'); }
+function handlePasswordChange(e) {
+  e.preventDefault();
+  const newPass = document.getElementById('new-admin-pass').value;
   
-  const saveBtn = document.getElementById('save-btn');
-  saveBtn.disabled = false;
-  saveBtn.textContent = "Save Changes";
-  switchImgTab('upload');
-}
+  // Find and remove matching password configurations if existing
+  const targetConfig = rawCloudCatalog.find(r => r.category === 'System-Config' && r.name === 'AdminPassword');
+  const deletionPromise = targetConfig ? 
+    fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: targetConfig.id }) }) :
+    Promise.resolve();
 
-// ── INITIALIZATION ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  loadSyncMenuFromServer();
-  
-  // Clean Enter/Escape handling optimization for desktop operations
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeModal('menu-item-modal');
-    }
+  deletionPromise.then(() => {
+    const formData = new FormData();
+    formData.append('name', 'AdminPassword');
+    formData.append('price', '0');
+    formData.append('category', 'System-Config');
+    formData.append('description', newPass);
+    
+    return fetch('banana.jpg').then(r => r.blob()).then(blob => {
+      formData.append('image', blob, 'config.jpg');
+      return fetch('/api/upload-image', { method: 'POST', body: formData });
+    });
+  })
+  .then(() => {
+    alert("System Administration password updated successfully across all networks.");
+    closeModal('password-modal');
+    loadSystemStateFromCloud();
   });
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.getElementById('item-file').value=''; }
+
+// ── BOOTSTRAP INITIALIZATION ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  loadSystemStateFromCloud();
+  renderNavigation();
 });
 </script>
 </body>
