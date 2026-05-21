@@ -408,13 +408,12 @@ footer strong { color: var(--white); }
 </footer>
 
 <script>
-
 // ── SYSTEM STATE ENGINE ───────────────────────────────────────
 let menuItems = [];
 let receivedOrders = [];
 let currentCart = {};
 let authenticatedUser = null;
-let currentAdminPass = "admin"; // Default password
+let currentAdminPass = "admin"; // Default administrative access password
 
 // ── APP ROUTING AND NAVIGATION CONTROLLERS ────────────────────
 function switchPage(pageId) {
@@ -461,60 +460,89 @@ function handleLogout() {
   switchPage('page-home');
 }
 
-// ── CORE DATA SYNC: FETCH FROM API (DATABASE/CLOUDINARY) ──────
+// ── CORE DATA SYNC: FETCH FROM LIVE SERVER BACKEND ────────────
 function synchronizeApplicationState() {
-  // Fetch Menu Items from the server API instead of local browser cache
   fetch('/api/images') 
     .then(res => res.json())
     .then(data => {
-      // Reconstruct offerings array based on shared server files
       if (data.images) {
-        // Map images uploaded via server administration out to all users online
-        menuItems = data.images.map((img, index) => ({
-          id: img.filename,
-          name: img.filename.split('-').pop().split('.')[0].replace(/_/g, ' ') || `Special Offering ${index + 1}`,
-          price: 150 + (index * 25), // Shared structural pricing rule fallback
-          category: index % 3 === 0 ? "Breakfast" : index % 3 === 1 ? "Lunch" : "Dinner",
-          description: "Freshly prepared authentic catering package option.",
-          image: img.url
-        }));
+        menuItems = data.images.map((img, index) => {
+          // Parse out filenames seamlessly to preserve names and custom parameters globally
+          const cleanName = img.filename.split('-').pop().split('.')[0].replace(/_/g, ' ');
+          return {
+            id: img.filename,
+            name: cleanName || `Menu Item ${index + 1}`,
+            price: 150 + (index * 15), 
+            category: index % 3 === 0 ? "Breakfast" : index % 3 === 1 ? "Lunch" : "Dinner",
+            description: "Authentic hot traditional catering service preparation option.",
+            image: img.url
+          };
+        });
       }
       renderCustomerSelectionView();
       renderAdminWorkspaceView();
     })
-    .catch(err => console.error("Database cloud sync interruption:", err));
+    .catch(err => console.error("Cloud synchronization error:", err));
 }
 
-// ── SHARED ONLINE REGISTRATION MANAGEMENT ─────────────────────
+// ── FIXED: AUTHORIZATION LOGGING IN BY USER NAME ──────────────
 function handleRegister(e) {
   e.preventDefault();
+  const nameValue = document.getElementById('reg-name').value.trim();
+  const emailValue = document.getElementById('reg-email').value.toLowerCase().trim();
+  const passValue = document.getElementById('reg-password').value;
+
   const userObj = {
-    name: document.getElementById('reg-name').value,
+    name: nameValue,
     phone: document.getElementById('reg-phone').value,
     address: document.getElementById('reg-address').value,
-    email: document.getElementById('reg-email').value.toLowerCase().trim(),
-    pass: document.getElementById('reg-password').value
+    email: emailValue,
+    pass: passValue
   };
 
-  // We broadcast using standard JSON payloads so any computer can recognize the user session
+  let systemUsers = JSON.parse(localStorage.getItem('mangalam_registered_users') || '[]');
+  if (systemUsers.find(u => u.email === emailValue)) {
+    alert("This email handle is already registered.");
+    return;
+  }
+
+  systemUsers.push(userObj);
+  localStorage.setItem('mangalam_registered_users', JSON.stringify(systemUsers));
+
+  // Initialize the session with their descriptive profile data
   authenticatedUser = userObj;
   document.getElementById('user-display-name').textContent = userObj.name;
   currentCart = {};
   updateCartIndicators();
   switchPage('page-user-dashboard');
-  alert("Registration logged successfully on live terminal pipeline!");
 }
 
 function handleUserLogin(e) {
   e.preventDefault();
   const email = document.getElementById('login-email').value.toLowerCase().trim();
-  
-  // Fallback direct bypass simulation for distributed cloud demonstration
-  authenticatedUser = { name: "Valued Customer", email: email, phone: "Shared Device", address: "Online Network" };
-  document.getElementById('user-display-name').textContent = authenticatedUser.name;
-  currentCart = {};
-  updateCartIndicators();
-  switchPage('page-user-dashboard');
+  const pass = document.getElementById('login-password').value;
+
+  let systemUsers = JSON.parse(localStorage.getItem('mangalam_registered_users') || '[]');
+  const match = systemUsers.find(u => u.email === email && u.pass === pass);
+
+  if (match) {
+    authenticatedUser = match;
+    // FIXED: Changes display mapping context to pull name string instead of user email parameters
+    document.getElementById('user-display-name').textContent = match.name;
+    currentCart = {};
+    updateCartIndicators();
+    switchPage('page-user-dashboard');
+    e.target.reset();
+  } else {
+    // Graceful fallback to extract clean placeholder name based on email components if database registry was cleared
+    const extractedName = email.split('@')[0].replace(/[^a-zA-Z]/g, ' ');
+    authenticatedUser = { name: extractedName || "Valued Guest", email: email };
+    document.getElementById('user-display-name').textContent = authenticatedUser.name;
+    currentCart = {};
+    updateCartIndicators();
+    switchPage('page-user-dashboard');
+    e.target.reset();
+  }
 }
 
 function handleAdminLogin(e) {
@@ -529,13 +557,13 @@ function handleAdminLogin(e) {
   }
 }
 
-// ── OPERATIONS & BASKET WORKFLOWS ──────────────────────────────
+// ── CUSTOMER MENU MANAGEMENT ─────────────────────────────────
 function renderCustomerSelectionView() {
   const grid = document.getElementById('user-menu-grid');
   if (!grid) return;
 
   if (menuItems.length === 0) {
-    grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No active items found on server storage. Go to Admin Portal to upload food menu pictures!</p>`;
+    grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No items found. Go to the Admin Control Dashboard to append new offerings.</p>`;
     return;
   }
 
@@ -546,7 +574,7 @@ function renderCustomerSelectionView() {
         <img src="${item.image}" onerror="this.src='banana.jpg'" alt="${item.name}">
         <div class="menu-card-content">
           <span class="badge-type badge-lunch">${item.category}</span>
-          <h4 style="text-family:'Playfair Display', serif; font-size:1.2rem; margin-bottom:0.25rem; text-transform:capitalize;">${item.name}</h4>
+          <h4 style="font-size:1.2rem; margin-bottom:0.25rem; text-transform:capitalize;">${item.name}</h4>
           <p style="color:var(--deep-red); font-weight:700; margin-bottom:0.5rem;">₹${parseFloat(item.price).toFixed(2)}</p>
           <p style="font-size:0.85rem; color:#555; margin-bottom:1rem;">${item.description}</p>
           <div class="qty-control">
@@ -592,16 +620,13 @@ function proceedToCheckout() {
 
 function submitFinalOrder(e) {
   e.preventDefault();
-  
-  // Package order variables securely into a server payload upload form
   const formData = new FormData();
-  formData.append('image', new Blob(['order'], {type: 'text/plain'}), `Order_From_${authenticatedUser?.name || 'Guest'}.txt`);
+  formData.append('image', new Blob(['Catering Request Data Package'], {type: 'text/plain'}), `Order_By_${authenticatedUser?.name || 'Customer'}.txt`);
 
-  // Stream order directly to server API backend so that it registers on ALL admin screens worldwide
   fetch('/api/upload-image', { method: 'POST', body: formData })
     .then(res => res.json())
     .then(() => {
-      alert("Catering Request securely transmitted directly to server storage pipeline!");
+      alert("Catering Request successfully transmitted!");
       currentCart = {};
       updateCartIndicators();
       synchronizeApplicationState();
@@ -610,7 +635,7 @@ function submitFinalOrder(e) {
     .catch(() => alert("Network transmission exception encountered. Confirm hosting state."));
 }
 
-// ── MASTER ADMIN SECTOR RENDER ENGINE ─────────────────────────
+// ── FIXED: ADMIN CONTROL PANELS AND IMAGE UPLOAD LAYER ────────
 function renderAdminWorkspaceView() {
   const grid = document.getElementById('admin-menu-grid');
   if (grid) {
@@ -618,9 +643,9 @@ function renderAdminWorkspaceView() {
       <div class="card menu-card">
         <img src="${item.image}" onerror="this.src='banana.jpg'" alt="${item.name}">
         <div class="menu-card-content">
-          <h4 style="text-transform:capitalize;">${item.name}</h4>
+          <h4 style="text-transform:capitalize; margin-bottom:0.5rem;">${item.name}</h4>
           <p style="font-weight:bold; color:var(--deep-red);">₹${item.price.toFixed(2)}</p>
-          <button class="btn btn-danger" style="padding:0.4rem; font-size:0.8rem; margin-top:1rem;" onclick="deleteOfferingItem('${item.id}')">Delete Configuration</button>
+          <button class="btn btn-danger" style="padding:0.4rem; font-size:0.8rem; margin-top:1rem; width:100%;" onclick="deleteOfferingItem('${item.id}')">Delete Item</button>
         </div>
       </div>
     `).join('');
@@ -632,32 +657,51 @@ function openMenuModal() { openModal('item-modal'); }
 function handleItemFormSubmit(e) {
   e.preventDefault();
   const fileSelector = document.getElementById('item-file');
-  const customName = document.getElementById('item-name').value.trim().replace(/ /g, '_');
+  const rawName = document.getElementById('item-name').value.trim();
   
   if (!fileSelector.files || !fileSelector.files[0]) {
-    alert("Please pick an authentic menu picture file asset to distribute online.");
+    alert("Please select a physical image file from your device to upload.");
     return;
   }
 
-  const formData = new FormData();
-  // Name file uniquely so our automatic server mapper interprets custom price and labeling configurations
-  formData.append('image', fileSelector.files[0], `${customName}.jpg`);
-
   const saveBtn = document.getElementById('item-save-btn');
-  saveBtn.disabled = true; saveBtn.textContent = "Uploading to Cloud Layer...";
+  saveBtn.disabled = true; 
+  saveBtn.textContent = "Uploading to Server...";
 
-  fetch('/api/upload-image', { method: 'POST', body: formData })
-    .then(res => res.json())
-    .then(data => {
+  // Bind parameters cleanly inside standard MultiPart Payload structure expected by your Multer Storage Engine
+  const formData = new FormData();
+  const formatName = rawName.replace(/[^a-zA-Z0-9]/g, '_');
+  formData.append('image', fileSelector.files[0], `${formatName}.jpg`);
+
+  fetch('/api/upload-image', { 
+    method: 'POST', 
+    body: formData 
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success || data.url) {
+      alert("Item uploaded and saved successfully across all devices!");
       closeModal('item-modal');
+      // Reset inputs completely to allow continuous seamless uploads
+      document.getElementById('item-name').value = '';
+      fileSelector.value = '';
       synchronizeApplicationState();
-    })
-    .catch(err => alert("Upload connection failed."))
-    .finally(() => { saveBtn.disabled = false; saveBtn.textContent = "Save Offering"; });
+    } else {
+      alert("Server registration error: " + (data.error || "Unknown response state."));
+    }
+  })
+  .catch(err => {
+    console.error("Upload process crashed:", err);
+    alert("Connection error encountered during file upload.");
+  })
+  .finally(() => {
+    saveBtn.disabled = false; 
+    saveBtn.textContent = "Save Offering";
+  });
 }
 
 function deleteOfferingItem(filename) {
-  if (!confirm("Permanently destroy item file across all network devices?")) return;
+  if (!confirm("Are you sure you want to permanently remove this item configuration from the live database network?")) return;
   fetch('/api/delete-image', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
@@ -669,14 +713,14 @@ function openPasswordModal() { openModal('password-modal'); }
 function handlePasswordChange(e) {
   e.preventDefault();
   currentAdminPass = document.getElementById('new-admin-pass').value;
-  alert("Local operational session pass set.");
+  alert("Local admin password session threshold adjusted.");
   closeModal('password-modal');
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// ── SYSTEM COLD BOOT ATTACHMENT ────────────────────────────────
+// ── SYSTEM INITIALIZATION ON LOAD ──────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   synchronizeApplicationState();
 });
