@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Mangalam Catering Services</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=DM+Sans:wght@300;400;500&display=swap\" rel="stylesheet">
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────────── */
 :root{
@@ -14,1473 +14,454 @@
   --success:#2E7D32; --danger:#C62828;
   --shadow:0 4px 24px rgba(139,26,26,.10);
   --shadow-lg:0 8px 48px rgba(139,26,26,.15);
-  --sky:#4AACDB; --leaf:#1A5C2A;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;display:flex;flex-direction:column;}
-h1,h2,h3,h4{font-family:'Playfair Display',serif;}
+body{font-family:'DM Sans',sans-serif;color:var(--charcoal);background:var(--cream);line-height:1.5;}
 
-/* ── HEADER ──────────────────────────────────────────────────── */
-.site-header{
-  background-image:linear-gradient(rgba(10,40,15,.78),rgba(10,40,15,.78)),
-    repeating-linear-gradient(45deg,#1a4a1a 0,#1a4a1a 10px,#0f3010 10px,#0f3010 20px);
-  padding:0 2rem;display:flex;align-items:center;justify-content:space-between;
-  min-height:80px;box-shadow:0 2px 20px rgba(0,0,0,.35);
-  position:sticky;top:0;z-index:200;
-}
-.site-logo{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);
-  font-style:italic;font-weight:800;text-decoration:none;line-height:1;white-space:nowrap;cursor:pointer;}
-.logo-sub{font-style:normal;font-weight:600;color:#F0F0E8;}
-.nav-links{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
-.nav-links button{background:none;border:none;color:rgba(240,240,232,.85);
-  font-family:'DM Sans',sans-serif;font-size:.875rem;cursor:pointer;
-  padding:.4rem .85rem;border-radius:4px;transition:all .2s;}
-.nav-links button:hover{color:var(--gold);background:rgba(255,255,255,.12);}
-.nav-links button.active-nav{color:var(--gold);}
+/* ── LAYOUT & PAGES ───────────────────────────────────────────── */
+header{background:var(--deep-red);color:var(--white);padding:1rem 2rem;display:flex;justify-content:between;align-items:center;box-shadow:var(--shadow);}
+header h1{font-family:'Playfair Display',serif;color:var(--gold);}
+nav button{background:transparent;border:none;color:var(--ivory);padding:0.5rem 1rem;cursor:pointer;font-size:1rem;font-weight:500;}
+nav button:hover, nav button.active{color:var(--saffron);}
 
-/* ── PAGE SYSTEM ─────────────────────────────────────────────── */
-.page{display:none;flex:1;padding:2rem 1.5rem;max-width:1100px;margin:0 auto;width:100%;}
+.container{max-width:1200px;margin:2rem auto;padding:0 1rem;}
+.page{display:none;}
 .page.active{display:block;}
-main{flex:1;display:flex;flex-direction:column;}
 
-/* ── CARDS & FORMS ───────────────────────────────────────────── */
-.card{background:var(--white);border:1px solid var(--border);border-radius:12px;
-  padding:1.75rem;box-shadow:var(--shadow);margin-bottom:1.5rem;}
-.card-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--deep-red);
-  margin-bottom:1.25rem;padding-bottom:.6rem;border-bottom:2px solid var(--border);}
-.form-group{margin-bottom:1.1rem;}
-.form-group label{display:block;font-size:.8rem;font-weight:500;color:var(--muted);
-  letter-spacing:.06em;text-transform:uppercase;margin-bottom:.35rem;}
-.form-group input,.form-group select,.form-group textarea{
-  width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;
-  font-family:'DM Sans',sans-serif;font-size:.9rem;background:var(--ivory);
-  color:var(--charcoal);outline:none;transition:border-color .2s;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--saffron);}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem;}
-@media(max-width:540px){.grid-2{grid-template-columns:1fr;}}
+/* ── MENU CARD GRID ───────────────────────────────────────────── */
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2rem;margin-top:2rem;}
+.menu-card{background:var(--white);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);transition:transform 0.2s;}
+.menu-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+.menu-card img{width:100%;height:200px;object-fit:cover;background:var(--ivory);}
+.menu-card-body{padding:1.5rem;}
+.menu-card-title{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--deep-red);margin-bottom:0.5rem;}
+.menu-card-price{color:var(--saffron);font-weight:600;font-size:1.1rem;margin-bottom:0.5rem;}
+.menu-card-desc{color:var(--muted);font-size:0.9rem;}
 
-/* ── BUTTONS ─────────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;
-  padding:.6rem 1.4rem;border-radius:8px;font-family:'DM Sans',sans-serif;
-  font-size:.875rem;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none;}
-.btn-primary{background:var(--deep-red);color:#fff;}.btn-primary:hover{background:#6b1313;}
-.btn-secondary{background:var(--saffron);color:#fff;}.btn-secondary:hover{background:#c7730e;}
-.btn-outline{background:transparent;color:var(--deep-red);border:2px solid var(--deep-red);}
-.btn-outline:hover{background:var(--deep-red);color:#fff;}
-.btn-sky{background:var(--sky);color:#fff;box-shadow:0 4px 14px rgba(46,143,191,.3);}
-.btn-sky:hover{background:#2e8fbf;transform:translateY(-2px);}
-.btn-green{background:var(--leaf);color:#fff;}.btn-green:hover{background:#0f3d1c;transform:translateY(-2px);}
-.btn-admin{background:transparent;color:#3D6070;border:2px solid #3D6070;}
-.btn-admin:hover{background:#1A3A4A;color:#fff;border-color:#1A3A4A;}
-.btn-danger{background:var(--danger);color:#fff;}.btn-danger:hover{background:#9b1e1e;}
-.btn-sm{padding:.35rem .85rem;font-size:.78rem;}
-.btn:disabled{opacity:.5;cursor:not-allowed;}
-.btn-print{background:#2563EB;color:#fff;border:none;padding:.4rem 1rem;border-radius:6px;
-  font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;
-  display:inline-flex;align-items:center;gap:.35rem;transition:background .2s;}
-.btn-print:hover{background:#1d4ed8;}
+/* ── FORMS & BUTTONS ──────────────────────────────────────────── */
+.form-group{margin-bottom:1.25rem;}
+.form-group label{display:block;margin-bottom:0.5rem;font-weight:500;color:var(--muted);font-size:0.9rem;}
+input, select, textarea{width:100%;padding:0.75rem;border:1px solid var(--border);border-radius:4px;font-family:inherit;font-size:1rem;}
+input:focus, select:focus, textarea:focus{outline:none;border-color:var(--saffron);}
 
-/* ── ALERTS / BADGES ─────────────────────────────────────────── */
-.alert{padding:.75rem 1rem;border-radius:8px;font-size:.875rem;margin-bottom:1rem;}
-.alert-success{background:#E8F5E9;color:var(--success);border:1px solid #A5D6A7;}
-.alert-danger{background:#FFEBEE;color:var(--danger);border:1px solid #FFCDD2;}
-.alert-info{background:#FFF8E1;color:#6D4C00;border:1px solid var(--gold);}
-.badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.73rem;font-weight:500;}
-.badge-success{background:#E8F5E9;color:var(--success);}
-.badge-warning{background:#FFF8E1;color:#8B5E00;}
-.badge-danger{background:#FFEBEE;color:var(--danger);}
-.badge-info{background:#E3F2FD;color:#1565C0;}
+.btn{display:inline-block;padding:0.75rem 1.5rem;background:var(--saffron);color:var(--white);border:none;border-radius:4px;cursor:pointer;font-weight:500;font-size:1rem;text-align:center;}
+.btn:hover{opacity:0.9;}
+.btn-danger{background:var(--danger);}
+.btn-secondary{background:var(--muted);}
 
-/* ── TABLE ───────────────────────────────────────────────────── */
-.table-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:.85rem;}
-th{background:var(--ivory);color:var(--muted);font-weight:500;letter-spacing:.05em;
-  text-transform:uppercase;font-size:.76rem;padding:.7rem .9rem;text-align:left;
-  border-bottom:2px solid var(--border);}
-td{padding:.7rem .9rem;border-bottom:1px solid var(--border);vertical-align:middle;}
-tr:last-child td{border-bottom:none;}tr:hover td{background:var(--ivory);}
+/* ── TABS INSIDE MODAL ────────────────────────────────────────── */
+.tab-header{display:flex;border-bottom:1px solid var(--border);margin-bottom:1rem;}
+.tab-btn{flex:1;padding:0.75rem;background:transparent;border:none;cursor:pointer;text-align:center;font-weight:500;color:var(--muted);}
+.tab-btn.active{color:var(--saffron);border-bottom:2px solid var(--saffron);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
 
-/* ── MODAL ───────────────────────────────────────────────────── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;
-  display:flex;align-items:center;justify-content:center;opacity:0;
-  pointer-events:none;transition:opacity .25s;}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:#fff;border-radius:14px;padding:1.75rem;width:90%;max-width:560px;
-  max-height:90vh;overflow-y:auto;box-shadow:0 8px 48px rgba(0,0,0,.2);
-  transform:translateY(16px);transition:transform .25s;}
-.modal-overlay.open .modal{transform:translateY(0);}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
-.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);}
+/* ── MODAL STRUCTURE ──────────────────────────────────────────── */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:1000;padding:1rem;}
+.modal.open{display:flex;}
+.modal-wrapper{background:var(--white);padding:2rem;border-radius:8px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0.5rem;}
+.modal-header h3{font-family:'Playfair Display',serif;color:var(--deep-red);}
 
-/* ── TABS ────────────────────────────────────────────────────── */
-.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:2rem;overflow-x:auto;}
-.tab-btn{background:none;border:none;padding:.9rem 1.25rem;font-family:'DM Sans',sans-serif;
-  font-size:.875rem;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;
-  margin-bottom:-2px;transition:all .2s;white-space:nowrap;}
-.tab-btn.active,.tab-btn:hover{color:var(--deep-red);border-bottom-color:var(--deep-red);}
-.tab-panel{display:none;}.tab-panel.active{display:block;}
-
-/* ── HOME PAGE ───────────────────────────────────────────────── */
-.home-wrap{
-  background-image:linear-gradient(rgba(15,50,20,.72),rgba(15,50,20,.72)),
-    repeating-linear-gradient(60deg,#1a4a1a 0,#1a4a1a 8px,#0f3010 8px,#0f3010 16px);
-  border-radius:18px;padding:0 0 2.5rem;overflow:hidden;
-  box-shadow:0 6px 40px rgba(15,50,20,.4);}
-.hero{text-align:center;padding:2.5rem 1.5rem 2rem;
-  background:linear-gradient(160deg,rgba(91,184,232,.35) 0%,rgba(58,138,74,.55) 100%);
-  border-bottom:3px solid rgba(255,255,255,.15);}
-.hero-badge{display:inline-block;background:rgba(255,255,255,.15);border:1.5px solid var(--sky);
-  color:#d6f0fc;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;
-  padding:.3rem 1.2rem;border-radius:20px;margin-bottom:1.2rem;font-weight:500;}
-.hero h1{font-size:clamp(1.6rem,4.5vw,2.8rem);color:#fff;line-height:1.15;margin-bottom:.75rem;}
-.hero h1 em{color:#7dd9a0;font-style:italic;}
-.hero p{font-size:.95rem;color:rgba(255,255,255,.8);max-width:480px;margin:0 auto 2rem;line-height:1.7;}
-.hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
-.hero-buttons .btn{min-width:140px;padding:.8rem 1.75rem;}
-.ornament{text-align:center;font-size:1.4rem;margin:2rem 0 1.5rem;
-  background:linear-gradient(90deg,var(--sky),#1A5C2A);-webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;background-clip:text;opacity:.8;letter-spacing:.5rem;}
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem;padding:0 1.5rem;}
-.feature-card{border-radius:12px;padding:1.5rem 1.25rem;text-align:center;transition:transform .22s;}
-.feature-card:hover{transform:translateY(-4px);}
-.feature-card:nth-child(odd){background:linear-gradient(160deg,rgba(91,184,232,.2) 0%,rgba(255,255,255,.1) 100%);
-  border:1.5px solid rgba(91,184,232,.3);}
-.feature-card:nth-child(even){background:linear-gradient(160deg,#1A5C2A 0%,#2E7D3A 100%);
-  border:1.5px solid rgba(30,107,46,.6);}
-.feature-card::before{content:'';display:block;height:3px;border-radius:12px 12px 0 0;
-  margin:-1.5rem -1.25rem 1rem;background:linear-gradient(90deg,var(--sky),var(--leaf));}
-.feature-icon{font-size:2.2rem;margin-bottom:.75rem;display:block;}
-.feature-card:nth-child(odd) h3{color:#d6f0fc;font-size:1rem;}
-.feature-card:nth-child(even) h3{color:#c8f0d0;font-size:1rem;}
-.feature-card:nth-child(odd) p{color:rgba(255,255,255,.75);font-size:.85rem;line-height:1.6;}
-.feature-card:nth-child(even) p{color:rgba(255,255,255,.85);font-size:.85rem;line-height:1.6;}
-
-/* ── MENU GRID ───────────────────────────────────────────────── */
-.meal-tabs{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem;}
-.meal-tab{padding:.6rem 1.5rem;border-radius:30px;border:2px solid var(--border);
-  background:var(--white);font-family:'DM Sans',sans-serif;font-size:.875rem;
-  cursor:pointer;transition:all .2s;font-weight:500;}
-.meal-tab.active,.meal-tab:hover{background:var(--deep-red);border-color:var(--deep-red);color:#fff;}
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.1rem;}
-.menu-card{border:1.5px solid var(--border);border-radius:12px;background:var(--white);
-  overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;}
-.menu-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
-.menu-card-img{width:100%;height:130px;object-fit:cover;background:var(--ivory);
-  display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
-.menu-card-img img{width:100%;height:130px;object-fit:cover;}
-.menu-card-body{padding:.9rem;}
-.menu-card-name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--deep-red);margin-bottom:.3rem;}
-.menu-card-desc{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:.65rem;}
-.menu-card-footer{display:flex;align-items:center;justify-content:space-between;}
-.menu-price{font-size:1rem;font-weight:600;color:var(--saffron);}
-.qty-ctrl{display:flex;align-items:center;gap:.35rem;}
-.qty-btn{background:var(--ivory);border:1px solid var(--border);border-radius:6px;
-  width:26px;height:26px;cursor:pointer;font-size:.95rem;line-height:1;transition:background .15s;}
-.qty-btn:hover{background:var(--saffron);color:#fff;border-color:var(--saffron);}
-.qty-val{min-width:20px;text-align:center;font-weight:600;font-size:.875rem;}
-
-/* ── ORDER SUMMARY ───────────────────────────────────────────── */
-.order-summary{background:var(--ivory);border:1.5px solid var(--border);
-  border-radius:12px;padding:1.1rem 1.4rem;margin-top:1.25rem;}
-.order-row{display:flex;justify-content:space-between;font-size:.85rem;padding:.3rem 0;}
-.order-total{display:flex;justify-content:space-between;font-size:1.05rem;font-weight:700;
-  color:var(--deep-red);padding-top:.65rem;border-top:2px solid var(--border);margin-top:.4rem;}
-.action-row{display:flex;gap:1rem;margin-top:1.25rem;flex-wrap:wrap;}
-
-/* ── SPINNER ─────────────────────────────────────────────────── */
-.spinner{display:inline-block;width:16px;height:16px;
-  border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
-  border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* ── DIVIDER ─────────────────────────────────────────────────── */
-.divider{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
-.flex{display:flex;}.gap-1{gap:.5rem;}.gap-2{gap:1rem;}.flex-wrap{flex-wrap:wrap;}
-.items-center{align-items:center;}.justify-between{justify-content:space-between;}
-.text-center{text-align:center;}.text-muted{color:var(--muted);}
-.mt-1{margin-top:.5rem;}.mt-2{margin-top:1rem;}.mt-3{margin-top:1.5rem;}
-.mb-1{margin-bottom:.5rem;}.mb-2{margin-bottom:1rem;}
-.w-full{width:100%;}
-
-/* ── FOOTER ──────────────────────────────────────────────────── */
-footer{background:var(--charcoal);color:rgba(255,255,255,.6);text-align:center;
-  padding:1.1rem;font-size:.82rem;}
-footer a{color:var(--gold);text-decoration:none;}
-
-/* ── PRINT ───────────────────────────────────────────────────── */
-@media print{
-  .site-header,.tabs,.btn,.modal-overlay,.no-print,footer{display:none!important;}
-  body{background:#fff!important;}
-  .tab-panel{display:block!important;}
-  .card{box-shadow:none!important;border:1px solid #ccc!important;}
-}
-.menu-img-thumb{width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border);}
+/* ── IMAGE PICKER LIBRARY GALLERY ──────────────────────────────── */
+.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:0.5rem;max-height:200px;overflow-y:auto;border:1px solid var(--border);padding:0.5rem;border-radius:4px;}
+.library-item{width:100%;height:80px;object-fit:cover;cursor:pointer;border:2px solid transparent;border-radius:4px;}
+.library-item:hover{border-color:var(--saffron);}
+.library-item.selected{border-color:var(--success);box-shadow:0 0 8px rgba(46,125,50,0.5);}
+.img-preview-box{margin-top:1rem;text-align:center;}
+.img-preview-box img{max-width:100%;max-height:120px;border-radius:4px;border:1px solid var(--border);}
 </style>
 </head>
 <body>
 
-<!-- ═══════ HEADER ═══════ -->
-<header class="site-header">
-  <div class="site-logo" onclick="goHome()">
-    Mangalam <span class="logo-sub">Catering Services</span>
-  </div>
-  <nav class="nav-links" id="main-nav">
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('login')">Login</button>
-    <button onclick="showPage('register')">Register</button>
-    <button onclick="showPage('admin-login')" style="color:rgba(240,240,232,.55);">Admin</button>
+<header>
+  <h1>Mangalam Catering</h1>
+  <nav>
+    <button onclick="switchPage('page-menu')" id="nav-menu" class="active">Our Menu</button>
+    <button onclick="switchPage('page-admin')" id="nav-admin">Admin Panel</button>
   </nav>
 </header>
 
-<main>
+<div class="container">
+  <main id="page-menu" class="page active">
+    <div class="menu-grid" id="customer-menu-grid"></div>
+  </main>
 
-<!-- ════════════════════════════════════════
-     PAGE: HOME
-════════════════════════════════════════ -->
-<div id="page-home" class="page active">
-  <div class="home-wrap">
-    <div class="hero">
-      <div class="hero-badge">&#127800; Traditional South Indian Catering</div>
-      <h1>Where Every Feast<br>Becomes a <em>Memory</em></h1>
-      <p>Authentic flavours, curated menus and seamless service for weddings, functions and corporate events.</p>
-      <div class="hero-buttons">
-        <button class="btn btn-sky" onclick="showPage('login')">Login</button>
-        <button class="btn btn-green" onclick="showPage('register')">Register</button>
-        <button class="btn btn-admin" onclick="showPage('admin-login')">Admin</button>
-      </div>
+  <section id="page-admin" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+      <h2>Menu Management Dashboard</h2>
+      <button class="btn" onclick="openAddModal()">+ Add New Menu Item</button>
     </div>
-    <div class="ornament">&#10022; &#10022; &#10022;</div>
-    <div class="features">
-      <div class="feature-card"><span class="feature-icon">&#127858;</span><h3>Curated Menus</h3><p>Handpicked breakfast, lunch and dinner items crafted with the finest ingredients.</p></div>
-      <div class="feature-card"><span class="feature-icon">&#127873;</span><h3>Combo Packages</h3><p>Value-packed combos designed by our chefs for every type of occasion.</p></div>
-      <div class="feature-card"><span class="feature-icon">&#128197;</span><h3>Easy Booking</h3><p>Choose your date, customise your order and let us handle the rest.</p></div>
-      <div class="feature-card"><span class="feature-icon">&#128222;</span><h3>Personal Service</h3><p>Request a callback and our team will reach you to finalise every detail.</p></div>
-    </div>
-  </div>
+    <div class="menu-grid" id="admin-menu-grid"></div>
+  </section>
 </div>
 
-<!-- ════════════════════════════════════════
-     PAGE: REGISTER
-════════════════════════════════════════ -->
-<div id="page-register" class="page">
-  <div style="max-width:480px;margin:2rem auto;">
-    <div class="card">
-      <h2 class="card-title">Create Account</h2>
-      <div id="reg-msg"></div>
-      <div class="form-group"><label>Full Name *</label><input id="reg-name" placeholder="Your full name"></div>
-      <div class="form-group"><label>Address *</label><textarea id="reg-addr" rows="2" style="resize:vertical;"></textarea></div>
-      <div class="form-group"><label>Phone *</label><input id="reg-phone" placeholder="+91 98765 43210"></div>
-      <div class="form-group"><label>Email *</label><input id="reg-email" type="email" placeholder="you@example.com"></div>
-      <div class="form-group"><label>Password *</label><input id="reg-pw" type="password" placeholder="Choose a password"></div>
-      <button class="btn btn-primary w-full" onclick="doRegister()">Register</button>
-      <p class="text-center mt-2 text-muted" style="font-size:.875rem;">
-        Already registered? <a href="#" onclick="showPage('login');return false;" style="color:var(--deep-red);">Login</a>
-      </p>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     PAGE: LOGIN
-════════════════════════════════════════ -->
-<div id="page-login" class="page">
-  <div style="max-width:420px;margin:2rem auto;">
-    <div class="card">
-      <h2 class="card-title">Welcome Back</h2>
-      <div id="login-msg"></div>
-      <div class="form-group"><label>Full Name</label><input id="login-name" placeholder="Your registered name"></div>
-      <div class="form-group"><label>Password</label><input id="login-pw" type="password" placeholder="Your password"></div>
-      <button class="btn btn-primary w-full" onclick="doLogin()">Login</button>
-      <p class="text-center mt-2 text-muted" style="font-size:.875rem;">
-        New here? <a href="#" onclick="showPage('register');return false;" style="color:var(--deep-red);">Register</a>
-      </p>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     PAGE: DASHBOARD (user)
-════════════════════════════════════════ -->
-<div id="page-dashboard" class="page">
-  <!-- Panel 1: Choose -->
-  <div id="dash-p1" class="dash-panel">
-    <div class="card">
-      <h3 class="card-title">Hello, <span id="dash-username"></span> &#128075;</h3>
-      <p class="text-muted mb-2">Select a meal type to begin your order.</p>
-      <div class="meal-tabs" id="meal-tabs">
-        <button class="meal-tab active" onclick="selectMeal('Breakfast',this)">&#127774; Breakfast</button>
-        <button class="meal-tab" onclick="selectMeal('Lunch',this)">&#9728;&#65039; Lunch</button>
-        <button class="meal-tab" onclick="selectMeal('Dinner',this)">&#127769; Dinner</button>
-      </div>
-      <div class="flex gap-1 flex-wrap">
-        <button class="btn btn-primary" onclick="showMenuPanel()">&#127869;&#65039; View Menu Items</button>
-        <button class="btn btn-secondary" onclick="showCombosPanel()">&#127873; View Combos</button>
-      </div>
-    </div>
-  </div>
-  <!-- Panel 2: Menu Items -->
-  <div id="dash-p2" class="dash-panel" style="display:none;">
-    <div class="card">
-      <h3 class="card-title" id="menu-panel-title">Menu Items</h3>
-      <div id="menu-grid-wrap" class="menu-grid"></div>
-      <div id="dash-summary" class="order-summary" style="display:none;">
-        <h4 style="margin-bottom:.75rem;color:var(--charcoal);">Your Selection</h4>
-        <div id="summary-rows"></div>
-        <div class="order-total"><span>Total</span><span id="summary-total">&#8377;0</span></div>
-      </div>
-      <div class="action-row">
-        <button class="btn btn-outline" onclick="dashBack()">&#8592; Add More</button>
-        <button class="btn btn-primary" id="btn-proceed-menu" onclick="dashCheckout()" disabled>Proceed to Checkout &#8594;</button>
-      </div>
-    </div>
-  </div>
-  <!-- Panel 3: Combos -->
-  <div id="dash-p3" class="dash-panel" style="display:none;">
-    <div class="card">
-      <h3 class="card-title">Combo Packages</h3>
-      <div id="combos-list-wrap"></div>
-      <div id="dash-combo-summary" class="order-summary" style="display:none;">
-        <h4 style="margin-bottom:.75rem;color:var(--charcoal);">Your Selection</h4>
-        <div id="combo-summary-rows"></div>
-        <div class="order-total"><span>Total</span><span id="combo-summary-total">&#8377;0</span></div>
-      </div>
-      <div class="action-row">
-        <button class="btn btn-outline" onclick="dashBack()">&#8592; Add More</button>
-        <button class="btn btn-primary" id="btn-proceed-combo" onclick="dashCheckout()" disabled>Proceed to Checkout &#8594;</button>
-      </div>
-    </div>
-  </div>
-  <!-- Panel 4: Checkout -->
-  <div id="dash-p4" class="dash-panel" style="display:none;">
-    <div class="card">
-      <h3 class="card-title">Checkout</h3>
-      <div id="checkout-order-summary" class="order-summary mb-2"></div>
-      <hr class="divider">
-      <div class="form-group"><label>Name</label><input id="co-name" readonly style="background:#f5f5f5;"></div>
-      <div class="form-group"><label>Phone</label><input id="co-phone" readonly style="background:#f5f5f5;"></div>
-      <div class="form-group"><label>Email</label><input id="co-email" type="email"></div>
-      <div class="form-group"><label>Date of Event</label><input id="co-date" type="date"></div>
-      <div class="form-group"><label>Remarks / Special Requests</label><textarea id="co-remarks" rows="3" placeholder="Dietary preferences, allergies..."></textarea></div>
-      <div class="form-group"><label>Payment Details</label><input id="co-payment" placeholder="UPI / Bank transfer / Cash"></div>
-      <label style="display:flex;align-items:center;gap:.65rem;cursor:pointer;margin-bottom:1.5rem;font-size:.9rem;">
-        <input type="checkbox" id="co-callback" style="width:18px;height:18px;accent-color:var(--deep-red);">
-        Request a Call-Back from our team
-      </label>
-      <div id="checkout-msg"></div>
-      <div class="action-row">
-        <button class="btn btn-outline" onclick="dashBack()">&#8592; Back</button>
-        <button class="btn btn-primary" id="btn-place-order" onclick="placeOrder()">&#10003; Place Order</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     PAGE: ADMIN LOGIN
-════════════════════════════════════════ -->
-<div id="page-admin-login" class="page">
-  <div style="max-width:380px;margin:2rem auto;">
-    <div class="card">
-      <h2 class="card-title">Admin Panel</h2>
-      <p class="text-muted mb-2" style="font-size:.875rem;">Mangalam Catering Services</p>
-      <div id="adm-login-msg"></div>
-      <div class="form-group"><label>Admin Password</label><input id="adm-pw" type="password" placeholder="Enter admin password"></div>
-      <button class="btn btn-primary w-full" onclick="doAdminLogin()">Login to Admin</button>
-      <p class="text-center mt-2"><a href="#" onclick="showPage('home');return false;" style="color:var(--muted);font-size:.85rem;">&#8592; Back to Home</a></p>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     PAGE: ADMIN DASHBOARD
-════════════════════════════════════════ -->
-<div id="page-admin" class="page">
-  <div class="tabs">
-    <button class="tab-btn active" onclick="admTab('orders',this)">&#128203; Orders</button>
-    <button class="tab-btn" onclick="admTab('menu',this)">&#127869;&#65039; Menu Items</button>
-    <button class="tab-btn" onclick="admTab('combos',this)">&#127873; Combos</button>
-    <button class="tab-btn" onclick="admTab('users',this)">&#128101; Users</button>
-    <button class="tab-btn" onclick="admTab('password',this)">&#128273; Password</button>
-  </div>
-
-  <!-- ORDERS TAB -->
-  <div id="adm-orders" class="tab-panel active">
-    <div class="card">
-      <div class="flex justify-between items-center mb-2 flex-wrap" style="gap:.75rem;">
-        <h3 class="card-title" style="margin-bottom:0;border:none;padding:0;">Orders</h3>
-        <button class="btn-print no-print" onclick="window.print()">&#128424; Print</button>
-      </div>
-      <div id="orders-table-wrap" class="table-wrap"></div>
-    </div>
-  </div>
-
-  <!-- MENU ITEMS TAB -->
-  <div id="adm-menu" class="tab-panel">
-    <div class="card">
-      <div class="flex justify-between items-center mb-2 flex-wrap" style="gap:.75rem;">
-        <h3 class="card-title" style="margin-bottom:0;border:none;padding:0;">Menu Items</h3>
-        <div class="flex gap-1 flex-wrap">
-          <button class="btn btn-primary btn-sm" onclick="openMenuModal()">+ Add Item</button>
-          <button class="btn-print no-print" onclick="window.print()">&#128424; Print</button>
-        </div>
-      </div>
-      <div id="menu-table-wrap" class="table-wrap"></div>
-    </div>
-  </div>
-
-  <!-- COMBOS TAB -->
-  <div id="adm-combos" class="tab-panel">
-    <div class="card">
-      <div class="flex justify-between items-center mb-2 flex-wrap" style="gap:.75rem;">
-        <h3 class="card-title" style="margin-bottom:0;border:none;padding:0;">Combo Packages</h3>
-        <div class="flex gap-1 flex-wrap">
-          <button class="btn btn-primary btn-sm" onclick="openComboModal()">+ Create Combo</button>
-          <button class="btn-print no-print" onclick="window.print()">&#128424; Print</button>
-        </div>
-      </div>
-      <div id="combos-adm-wrap"></div>
-    </div>
-  </div>
-
-  <!-- USERS TAB -->
-  <div id="adm-users" class="tab-panel">
-    <div class="card">
-      <div class="flex justify-between items-center mb-2 flex-wrap" style="gap:.75rem;">
-        <h3 class="card-title" style="margin-bottom:0;border:none;padding:0;">Registered Users</h3>
-        <button class="btn-print no-print" onclick="window.print()">&#128424; Print</button>
-      </div>
-      <div id="users-table-wrap" class="table-wrap"></div>
-    </div>
-  </div>
-
-  <!-- PASSWORD TAB -->
-  <div id="adm-password" class="tab-panel">
-    <div class="card" style="max-width:420px;">
-      <h3 class="card-title">Change Admin Password</h3>
-      <div id="pw-msg"></div>
-      <div class="form-group"><label>New Password</label><input id="new-pw" type="password" placeholder="Enter new password"></div>
-      <div class="form-group"><label>Confirm Password</label><input id="confirm-pw" type="password" placeholder="Confirm new password"></div>
-      <button class="btn btn-primary" onclick="changeAdminPw()">Update Password</button>
-    </div>
-  </div>
-</div>
-
-</main>
-
-<!-- ═══ MODAL: Add/Edit Menu Item ═══ -->
-<div class="modal-overlay" id="menu-modal">
-  <div class="modal">
+<div class="modal" id="menu-item-modal">
+  <div class="modal-wrapper">
     <div class="modal-header">
-      <h3 id="menu-modal-title">Add Menu Item</h3>
-      <button class="modal-close" onclick="closeModal('menu-modal')">&#215;</button>
+      <h3 id="modal-title">Add Menu Item</h3>
+      <button style="background:transparent; border:none; font-size:1.5rem; cursor:pointer;" onclick="closeModal('menu-item-modal')">&times;</button>
     </div>
-    <div id="menu-modal-msg"></div>
-    <input type="hidden" id="edit-item-id">
-    <div class="form-group"><label>Name *</label><input id="mi-name" placeholder="Item name"></div>
-    <div class="grid-2">
-      <div class="form-group"><label>Meal Type *</label>
-        <select id="mi-type">
+    
+    <form id="menu-form" onsubmit="handleFormSubmit(event)">
+      <input type="hidden" id="edit-item-id" value="">
+      
+      <div class="form-group">
+        <label for="mi-name">Dish Name</label>
+        <input type="text" id="mi-name" placeholder="e.g., Special Masala Dosa" autocorrect="off" autocapitalize="words" spellcheck="false" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="mi-price">Price (₹)</label>
+        <input type="number" id="mi-price" placeholder="0.00" inputmode="decimal" pattern="[0-9]*" step="0.01" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="mi-category">Category</label>
+        <select id="mi-category">
           <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Dinner">Dinner</option>
+          <option value="Lunch">Lunch / Meals</option>
+          <option value="Sweets">Sweets & Desserts</option>
+          <option value="Beverages">Beverages</option>
         </select>
       </div>
-      <div class="form-group"><label>Price (&#8377;) *</label><input id="mi-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
-    </div>
-    <div class="form-group"><label>Description</label><textarea id="mi-desc" rows="2" placeholder="Description"></textarea></div>
-    <!-- ── Image Upload Section ── -->
-    <div class="form-group">
-      <label>Item Image (optional)</label>
 
-      <!-- Tab switcher -->
-      <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
-        <button type="button" id="img-tab-upload" onclick="switchImgTab('upload')"
-          class="btn btn-sm btn-primary" style="flex:1;">&#128190; Upload from Device</button>
-        <button type="button" id="img-tab-url" onclick="switchImgTab('url')"
-          class="btn btn-sm btn-outline" style="flex:1;">&#127760; Paste URL</button>
-        <button type="button" id="img-tab-library" onclick="switchImgTab('library')"
-          class="btn btn-sm btn-outline" style="flex:1;">&#128247; Library</button>
+      <div class="form-group">
+        <label for="mi-description">Description / Key Ingredients</label>
+        <textarea id="mi-description" rows="2" placeholder="Briefly describe the catering option..."></textarea>
       </div>
 
-      <!-- Upload panel -->
-      <div id="img-upload-panel">
-        <label id="img-drop-zone" for="mi-img-file"
-          style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-          gap:.4rem;padding:1.2rem;border:2px dashed var(--border);border-radius:10px;
-          background:var(--ivory);cursor:pointer;transition:border-color .2s;text-align:center;">
-          <span style="font-size:2rem;">&#128444;&#65039;</span>
-          <span style="font-size:.85rem;color:var(--muted);">Click to choose or drag &amp; drop</span>
-          <span style="font-size:.75rem;color:var(--muted);">JPG, PNG, WebP, GIF · max 5 MB</span>
-        </label>
-        <input type="file" id="mi-img-file" accept="image/*" style="display:none;"
-          onchange="handleImgFileUpload(this)">
-        <div id="img-upload-status" style="margin-top:.4rem;font-size:.8rem;"></div>
-      </div>
+      <div class="form-group" style="margin-top:1.5rem;">
+        <label style="font-weight:600; color:var(--charcoal);">Item Banner Image</label>
+        
+        <div class="tab-header">
+          <div class="tab-btn active" id="tab-btn-upload" onclick="switchImgTab('upload')">Upload File</div>
+          <div class="tab-btn" id="tab-btn-library" onclick="switchImgTab('library')">Cloud Library</div>
+        </div>
 
-      <!-- URL panel -->
-      <div id="img-url-panel" style="display:none;">
-        <div style="display:flex;gap:.5rem;">
-          <input id="mi-img-url" placeholder="https://example.com/image.jpg"
-            style="flex:1;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;
-            font-family:'DM Sans',sans-serif;font-size:.9rem;background:var(--ivory);
-            color:var(--charcoal);outline:none;">
-          <button type="button" class="btn btn-sm btn-secondary" onclick="applyImgUrl()">Apply</button>
+        <div class="tab-content active" id="tab-content-upload">
+          <input type="file" id="mi-img-file" accept="image/*" onchange="handleFileSelect(event)">
+          <p style="font-size:0.8rem; color:var(--muted); margin-top:0.25rem;">Max Size: 5MB (JPG, PNG, WebP, GIF)</p>
+        </div>
+
+        <div class="tab-content" id="tab-content-library">
+          <div class="library-grid" id="modal-library-grid">
+            </div>
+        </div>
+
+        <input type="hidden" id="mi-selected-url" value="">
+        <input type="hidden" id="mi-selected-filename" value="">
+
+        <div class="img-preview-box" id="preview-box" style="display:none;">
+          <p style="font-size:0.8rem; color:var(--muted); margin-bottom:0.25rem;">Selected Image Preview:</p>
+          <img id="img-preview-element" src="" alt="Preview">
         </div>
       </div>
 
-      <!-- Library panel -->
-      <div id="img-library-panel" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
-          <span style="font-size:.8rem;color:var(--muted);">Previously uploaded images</span>
-          <button type="button" class="btn btn-sm btn-outline" onclick="loadImgLibrary()">&#8635; Refresh</button>
-        </div>
-        <div id="img-library-grid"
-          style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;
-          max-height:200px;overflow-y:auto;border:1.5px solid var(--border);border-radius:8px;
-          padding:.5rem;background:var(--ivory);">
-          <p style="font-size:.8rem;color:var(--muted);grid-column:1/-1;text-align:center;padding:.5rem;">
-            Click "Refresh" to load images.</p>
-        </div>
+      <div style="display:flex; gap:1rem; margin-top:2rem;">
+        <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal('menu-item-modal')">Cancel</button>
+        <button type="submit" class="btn" style="flex:1;" id="save-btn">Save Changes</button>
       </div>
-
-      <!-- Hidden field – stores the final /uploads/... path or external URL -->
-      <input type="hidden" id="mi-img">
-
-      <!-- Preview -->
-      <div id="img-preview-wrap" style="display:none;margin-top:.75rem;text-align:center;">
-        <img id="img-preview" src="" alt="Preview"
-          style="max-width:200px;max-height:130px;object-fit:cover;border-radius:10px;
-          border:1.5px solid var(--border);box-shadow:var(--shadow);">
-        <div style="margin-top:.4rem;">
-          <button type="button" class="btn btn-sm btn-danger" onclick="clearImgSelection()">
-            &#10005; Remove Image</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex gap-1 mt-2">
-      <button class="btn btn-primary" id="menu-save-btn" onclick="saveMenuItem()">Save Item</button>
-      <button class="btn btn-outline" onclick="closeModal('menu-modal')">Cancel</button>
-    </div>
+    </form>
   </div>
 </div>
-
-<!-- ═══ MODAL: Create Combo ═══ -->
-<div class="modal-overlay" id="combo-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Create Combo Package</h3>
-      <button class="modal-close" onclick="closeModal('combo-modal')">&#215;</button>
-    </div>
-    <div id="combo-modal-msg"></div>
-    <div class="grid-2">
-      <div class="form-group"><label>Combo Name *</label><input id="cm-name" placeholder="e.g. FamilyFeast"></div>
-      <div class="form-group"><label>Price (&#8377;) *</label><input id="cm-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
-    </div>
-    <div class="form-group"><label>Description *</label><textarea id="cm-desc" rows="2" placeholder="What's included..."></textarea></div>
-    <div class="form-group">
-      <label>Select Menu Items *</label>
-      <div id="combo-items-check" style="max-height:220px;overflow-y:auto;border:1.5px solid var(--border);border-radius:8px;padding:.75rem;background:var(--ivory);">Loading&#8230;</div>
-      <div id="combo-sel-summary" style="margin-top:.5rem;font-size:.82rem;color:var(--muted);"></div>
-    </div>
-    <div style="background:var(--ivory);border:1px solid var(--border);border-radius:8px;padding:.65rem 1rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:.85rem;color:var(--muted);">Auto-sum from selected items:</span>
-      <strong style="color:var(--saffron);" id="cm-auto-price">&#8377;0.00</strong>
-    </div>
-    <div class="flex gap-1">
-      <button class="btn btn-primary" onclick="saveCombo()">&#10003; Create Combo</button>
-      <button class="btn btn-outline" onclick="closeModal('combo-modal')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: View Order ═══ -->
-<div class="modal-overlay" id="order-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Order Details</h3>
-      <button class="modal-close" onclick="closeModal('order-modal')">&#215;</button>
-    </div>
-    <div id="order-detail"></div>
-  </div>
-</div>
-
-<!-- ═══ FOOTER ═══ -->
-<footer>
-  <p>&#127869; Mangalam Catering Services &nbsp;|&nbsp;
-  Contact us: <a id="contact-email" data-eu="sairamkumarmr" data-ed="gosssysas.in" href="#">&#8230;</a></p>
-</footer>
 
 <script>
-/* ================================================================
-   DATA STORE  –  localStorage
-================================================================ */
-var DB = {
-  get: function(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){return null;} },
-  set: function(k,v){ localStorage.setItem(k, JSON.stringify(v)); },
-  def: function(k,v){ if(this.get(k)===null) this.set(k,v); }
-};
+let menuItems = [];
+let targetUploadedFile = null;
 
-/* ── Seed default data on first load ── */
-DB.def('users', []);
-DB.def('orders', []);
-DB.def('admin_pw', 'admin');
-DB.def('menu_items', [
-  {id:'i1',name:'Idli Sambar',desc:'Soft steamed rice cakes with spiced lentil soup and chutneys',price:80,type:'Breakfast',img:''},
-  {id:'i2',name:'Masala Dosa',desc:'Crispy crepe filled with spiced potato stuffing',price:100,type:'Breakfast',img:''},
-  {id:'i3',name:'Pongal',desc:'Comforting rice and lentil porridge with pepper and ghee',price:90,type:'Breakfast',img:''},
-  {id:'i4',name:'Veg Meals',desc:'Full South Indian lunch with rice, sambar, rasam, kootu and papad',price:180,type:'Lunch',img:''},
-  {id:'i5',name:'Curd Rice',desc:'Cooling curd rice tempered with mustard and curry leaves',price:80,type:'Lunch',img:''},
-  {id:'i6',name:'Puliyodarai',desc:'Tangy tamarind rice with peanuts and sesame',price:100,type:'Lunch',img:''},
-  {id:'i7',name:'Chapati & Curry',desc:'Soft wheat rotis with seasonal vegetable curry',price:120,type:'Dinner',img:''},
-  {id:'i8',name:'Poori & Bhaji',desc:'Puffed fried bread with potato masala',price:110,type:'Dinner',img:''},
-  {id:'i9',name:'Veg Biryani',desc:'Aromatic basmati rice with mixed vegetables and whole spices',price:200,type:'Dinner',img:''}
-]);
-DB.def('combos', [
-  {id:'c1',name:'Combo1',desc:'Breakfast Delight – Idli Sambar + Masala Dosa + Pongal',
-   item_ids:['i1','i2','i3'],item_names:['Idli Sambar','Masala Dosa','Pongal'],price:230},
-  {id:'c2',name:'Combo2',desc:'Full Day Feast – Veg Meals + Chapati & Curry + Curd Rice',
-   item_ids:['i4','i7','i5'],item_names:['Veg Meals','Chapati & Curry','Curd Rice'],price:320}
-]);
-
-/* ── ID generator ── */
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-
-/* ── HTML escape ── */
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function rupee(n){ return '&#8377;' + parseFloat(n||0).toFixed(2); }
-
-/* ================================================================
-   SESSION
-================================================================ */
-var currentUser  = null;   /* logged-in user object */
-var adminSession = false;  /* admin logged in? */
-var currentMeal  = 'Breakfast';
-var cartItems    = {};     /* {itemId: {item, qty}} */
-var cartCombos   = {};     /* {comboId: {combo, qty}} */
-
-/* ================================================================
-   NAVIGATION
-================================================================ */
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-  var pg = document.getElementById('page-'+name);
-  if(pg) pg.classList.add('active');
-  updateNav(name);
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function goHome(){ showPage('home'); }
-
-function updateNav(page) {
-  var nav = document.getElementById('main-nav');
-  nav.innerHTML = '';
-  if(currentUser) {
-    nav.innerHTML =
-      '<button onclick="showPage(\'dashboard\')" class="'+(page==='dashboard'?'active-nav':'')+'">Dashboard</button>'+
-      '<button onclick="doLogout()">Logout ('+esc(currentUser.name)+')</button>';
-  } else if(adminSession) {
-    nav.innerHTML =
-      '<button onclick="showPage(\'admin\')" class="'+(page==='admin'?'active-nav':'')+'">Admin</button>'+
-      '<button onclick="doAdminLogout()">Admin Logout</button>';
-  } else {
-    nav.innerHTML =
-      '<button onclick="showPage(\'home\')">Home</button>'+
-      '<button onclick="showPage(\'login\')">Login</button>'+
-      '<button onclick="showPage(\'register\')">Register</button>'+
-      '<button onclick="showPage(\'admin-login\')" style="color:rgba(240,240,232,.55);">Admin</button>';
-  }
-}
-
-/* ================================================================
-   REGISTER
-================================================================ */
-function doRegister() {
-  var name = document.getElementById('reg-name').value.trim();
-  var addr = document.getElementById('reg-addr').value.trim();
-  var phone= document.getElementById('reg-phone').value.trim();
-  var email= document.getElementById('reg-email').value.trim();
-  var pw   = document.getElementById('reg-pw').value.trim();
-  var msg  = document.getElementById('reg-msg');
-  if(!name||!addr||!phone||!email||!pw){ msg.innerHTML='<div class="alert alert-danger">All fields are required.</div>'; return; }
-  var users = DB.get('users')||[];
-  if(users.find(function(u){ return u.name.toLowerCase()===name.toLowerCase(); })){
-    msg.innerHTML='<div class="alert alert-danger">Name "'+esc(name)+'" already registered.</div>'; return;
-  }
-  users.push({name:name,address:addr,phone:phone,email:email,password:pw});
-  DB.set('users',users);
-  msg.innerHTML='<div class="alert alert-success">&#10003; Registered! Redirecting to login&#8230;</div>';
-  setTimeout(function(){ showPage('login'); },1200);
-}
-
-/* ================================================================
-   LOGIN / LOGOUT
-================================================================ */
-function doLogin() {
-  var name = document.getElementById('login-name').value.trim();
-  var pw   = document.getElementById('login-pw').value.trim();
-  var msg  = document.getElementById('login-msg');
-  var users= DB.get('users')||[];
-  var user = users.find(function(u){ return u.name.toLowerCase()===name.toLowerCase() && u.password===pw; });
-  if(!user){ msg.innerHTML='<div class="alert alert-danger">Invalid name or password.</div>'; return; }
-  currentUser = user;
-  adminSession = false;
-  document.getElementById('dash-username').textContent = user.name;
-  document.getElementById('co-name').value  = user.name;
-  document.getElementById('co-phone').value = user.phone;
-  document.getElementById('co-email').value = user.email;
-  cartItems = {}; cartCombos = {};
-  showDashPanel(1);
-  showPage('dashboard');
-}
-
-function doLogout() {
-  currentUser = null;
-  cartItems = {}; cartCombos = {};
-  showPage('home');
-}
-
-/* ================================================================
-   ADMIN LOGIN / LOGOUT
-================================================================ */
-function doAdminLogin() {
-  var pw  = document.getElementById('adm-pw').value;
-  var msg = document.getElementById('adm-login-msg');
-  if(pw === (DB.get('admin_pw')||'admin')) {
-    adminSession = true;
-    currentUser  = null;
-    showPage('admin');
-    renderAdminOrders();
-    renderAdminMenu();
-    renderAdminCombos();
-    renderAdminUsers();
-  } else {
-    msg.innerHTML='<div class="alert alert-danger">Invalid password.</div>';
-  }
-}
-
-function doAdminLogout() {
-  adminSession = false;
-  showPage('home');
-}
-
-/* ================================================================
-   ADMIN TABS
-================================================================ */
-function admTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  var panel = document.getElementById('adm-'+name);
-  if(panel) panel.classList.add('active');
-  if(btn)   btn.classList.add('active');
-}
-
-/* ================================================================
-   DASHBOARD – PANELS
-================================================================ */
-function showDashPanel(n) {
-  for(var i=1;i<=4;i++){
-    var el = document.getElementById('dash-p'+i);
-    if(el) el.style.display = (i===n?'block':'none');
-  }
-}
-
-function selectMeal(type, btn) {
-  currentMeal = type;
-  document.querySelectorAll('.meal-tab').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-}
-
-function showMenuPanel() {
-  showDashPanel(2);
-  document.getElementById('menu-panel-title').textContent = currentMeal + ' Menu';
-  renderMenuGrid();
-}
-
-function renderMenuGrid() {
-  var items  = (DB.get('menu_items')||[]).filter(function(i){ return i.type===currentMeal; });
-  var grid   = document.getElementById('menu-grid-wrap');
-  grid.innerHTML = '';
-  if(!items.length){ grid.innerHTML='<p class="text-muted">No items for '+esc(currentMeal)+'.</p>'; return; }
-  items.forEach(function(item) {
-    var qty = cartItems[item.id] ? cartItems[item.id].qty : 0;
-    var imgHtml = item.img
-      ? '<img src="'+esc(item.img)+'" onerror="this.parentElement.textContent=\'&#127869;&#65039;\'">'
-      : '&#127869;&#65039;';
-    var div = document.createElement('div');
-    div.className = 'menu-card';
-    div.innerHTML =
-      '<div class="menu-card-img">'+imgHtml+'</div>'+
-      '<div class="menu-card-body">'+
-        '<div class="menu-card-name">'+esc(item.name)+'</div>'+
-        '<div class="menu-card-desc">'+esc(item.desc)+'</div>'+
-        '<div class="menu-card-footer">'+
-          '<span class="menu-price">'+rupee(item.price)+'</span>'+
-          '<div class="qty-ctrl">'+
-            '<button class="qty-btn" onclick="changeQty(\''+item.id+'\',-1)">&#8722;</button>'+
-            '<span class="qty-val" id="qty-'+item.id+'">'+qty+'</span>'+
-            '<button class="qty-btn" onclick="changeQty(\''+item.id+'\',1)">&#43;</button>'+
-          '</div>'+
-        '</div>'+
-      '</div>';
-    grid.appendChild(div);
-  });
-  renderDashSummary();
-}
-
-function changeQty(itemId, delta) {
-  var items = DB.get('menu_items')||[];
-  var item  = items.find(function(i){ return i.id===itemId; });
-  if(!item) return;
-  var qty = (cartItems[itemId] ? cartItems[itemId].qty : 0) + delta;
-  if(qty<=0){ delete cartItems[itemId]; qty=0; }
-  else { cartItems[itemId]={item:item,qty:qty}; }
-  var el = document.getElementById('qty-'+itemId);
-  if(el) el.textContent = qty;
-  renderDashSummary();
-}
-
-function renderDashSummary() {
-  var rows='', total=0;
-  Object.values(cartItems).forEach(function(e){
-    var sub=e.item.price*e.qty; total+=sub;
-    rows+='<div class="order-row"><span>'+esc(e.item.name)+' &#215; '+e.qty+'</span><span>'+rupee(sub)+'</span></div>';
-  });
-  Object.values(cartCombos).forEach(function(e){
-    var sub=e.combo.price*e.qty; total+=sub;
-    rows+='<div class="order-row"><span>'+esc(e.combo.name)+' &#215; '+e.qty+'</span><span>'+rupee(sub)+'</span></div>';
-  });
-  var hasItems = Object.keys(cartItems).length+Object.keys(cartCombos).length > 0;
-  var sumDiv = document.getElementById('dash-summary');
-  if(sumDiv){ sumDiv.style.display=hasItems?'block':'none'; }
-  var rowsEl = document.getElementById('summary-rows');
-  var totEl  = document.getElementById('summary-total');
-  if(rowsEl) rowsEl.innerHTML=rows;
-  if(totEl)  totEl.innerHTML=rupee(total);
-  var btn = document.getElementById('btn-proceed-menu');
-  if(btn) btn.disabled=!hasItems;
-}
-
-function showCombosPanel() {
-  showDashPanel(3);
-  var combos = DB.get('combos')||[];
-  var wrap   = document.getElementById('combos-list-wrap');
-  wrap.innerHTML='';
-  if(!combos.length){ wrap.innerHTML='<p class="text-muted">No combos available yet.</p>'; return; }
-  combos.forEach(function(combo) {
-    var qty = cartCombos[combo.id] ? cartCombos[combo.id].qty : 0;
-    var div = document.createElement('div');
-    div.style.cssText='border:1.5px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;background:var(--white);box-shadow:var(--shadow);margin-bottom:.9rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;';
-    div.innerHTML=
-      '<div style="flex:1;">'+
-        '<div style="font-family:\'Playfair Display\',serif;color:var(--deep-red);font-size:1.05rem;">'+esc(combo.name)+'</div>'+
-        '<div style="font-size:.85rem;color:var(--muted);margin-top:.25rem;">'+esc(combo.desc)+'</div>'+
-        '<div style="margin-top:.5rem;">'+
-          (combo.item_names||[]).map(function(n){ return '<span style="display:inline-block;background:#EAF6FD;border:1px solid #B3DFF5;color:#1A6A8A;border-radius:12px;padding:.15rem .6rem;font-size:.75rem;margin:.1rem .15rem .1rem 0;">'+esc(n)+'</span>'; }).join('')+
-        '</div>'+
-      '</div>'+
-      '<div style="display:flex;align-items:center;gap:.75rem;flex-shrink:0;">'+
-        '<strong style="color:var(--saffron);">'+rupee(combo.price)+'</strong>'+
-        '<div class="qty-ctrl">'+
-          '<button class="qty-btn" onclick="changeCQty(\''+combo.id+'\',-1)">&#8722;</button>'+
-          '<span class="qty-val" id="cqty-'+combo.id+'">'+qty+'</span>'+
-          '<button class="qty-btn" onclick="changeCQty(\''+combo.id+'\',1)">&#43;</button>'+
-        '</div>'+
-      '</div>';
-    wrap.appendChild(div);
-  });
-  renderComboSummary();
-}
-
-function changeCQty(comboId, delta) {
-  var combos = DB.get('combos')||[];
-  var combo  = combos.find(function(c){ return c.id===comboId; });
-  if(!combo) return;
-  var qty = (cartCombos[comboId] ? cartCombos[comboId].qty : 0) + delta;
-  if(qty<=0){ delete cartCombos[comboId]; qty=0; }
-  else { cartCombos[comboId]={combo:combo,qty:qty}; }
-  var el = document.getElementById('cqty-'+comboId);
-  if(el) el.textContent=qty;
-  renderComboSummary();
-}
-
-function renderComboSummary() {
-  var rows='', total=0;
-  Object.values(cartItems).forEach(function(e){
-    var sub=e.item.price*e.qty; total+=sub;
-    rows+='<div class="order-row"><span>'+esc(e.item.name)+' &#215; '+e.qty+'</span><span>'+rupee(sub)+'</span></div>';
-  });
-  Object.values(cartCombos).forEach(function(e){
-    var sub=e.combo.price*e.qty; total+=sub;
-    rows+='<div class="order-row"><span>'+esc(e.combo.name)+' &#215; '+e.qty+'</span><span>'+rupee(sub)+'</span></div>';
-  });
-  var hasItems = Object.keys(cartItems).length+Object.keys(cartCombos).length>0;
-  var sumDiv=document.getElementById('dash-combo-summary');
-  if(sumDiv) sumDiv.style.display=hasItems?'block':'none';
-  var r=document.getElementById('combo-summary-rows');
-  var t=document.getElementById('combo-summary-total');
-  if(r) r.innerHTML=rows;
-  if(t) t.innerHTML=rupee(total);
-  var btn=document.getElementById('btn-proceed-combo');
-  if(btn) btn.disabled=!hasItems;
-}
-
-function dashBack() {
-  showDashPanel(1);
-}
-
-/* ================================================================
-   CHECKOUT
-================================================================ */
-function dashCheckout() {
-  var rows='', total=0;
-  Object.values(cartItems).forEach(function(e){
-    var sub=e.item.price*e.qty; total+=sub;
-    rows+='<div class="order-row"><span>'+esc(e.item.name)+' &#215; '+e.qty+'</span><span>'+rupee(sub)+'</span></div>';
-  });
-  Object.values(cartCombos).forEach(function(e){
-    var sub=e.combo.price*e.qty; total+=sub;
-    rows+='<div class="order-row"><span>'+esc(e.combo.name)+' &#215; '+e.qty+'</span><span>'+rupee(sub)+'</span></div>';
-  });
-  var sumEl = document.getElementById('checkout-order-summary');
-  sumEl.innerHTML='<h4 style="margin-bottom:.75rem;">Your Order</h4>'+rows+
-    '<div class="order-total"><span>Total</span><span>'+rupee(total)+'</span></div>';
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('co-date').min = today;
-  document.getElementById('checkout-msg').innerHTML='';
-  document.getElementById('btn-place-order').style.display='';
-  document.getElementById('btn-place-order').disabled=false;
-  showDashPanel(4);
-}
-
-function placeOrder() {
-  var date = document.getElementById('co-date').value;
-  var msg  = document.getElementById('checkout-msg');
-  if(!date){ msg.innerHTML='<div class="alert alert-danger">Please select the event date.</div>'; return; }
-  var total=0;
-  var selItems  = Object.values(cartItems).map(function(e){ total+=e.item.price*e.qty; return {id:e.item.id,name:e.item.name,price:e.item.price,qty:e.qty}; });
-  var selCombos = Object.values(cartCombos).map(function(e){ total+=e.combo.price*e.qty; return {id:e.combo.id,name:e.combo.name,price:e.combo.price,qty:e.qty}; });
-  var order = {
-    id: uid(),
-    user_name:       currentUser.name,
-    user_phone:      currentUser.phone,
-    user_email:      document.getElementById('co-email').value,
-    event_date:      date,
-    remarks:         document.getElementById('co-remarks').value,
-    payment_details: document.getElementById('co-payment').value,
-    request_callback:document.getElementById('co-callback').checked,
-    selected_items:  selItems,
-    selected_combos: selCombos,
-    total_amount:    total,
-    contacted:       false,
-    payment_received:false,
-    order_completed: false,
-    created_at:      new Date().toLocaleString('en-IN')
-  };
-  var orders = DB.get('orders')||[];
-  orders.push(order);
-  DB.set('orders',orders);
-  msg.innerHTML='<div class="alert alert-success">&#127881; Order placed! ID: <strong>'+order.id+'</strong><br>Our team will contact you shortly.</div>';
-  document.getElementById('btn-place-order').style.display='none';
-  cartItems={}; cartCombos={};
-}
-
-/* ================================================================
-   ADMIN – ORDERS
-================================================================ */
-function renderAdminOrders() {
-  var orders = (DB.get('orders')||[]).slice().reverse();
-  var wrap   = document.getElementById('orders-table-wrap');
-  if(!orders.length){ wrap.innerHTML='<p class="text-muted text-center" style="padding:2rem;">No orders yet.</p>'; return; }
-  var html = '<table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Event Date</th><th>Amount</th><th>Callback</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
-  orders.forEach(function(o){
-    var status = o.order_completed?'<span class="badge badge-success">Completed</span>':
-                 o.payment_received?'<span class="badge badge-info">Paid</span>':
-                 o.contacted?'<span class="badge badge-warning">Contacted</span>':
-                 '<span class="badge badge-danger">Pending</span>';
-    html+='<tr id="orow-'+o.id+'">'+
-      '<td><code style="font-size:.72rem;">'+o.id.slice(-8)+'</code></td>'+
-      '<td><strong>'+esc(o.user_name)+'</strong></td>'+
-      '<td>'+esc(o.user_phone)+'</td>'+
-      '<td>'+(o.event_date||'&#8212;')+'</td>'+
-      '<td>'+rupee(o.total_amount)+'</td>'+
-      '<td>'+(o.request_callback?'<span class="badge badge-warning">&#128222; Yes</span>':'&#8212;')+'</td>'+
-      '<td>'+status+'</td>'+
-      '<td class="no-print">'+
-        '<button class="btn btn-sm btn-outline" onclick="viewOrder(\''+o.id+'\')">View</button> '+
-        '<button class="btn btn-sm btn-danger" onclick="deleteOrder(\''+o.id+'\')">Del</button>'+
-      '</td>'+
-    '</tr>';
-  });
-  html+='</tbody></table>';
-  wrap.innerHTML=html;
-}
-
-function viewOrder(orderId) {
-  var orders = DB.get('orders')||[];
-  var o = orders.find(function(x){ return x.id===orderId; });
-  if(!o) return;
-  var itemsHtml='';
-  (o.selected_items||[]).forEach(function(i){ itemsHtml+='<div style="font-size:.85rem;padding:.25rem 0;">'+esc(i.name)+' &#215; '+i.qty+' = '+rupee(i.price*i.qty)+'</div>'; });
-  (o.selected_combos||[]).forEach(function(i){ itemsHtml+='<div style="font-size:.85rem;padding:.25rem 0;">'+esc(i.name)+' &#215; '+i.qty+' = '+rupee(i.price*i.qty)+'</div>'; });
-  document.getElementById('order-detail').innerHTML=
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1.5rem;font-size:.875rem;margin-bottom:1rem;">'+
-      '<div><strong>Name:</strong> '+esc(o.user_name)+'</div>'+
-      '<div><strong>Phone:</strong> '+esc(o.user_phone)+'</div>'+
-      '<div><strong>Email:</strong> '+esc(o.user_email||'&#8212;')+'</div>'+
-      '<div><strong>Date:</strong> '+(o.event_date||'&#8212;')+'</div>'+
-      '<div><strong>Created:</strong> '+esc(o.created_at||'&#8212;')+'</div>'+
-      '<div><strong>Total:</strong> '+rupee(o.total_amount)+'</div>'+
-      '<div style="grid-column:1/-1;"><strong>Remarks:</strong> '+esc(o.remarks||'&#8212;')+'</div>'+
-      '<div style="grid-column:1/-1;"><strong>Payment:</strong> '+esc(o.payment_details||'&#8212;')+'</div>'+
-    '</div>'+
-    '<div style="background:var(--ivory);border:1px solid var(--border);border-radius:8px;padding:.75rem;margin-bottom:1rem;">'+
-      '<strong style="font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);">Items Ordered</strong>'+
-      (itemsHtml||'<div style="font-size:.85rem;color:var(--muted);">No items.</div>')+
-    '</div>'+
-    '<div style="display:flex;flex-wrap:wrap;gap:1.25rem;margin-bottom:1rem;">'+
-      flagBox('flag-contacted-'+orderId, o.contacted, 'Contacted')+
-      flagBox('flag-payment-'+orderId, o.payment_received, 'Payment Received')+
-      flagBox('flag-completed-'+orderId, o.order_completed, 'Order Completed')+
-    '</div>'+
-    '<div style="display:flex;gap:.75rem;flex-wrap:wrap;">'+
-      '<button class="btn btn-primary btn-sm" onclick="saveOrderFlags(\''+orderId+'\')">Save Flags</button>'+
-      '<button class="btn btn-outline btn-sm" onclick="closeModal(\'order-modal\')">Close</button>'+
-    '</div>'+
-    '<div id="order-flag-msg" style="margin-top:.75rem;"></div>';
-  openModal('order-modal');
-}
-
-function flagBox(id, checked, label){
-  return '<label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.875rem;">'+
-    '<input type="checkbox" id="'+id+'" '+(checked?'checked':'')+' style="width:15px;height:15px;accent-color:var(--deep-red);">'+esc(label)+'</label>';
-}
-
-function saveOrderFlags(orderId) {
-  var orders = DB.get('orders')||[];
-  var idx = orders.findIndex(function(o){ return o.id===orderId; });
-  if(idx<0) return;
-  orders[idx].contacted        = document.getElementById('flag-contacted-'+orderId).checked;
-  orders[idx].payment_received = document.getElementById('flag-payment-'+orderId).checked;
-  orders[idx].order_completed  = document.getElementById('flag-completed-'+orderId).checked;
-  DB.set('orders',orders);
-  var el = document.getElementById('order-flag-msg');
-  if(el) el.innerHTML='<div class="alert alert-success">&#10003; Flags saved.</div>';
-  setTimeout(function(){ closeModal('order-modal'); renderAdminOrders(); }, 700);
-}
-
-function deleteOrder(orderId) {
-  if(!confirm('Delete this order?')) return;
-  var orders = (DB.get('orders')||[]).filter(function(o){ return o.id!==orderId; });
-  DB.set('orders',orders);
-  renderAdminOrders();
-}
-
-/* ================================================================
-   ADMIN – MENU ITEMS
-================================================================ */
-function renderAdminMenu() {
-  var items = DB.get('menu_items')||[];
-  var wrap  = document.getElementById('menu-table-wrap');
-  var html  = '<table><thead><tr><th>Image</th><th>Name</th><th>Type</th><th>Description</th><th>Price</th><th class="no-print">Actions</th></tr></thead><tbody>';
-  items.forEach(function(item){
-    var thumb = item.img
-      ? '<img class="menu-img-thumb" src="'+esc(item.img)+'" alt="" onerror="this.replaceWith(document.createTextNode(\'🍽\'))">'
-      : '<span style="font-size:1.4rem;">&#127869;&#65039;</span>';
-    html+='<tr id="mrow-'+item.id+'">'+
-      '<td style="width:56px;">'+thumb+'</td>'+
-      '<td><strong>'+esc(item.name)+'</strong></td>'+
-      '<td><span class="badge badge-info">'+esc(item.type)+'</span></td>'+
-      '<td style="max-width:200px;font-size:.82rem;color:var(--muted);">'+esc(item.desc)+'</td>'+
-      '<td>'+rupee(item.price)+'</td>'+
-      '<td class="no-print">'+
-        '<button class="btn btn-sm btn-outline" '+
-          'data-id="'+item.id+'" data-name="'+esc(item.name)+'" data-desc="'+esc(item.desc)+'" '+
-          'data-price="'+item.price+'" data-type="'+item.type+'" data-img="'+esc(item.img||'')+'" '+
-          'onclick="openMenuModalEdit(this)">Edit</button> '+
-        '<button class="btn btn-sm btn-danger" onclick="deleteMenuItem(\''+item.id+'\')">Del</button>'+
-      '</td></tr>';
-  });
-  html+='</tbody></table>';
-  wrap.innerHTML=html;
-}
-
-function openMenuModal() {
-  document.getElementById('edit-item-id').value='';
-  document.getElementById('menu-modal-title').textContent='Add Menu Item';
-  document.getElementById('mi-name').value='';
-  document.getElementById('mi-desc').value='';
-  document.getElementById('mi-price').value='';
-  document.getElementById('mi-type').value='Breakfast';
-  document.getElementById('menu-modal-msg').innerHTML='';
-  resetImgFields();
-  openModal('menu-modal');
-}
-
-function openMenuModalEdit(btn) {
-  document.getElementById('edit-item-id').value = btn.dataset.id;
-  document.getElementById('menu-modal-title').textContent='Edit Menu Item';
-  document.getElementById('mi-name').value  = btn.dataset.name;
-  document.getElementById('mi-desc').value  = btn.dataset.desc;
-  document.getElementById('mi-price').value = btn.dataset.price;
-  document.getElementById('mi-type').value  = btn.dataset.type;
-  document.getElementById('menu-modal-msg').innerHTML='';
-  resetImgFields();
-  var existingImg = btn.dataset.img||'';
-  if(existingImg){
-    document.getElementById('mi-img').value = existingImg;
-    // If it's a URL (not a local upload path), show URL tab
-    if(!existingImg.startsWith('/uploads/')){
-      switchImgTab('url');
-      document.getElementById('mi-img-url').value = existingImg;
-    }
-    showImgPreview(existingImg);
-  }
-  openModal('menu-modal');
-}
-
-  function saveMenuItem() {
-  const fileInput = document.getElementById('mi-img-file');
+// ── APP ROUTING ────────────────────────────────────────────────
+function switchPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   
-  // If the admin is uploading a new file via the device tab:
-  if (fileInput && fileInput.files.length > 0) {
-    const formData = new FormData();
-    formData.append('image', fileInput.files[0]);
-    
-    // APPEND metadata fields here so the cloud server can link them:
-    formData.append('name', document.getElementById('mi-name').value);
-    formData.append('price', document.getElementById('mi-price').value);
-    formData.append('category', document.getElementById('mi-category').value || 'General');
-    formData.append('description', document.getElementById('mi-description').value || '');
+  const targetPage = document.getElementById(pageId);
+  if(targetPage) targetPage.classList.add('active');
+  
+  if(pageId === 'page-menu') document.getElementById('nav-menu').classList.add('active');
+  if(pageId === 'page-admin') {
+    document.getElementById('nav-admin').classList.add('active');
+    loadSyncMenuFromServer(); // Pull data fresh whenever admin logs in
+  }
+}
 
-    // Execute upload call
+function switchImgTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+  document.getElementById(`tab-content-${tabId}`).classList.add('active');
+  
+  if (tabId === 'library') {
+    fetchCloudLibrary();
+  }
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); resetFormFields(); }
+
+// ── FETCH / RENDER MASTER DATA ─────────────────────────────────
+function loadSyncMenuFromServer() {
+  fetch('/api/menu')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.menuItems) {
+        menuItems = data.menuItems;
+        renderCustomerMenu();
+        renderAdminMenu();
+      }
+    })
+    .catch(err => console.error("Could not fetch sync data:", err));
+}
+
+function renderCustomerMenu() {
+  const container = document.getElementById('customer-menu-grid');
+  if (!container) return;
+  if (menuItems.length === 0) {
+    container.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--muted);">No catering options found. Add items via the Admin Panel.</p>`;
+    return;
+  }
+  container.innerHTML = menuItems.map(item => `
+    <div class="menu-card">
+      <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" alt="${item.name}">
+      <div class="menu-card-body">
+        <div class="menu-card-title">${item.name}</div>
+        <div class="menu-card-price">₹${parseFloat(item.price).toFixed(2)}</div>
+        <p style="font-size:0.8rem; font-weight:bold; color:var(--saffron); margin-bottom:0.5rem;">${item.category}</p>
+        <div class="menu-card-desc">${item.description || 'No description provided.'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAdminMenu() {
+  const container = document.getElementById('admin-menu-grid');
+  if (!container) return;
+  if (menuItems.length === 0) {
+    container.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--muted);">No dashboard items found.</p>`;
+    return;
+  }
+  container.innerHTML = menuItems.map(item => `
+    <div class="menu-card">
+      <img src="${item.image}" alt="${item.name}">
+      <div class="menu-card-body">
+        <div class="menu-card-title">${item.name}</div>
+        <div class="menu-card-price">₹${parseFloat(item.price).toFixed(2)}</div>
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button class="btn btn-secondary" style="flex:1; padding:0.5rem;" onclick="openEditModal('${item.id}')">Edit</button>
+          <button class="btn btn-danger" style="flex:1; padding:0.5rem;" onclick="deleteCloudItem('${item.id}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── FETCH EXISTING CLOUDINARY MEDIA IMAGES ─────────────────────
+function fetchCloudLibrary() {
+  const grid = document.getElementById('modal-library-grid');
+  grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem;">Loading library images...</p>';
+  
+  fetch('/api/images')
+    .then(res => res.json())
+    .then(data => {
+      if (!data.images || data.images.length === 0) {
+        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem;">Library folder empty.</p>';
+        return;
+      }
+      grid.innerHTML = data.images.map(img => `
+        <img class="library-item" src="${img.url}" data-filename="${img.filename}" onclick="selectLibraryImage(this)">
+      `).join('');
+    })
+    .catch(() => grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; font-size:0.8rem; color:var(--danger);">Failed to query library.</p>');
+}
+
+function selectLibraryImage(imgElement) {
+  document.querySelectorAll('.library-item').forEach(el => el.classList.remove('selected'));
+  imgElement.classList.add('selected');
+  
+  // Clear local file choice if library tab is selected
+  document.getElementById('mi-img-file').value = '';
+  targetUploadedFile = null;
+
+  updatePreview(imgElement.src, imgElement.dataset.filename);
+}
+
+function handleFileSelect(e) {
+  if (e.target.files && e.target.files[0]) {
+    targetUploadedFile = e.target.files[0];
+    
+    // Clear library selections if a fresh local file is loaded
+    document.querySelectorAll('.library-item').forEach(el => el.classList.remove('selected'));
+    
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      updatePreview(event.target.result, '');
+    }
+    reader.readAsDataURL(targetUploadedFile);
+  }
+}
+
+function updatePreview(url, filename) {
+  document.getElementById('mi-selected-url').value = url;
+  document.getElementById('mi-selected-filename').value = filename;
+  
+  const previewBox = document.getElementById('preview-box');
+  const previewImg = document.getElementById('img-preview-element');
+  previewBox.style.display = 'block';
+  previewImg.src = url;
+}
+
+// ── MUTATION CORE LOGIC ────────────────────────────────────────
+function openAddModal() {
+  document.getElementById('modal-title').textContent = "Add Menu Item";
+  document.getElementById('edit-item-id').value = "";
+  openModal('menu-item-modal');
+}
+
+function openEditModal(itemId) {
+  const item = menuItems.find(i => i.id === itemId);
+  if (!item) return;
+  
+  document.getElementById('modal-title').textContent = "Edit Menu Item";
+  document.getElementById('edit-item-id').value = item.id;
+  document.getElementById('mi-name').value = item.name;
+  document.getElementById('mi-price').value = item.price;
+  document.getElementById('mi-category').value = item.category;
+  document.getElementById('mi-description').value = item.description || '';
+  
+  updatePreview(item.image, item.cloudinary_id || item.id);
+  openModal('menu-item-modal');
+}
+
+function handleFormSubmit(e) {
+  e.preventDefault();
+  const saveBtn = document.getElementById('save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving to Cloud...";
+
+  const editId = document.getElementById('edit-item-id').value;
+  const name = document.getElementById('mi-name').value;
+  const price = document.getElementById('mi-price').value;
+  const category = document.getElementById('mi-category').value;
+  const description = document.getElementById('mi-description').value;
+  const selectedUrl = document.getElementById('mi-selected-url').value;
+  const selectedFilename = document.getElementById('mi-selected-filename').value;
+
+  // SCENARIO A: User picked a brand new local file layout, stream immediately
+  if (targetUploadedFile) {
+    const formData = new FormData();
+    formData.append('image', targetUploadedFile);
+    formData.append('name', name);
+    formData.append('price', price);
+    formData.append('category', category);
+    formData.append('description', description);
+
+    // If updating an existing item but replacing its image file, delete the old file first
+    if (editId) {
+      fetch('/api/delete-image', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: editId })
+      }).catch(err => console.log("Old file clear fallback:", err));
+    }
+
     fetch('/api/upload-image', {
       method: 'POST',
       body: formData
     })
     .then(res => res.json())
     .then(data => {
-      if (data.success) {
-        // Refresh the page data arrays directly from the cloud master record
-        loadSyncMenuFromServer();
-        closeModal('menu-item-modal');
-      }
+      if (data.success) finalizeSave();
+      else alert("Cloudinary connection failed: " + data.error);
+    })
+    .catch(() => alert("Network exception uploading asset."));
+  } 
+  // SCENARIO B: Re-linking existing image library choice or updating text metadata fields
+  else if (editId && selectedUrl) {
+    // To update text variables when the image asset isn't modified, we remove the existing cloud record
+    // and recreate its metadata signature inside Cloudinary instantly.
+    fetch('/api/delete-image', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: selectedFilename || editId })
+    })
+    .then(() => {
+      // Re-upload proxy payload mapping text structures back into cloud records
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('price', price);
+      formData.append('category', category);
+      formData.append('description', description);
+      
+      // Pass standard placeholder image if the client cache lacks an active file stream
+      return fetch(selectedUrl)
+        .then(res => res.blob())
+        .then(blob => {
+          formData.append('image', blob, 'menu-item.jpg');
+          return fetch('/api/upload-image', { method: 'POST', body: formData });
+        });
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) finalizeSave();
     });
-  }
-}
-
-/*  
-function saveMenuItem() {
-  var id    = document.getElementById('edit-item-id').value;
-  var name  = document.getElementById('mi-name').value.trim();
-  var desc  = document.getElementById('mi-desc').value.trim();
-  var price = parseFloat(document.getElementById('mi-price').value);
-  var type  = document.getElementById('mi-type').value;
-  var msg   = document.getElementById('menu-modal-msg');
-
-  // Sync URL field into hidden field if URL tab is active
-  if(document.getElementById('img-url-panel').style.display !== 'none'){
-    var urlVal = document.getElementById('mi-img-url').value.trim();
-    document.getElementById('mi-img').value = urlVal;
-  }
-  var img = document.getElementById('mi-img').value.trim();
-
-  if(!name||isNaN(price)||price<0){ msg.innerHTML='<div class="alert alert-danger">Name and valid price are required.</div>'; return; }
-  var items = DB.get('menu_items')||[];
-  if(id){
-    var idx = items.findIndex(function(i){ return i.id===id; });
-    if(idx>=0) items[idx]={id:id,name:name,desc:desc,price:price,type:type,img:img};
   } else {
-    items.push({id:uid(),name:name,desc:desc,price:price,type:type,img:img});
+    alert("Please upload a file or select an image asset from the library archive tab.");
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save Changes";
   }
-  DB.set('menu_items',items);
-  closeModal('menu-modal');
-  renderAdminMenu();
-}*/
-
-function deleteMenuItem(itemId) {
-  if(!confirm('Delete this menu item?')) return;
-  DB.set('menu_items',(DB.get('menu_items')||[]).filter(function(i){ return i.id!==itemId; }));
-  renderAdminMenu();
 }
 
-/* ================================================================
-   ADMIN – COMBOS
-================================================================ */
-function renderAdminCombos() {
-  var combos = DB.get('combos')||[];
-  var wrap   = document.getElementById('combos-adm-wrap');
-  if(!combos.length){ wrap.innerHTML='<p class="text-muted text-center" style="padding:1.5rem;">No combos yet.</p>'; return; }
-  wrap.innerHTML = combos.map(function(c){
-    return '<div style="border:1.5px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;background:var(--white);box-shadow:var(--shadow);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">'+
-      '<div style="flex:1;">'+
-        '<strong style="font-family:\'Playfair Display\',serif;color:var(--deep-red);">'+esc(c.name)+'</strong>'+
-        '<div style="font-size:.85rem;color:var(--muted);margin-top:.25rem;">'+esc(c.desc)+'</div>'+
-        '<div style="margin-top:.5rem;">'+
-          (c.item_names||[]).map(function(n){ return '<span style="display:inline-block;background:#EAF6FD;border:1px solid #B3DFF5;color:#1A6A8A;border-radius:12px;padding:.15rem .6rem;font-size:.75rem;margin:.1rem .15rem .1rem 0;">'+esc(n)+'</span>'; }).join('')+
-        '</div>'+
-      '</div>'+
-      '<div style="display:flex;align-items:center;gap:.75rem;flex-shrink:0;" class="no-print">'+
-        '<strong style="color:var(--saffron);">'+rupee(c.price)+'</strong>'+
-        '<button class="btn btn-sm btn-danger" onclick="deleteCombo(\''+c.id+'\')">Delete</button>'+
-      '</div>'+
-    '</div>';
-  }).join('');
+function finalizeSave() {
+  loadSyncMenuFromServer();
+  closeModal('menu-item-modal');
 }
 
-function openComboModal() {
-  document.getElementById('cm-name').value='';
-  document.getElementById('cm-desc').value='';
-  document.getElementById('cm-price').value='';
-  document.getElementById('combo-modal-msg').innerHTML='';
-  document.getElementById('combo-sel-summary').textContent='';
-  document.getElementById('cm-auto-price').innerHTML='&#8377;0.00';
-  var container = document.getElementById('combo-items-check');
-  container.innerHTML='';
-  var items = DB.get('menu_items')||[];
-  if(!items.length){ container.innerHTML='<p style="color:var(--muted);font-size:.875rem;">No menu items yet. Add items first.</p>'; }
-  else {
-    items.forEach(function(item){
-      var lbl=document.createElement('label');
-      lbl.style.cssText='display:flex;align-items:center;gap:.6rem;padding:.4rem 0;cursor:pointer;font-size:.875rem;border-bottom:1px solid #f0e8d8;';
-      var chk=document.createElement('input');
-      chk.type='checkbox'; chk.className='combo-item-chk';
-      chk.value=item.id; chk.dataset.name=item.name; chk.dataset.price=item.price;
-      chk.style.cssText='width:15px;height:15px;flex-shrink:0;accent-color:var(--deep-red);cursor:pointer;';
-      chk.addEventListener('change',updateComboAutoPrice);
-      var ns=document.createElement('span'); ns.style.flex='1'; ns.textContent=item.name;
-      var ts=document.createElement('span'); ts.style.cssText='color:var(--saffron);font-size:.78rem;white-space:nowrap;';
-      ts.textContent=item.type+'  ₹'+item.price.toFixed(2);
-      lbl.appendChild(chk); lbl.appendChild(ns); lbl.appendChild(ts);
-      container.appendChild(lbl);
-    });
-  }
-  openModal('combo-modal');
+function deleteCloudItem(itemId) {
+  if (!confirm("Are you sure you want to permanently delete this menu item from all network devices?")) return;
+  
+  fetch('/api/delete-image', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename: itemId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      loadSyncMenuFromServer();
+    } else {
+      alert("Failed to delete item from cloud storage.");
+    }
+  })
+  .catch(() => alert("Network error deleting item."));
 }
 
-function updateComboAutoPrice(){
-  var checked=Array.from(document.querySelectorAll('.combo-item-chk:checked'));
-  var total=checked.reduce(function(s,c){ return s+parseFloat(c.dataset.price||0); },0);
-  var names=checked.map(function(c){ return c.dataset.name; });
-  document.getElementById('cm-auto-price').textContent='₹'+total.toFixed(2);
-  document.getElementById('combo-sel-summary').textContent=names.length?names.length+' selected: '+names.join(', '):'';
-}
-
-function saveCombo() {
-  var name  = document.getElementById('cm-name').value.trim();
-  var desc  = document.getElementById('cm-desc').value.trim();
-  var price = parseFloat(document.getElementById('cm-price').value);
-  var chkd  = Array.from(document.querySelectorAll('.combo-item-chk:checked'));
-  var msg   = document.getElementById('combo-modal-msg');
-  if(!name){  msg.innerHTML='<div class="alert alert-danger">Combo name is required.</div>'; return; }
-  if(!desc){  msg.innerHTML='<div class="alert alert-danger">Description is required.</div>'; return; }
-  if(isNaN(price)||price<=0){ msg.innerHTML='<div class="alert alert-danger">Valid price is required.</div>'; return; }
-  if(!chkd.length){ msg.innerHTML='<div class="alert alert-danger">Select at least one menu item.</div>'; return; }
-  var combos = DB.get('combos')||[];
-  if(combos.find(function(c){ return c.name.toLowerCase()===name.toLowerCase(); })){
-    msg.innerHTML='<div class="alert alert-danger">Combo "'+esc(name)+'" already exists.</div>'; return;
-  }
-  combos.push({
-    id:uid(), name:name, desc:desc, price:price,
-    item_ids:  chkd.map(function(c){ return c.value; }),
-    item_names:chkd.map(function(c){ return c.dataset.name; })
-  });
-  DB.set('combos',combos);
-  closeModal('combo-modal');
-  renderAdminCombos();
-}
-
-function deleteCombo(comboId) {
-  if(!confirm('Delete this combo?')) return;
-  DB.set('combos',(DB.get('combos')||[]).filter(function(c){ return c.id!==comboId; }));
-  renderAdminCombos();
-}
-
-/* ================================================================
-   ADMIN – USERS
-================================================================ */
-function renderAdminUsers() {
-  var users = DB.get('users')||[];
-  var wrap  = document.getElementById('users-table-wrap');
-  if(!users.length){ wrap.innerHTML='<p class="text-muted text-center" style="padding:2rem;">No users registered yet.</p>'; return; }
-  var html='<table><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th class="no-print">Actions</th></tr></thead><tbody>';
-  users.forEach(function(u,i){
-    html+='<tr id="urow-'+i+'">'+
-      '<td><strong>'+esc(u.name)+'</strong></td>'+
-      '<td>'+esc(u.phone)+'</td>'+
-      '<td>'+esc(u.email)+'</td>'+
-      '<td style="max-width:180px;font-size:.82rem;color:var(--muted);">'+esc(u.address)+'</td>'+
-      '<td class="no-print"><button class="btn btn-sm btn-danger" onclick="deleteUser(\''+esc(u.name)+'\','+i+')">Delete</button></td>'+
-    '</tr>';
-  });
-  html+='</tbody></table>';
-  wrap.innerHTML=html;
-}
-
-function deleteUser(name, rowIdx) {
-  if(!confirm('Delete user "'+name+'"? Their orders are kept.')) return;
-  var users = (DB.get('users')||[]).filter(function(u){ return u.name.toLowerCase()!==name.toLowerCase(); });
-  DB.set('users',users);
-  renderAdminUsers();
-}
-
-/* ================================================================
-   ADMIN – PASSWORD
-================================================================ */
-function changeAdminPw() {
-  var np  = document.getElementById('new-pw').value.trim();
-  var cp  = document.getElementById('confirm-pw').value.trim();
-  var msg = document.getElementById('pw-msg');
-  if(!np)     { msg.innerHTML='<div class="alert alert-danger">Password cannot be empty.</div>'; return; }
-  if(np!==cp) { msg.innerHTML='<div class="alert alert-danger">Passwords do not match.</div>'; return; }
-  DB.set('admin_pw', np);
-  msg.innerHTML='<div class="alert alert-success">&#10003; Password updated.</div>';
-  document.getElementById('new-pw').value='';
-  document.getElementById('confirm-pw').value='';
-}
-
-/* ================================================================
-   IMAGE UPLOAD HELPERS
-================================================================ */
-
-function switchImgTab(tab) {
-  var panels = { upload:'img-upload-panel', url:'img-url-panel', library:'img-library-panel' };
-  var tabs   = { upload:'img-tab-upload',   url:'img-tab-url',   library:'img-tab-library' };
-  Object.keys(panels).forEach(function(k) {
-    var p = document.getElementById(panels[k]);
-    var t = document.getElementById(tabs[k]);
-    if(!p||!t) return;
-    p.style.display = (k===tab) ? 'block' : 'none';
-    t.className = (k===tab) ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
-  });
-  if(tab==='library') loadImgLibrary();
-}
-
-function handleImgFileUpload(input) {
-  var file = input.files && input.files[0];
-  if(!file) return;
-  var statusEl = document.getElementById('img-upload-status');
-  var dropZone = document.getElementById('img-drop-zone');
-  if(file.size > 5*1024*1024) {
-    statusEl.innerHTML = '<span style="color:var(--danger);">&#10005; File too large (max 5 MB).</span>';
-    input.value=''; return;
-  }
-  statusEl.innerHTML = '<span style="color:var(--muted);">&#8635; Uploading…</span>';
-  if(dropZone) dropZone.style.opacity='0.6';
-  var formData = new FormData();
-  formData.append('image', file);
-  fetch('/api/upload-image', { method:'POST', body: formData })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if(dropZone) dropZone.style.opacity='1';
-      if(data.success){
-        document.getElementById('mi-img').value = data.url;
-        showImgPreview(data.url);
-        statusEl.innerHTML = '<span style="color:green;">&#10003; Uploaded successfully.</span>';
-      } else {
-        statusEl.innerHTML = '<span style="color:var(--danger);">&#10005; '+(data.error||'Upload failed.')+'</span>';
-        input.value='';
-      }
-    })
-    .catch(function(){
-      if(dropZone) dropZone.style.opacity='1';
-      statusEl.innerHTML = '<span style="color:var(--danger);">&#10005; Network error. Is the server running?</span>';
-      input.value='';
-    });
-}
-
-function applyImgUrl() {
-  var val = (document.getElementById('mi-img-url').value||'').trim();
-  if(!val) return;
-  document.getElementById('mi-img').value = val;
-  showImgPreview(val);
-}
-
-function loadImgLibrary() {
-  var grid = document.getElementById('img-library-grid');
-  grid.innerHTML = '<p style="font-size:.8rem;color:var(--muted);grid-column:1/-1;text-align:center;padding:.5rem;">Loading…</p>';
-  fetch('/api/images')
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var images = data.images||[];
-      if(!images.length){
-        grid.innerHTML = '<p style="font-size:.8rem;color:var(--muted);grid-column:1/-1;text-align:center;padding:.5rem;">No uploaded images yet.</p>';
-        return;
-      }
-      grid.innerHTML = '';
-      images.forEach(function(img){
-        var btn = document.createElement('button');
-        btn.type='button'; btn.title=img.filename;
-        btn.style.cssText='border:2px solid transparent;border-radius:8px;padding:2px;cursor:pointer;background:none;transition:border-color .15s;';
-        btn.innerHTML='<img src="'+esc(img.url)+'" style="width:76px;height:60px;object-fit:cover;border-radius:6px;display:block;" loading="lazy">';
-        btn.onclick=function(){
-          grid.querySelectorAll('button').forEach(function(b){ b.style.borderColor='transparent'; });
-          btn.style.borderColor='var(--primary)';
-          document.getElementById('mi-img').value=img.url;
-          showImgPreview(img.url);
-        };
-        grid.appendChild(btn);
-      });
-    })
-    .catch(function(){
-      grid.innerHTML='<p style="font-size:.8rem;color:var(--danger);grid-column:1/-1;text-align:center;padding:.5rem;">Could not load library. Is the server running?</p>';
-    });
-}
-
-function showImgPreview(src) {
-  document.getElementById('img-preview').src = src;
-  document.getElementById('img-preview-wrap').style.display = 'block';
-}
-function hideImgPreview() {
-  document.getElementById('img-preview-wrap').style.display = 'none';
-  document.getElementById('img-preview').src = '';
-}
-function clearImgSelection() {
-  document.getElementById('mi-img').value='';
-  var f=document.getElementById('mi-img-file'); if(f) f.value='';
-  var u=document.getElementById('mi-img-url');  if(u) u.value='';
-  var s=document.getElementById('img-upload-status'); if(s) s.innerHTML='';
-  hideImgPreview();
-}
-function resetImgFields() {
+function resetFormFields() {
+  document.getElementById('menu-form').reset();
+  document.getElementById('edit-item-id').value = '';
+  document.getElementById('mi-selected-url').value = '';
+  document.getElementById('mi-selected-filename').value = '';
+  document.getElementById('preview-box').style.display = 'none';
+  document.getElementById('img-preview-element').src = '';
+  document.querySelectorAll('.library-item').forEach(el => el.classList.remove('selected'));
+  targetUploadedFile = null;
+  
+  const saveBtn = document.getElementById('save-btn');
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Save Changes";
   switchImgTab('upload');
-  document.getElementById('mi-img').value='';
-  var f=document.getElementById('mi-img-file'); if(f) f.value='';
-  var u=document.getElementById('mi-img-url');  if(u) u.value='';
-  var s=document.getElementById('img-upload-status'); if(s) s.innerHTML='';
-  hideImgPreview();
 }
 
-/* ================================================================
-   MODAL HELPERS
-================================================================ */
-function openModal(id)  { var el=document.getElementById(id); if(el) el.classList.add('open'); }
-function closeModal(id) { var el=document.getElementById(id); if(el) el.classList.remove('open'); }
-
-/* ================================================================
-   FOOTER EMAIL
-================================================================ */
-(function(){
-  var a=document.getElementById('contact-email');
-  if(!a) return;
-  var addr=a.dataset.eu+String.fromCharCode(64)+a.dataset.ed;
-  a.href='mailto:'+addr; a.textContent=addr;
-})();
-
-/* ── Key bindings ── */
-document.addEventListener('keydown',function(e){
-  if(e.key==='Enter'){
-    var pg=document.querySelector('.page.active');
-    if(!pg) return;
-    if(pg.id==='page-login')      doLogin();
-    if(pg.id==='page-register')   doRegister();
-    if(pg.id==='page-admin-login')doAdminLogin();
-  }
-  if(e.key==='Escape'){
-    document.querySelectorAll('.modal-overlay.open').forEach(function(m){ m.classList.remove('open'); });
-  }
+// ── INITIALIZATION ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  loadSyncMenuFromServer();
+  
+  // Clean Enter/Escape handling optimization for desktop operations
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeModal('menu-item-modal');
+    }
+  });
 });
 </script>
 </body>
