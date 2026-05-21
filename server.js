@@ -116,7 +116,7 @@ app.get('/api/images', function (req, res) {
 /* ── Catch-all: serve index.html for Single Page Routing ──────── 
    Uses Express v5 compatible routing syntax '(*)' to prevent PathErrors
 ─────────────────────────────────────────────────────────────── */
-app.get('(*)', function (req, res) {
+app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
