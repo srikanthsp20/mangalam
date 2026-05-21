@@ -1141,6 +1141,37 @@ function openMenuModalEdit(btn) {
   openModal('menu-modal');
 }
 
+  function saveMenuItem() {
+  const fileInput = document.getElementById('mi-img-file');
+  
+  // If the admin is uploading a new file via the device tab:
+  if (fileInput && fileInput.files.length > 0) {
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    
+    // APPEND metadata fields here so the cloud server can link them:
+    formData.append('name', document.getElementById('mi-name').value);
+    formData.append('price', document.getElementById('mi-price').value);
+    formData.append('category', document.getElementById('mi-category').value || 'General');
+    formData.append('description', document.getElementById('mi-description').value || '');
+
+    // Execute upload call
+    fetch('/api/upload-image', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // Refresh the page data arrays directly from the cloud master record
+        loadSyncMenuFromServer();
+        closeModal('menu-item-modal');
+      }
+    });
+  }
+}
+
+/*  
 function saveMenuItem() {
   var id    = document.getElementById('edit-item-id').value;
   var name  = document.getElementById('mi-name').value.trim();
@@ -1167,7 +1198,7 @@ function saveMenuItem() {
   DB.set('menu_items',items);
   closeModal('menu-modal');
   renderAdminMenu();
-}
+}*/
 
 function deleteMenuItem(itemId) {
   if(!confirm('Delete this menu item?')) return;
