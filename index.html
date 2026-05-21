@@ -399,7 +399,6 @@ footer strong { color: var(--white); }
 <footer>
   <p>Contact Us: <strong id="contact-email">sairamkumarmr@gosssysas.in</strong> | Mangalam Catering Services, Kumbakonam</p>
 </footer>
-
 <script>
 // ── SYSTEM STATE ENGINE ───────────────────────────────────────
 let rawCloudCatalog = []; 
@@ -407,24 +406,35 @@ let menuItems = [];
 let receivedOrders = [];
 let currentCart = {};
 let authenticatedUser = null;
-let currentAdminPass = "admin123"; // Initial Default Boot Password
+let currentAdminPass = "admin"; // Updated Initial Default Boot Password
 
 // ── APP ROUTING AND INITIALIZATION ────────────────────────────
 function switchPage(pageId) {
+  // Hide all screens explicitly
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  
+  // Activate target layout container panel view component block cleanly
   const targetPage = document.getElementById(pageId);
-  if(targetPage) targetPage.classList.add('active');
+  if(targetPage) {
+    targetPage.classList.add('active');
+  }
   renderNavigation();
 }
 
 function routeHome() {
-  if (authenticatedUser) switchPage('page-user-dashboard');
-  else if (sessionStorage.getItem('isAdmin') === 'true') switchPage('page-admin-dashboard');
-  else switchPage('page-home');
+  if (authenticatedUser) {
+    switchPage('page-user-dashboard');
+  } else if (sessionStorage.getItem('isAdmin') === 'true') {
+    switchPage('page-admin-dashboard');
+  } else {
+    switchPage('page-home');
+  }
 }
 
 function renderNavigation() {
   const container = document.getElementById('header-nav');
+  if (!container) return;
+  
   if (authenticatedUser) {
     container.innerHTML = `
       <button class="nav-btn active" onclick="switchPage('page-user-dashboard')">Catering Selection</button>
@@ -459,9 +469,18 @@ function loadSystemStateFromCloud() {
       if (data.success && data.menuItems) {
         rawCloudCatalog = data.menuItems;
         parseCloudCatalogObjects();
+      } else {
+        // Fallback execution mapping if remote directory folder is empty
+        rawCloudCatalog = [];
+        parseCloudCatalogObjects();
       }
     })
-    .catch(err => console.error("Could not sync cloud data:", err));
+    .catch(err => {
+      console.error("Could not sync cloud data:", err);
+      // Ensure local rendering doesn't crash on connection exception states
+      rawCloudCatalog = [];
+      parseCloudCatalogObjects();
+    });
 }
 
 function parseCloudCatalogObjects() {
@@ -471,13 +490,12 @@ function parseCloudCatalogObjects() {
   rawCloudCatalog.forEach(resource => {
     const category = resource.category || '';
     
-    // Categorize Cloudinary data tags dynamically based on configuration headers
     if (category === 'Catering-Item' || category === 'Breakfast' || category === 'Lunch' || category === 'Dinner' || category === 'Combo') {
       menuItems.push({
         id: resource.id,
         name: resource.name,
         price: parseFloat(resource.price) || 0,
-        category: category === 'Catering-Item' ? 'Breakfast' : category, // backward fallback
+        category: category === 'Catering-Item' ? 'Breakfast' : category,
         description: resource.description || '',
         image: resource.image,
         cloudinary_id: resource.cloudinary_id
@@ -498,12 +516,22 @@ function parseCloudCatalogObjects() {
         });
       } catch(e) {}
     } else if (category === 'System-Config' && resource.name === 'AdminPassword') {
-      currentAdminPass = resource.description || 'admin123';
+      currentAdminPass = resource.description || 'admin';
     }
   });
 
   renderCustomerSelectionView();
   renderAdminWorkspaceView();
+  
+  // FIX CRITICAL PANEL VISIBILITY ERROR:
+  // If no session is actively authenticated, enforce 'page-home' panel preservation rules
+  if (!authenticatedUser && sessionStorage.getItem('isAdmin') !== 'true') {
+    // Keep checking current active page context so it does not pull you away while you type
+    const activePage = document.querySelector('.page.active');
+    if (!activePage || (activePage.id !== 'page-login' && activePage.id !== 'page-register' && activePage.id !== 'page-admin-login')) {
+      switchPage('page-home');
+    }
+  }
 }
 
 // ── USER MANAGEMENT SIGN IN LOGIC ─────────────────────────────
@@ -517,7 +545,6 @@ function handleRegister(e) {
     pass: document.getElementById('reg-password').value
   };
   
-  // Quick browser container mock registry emulation
   let users = JSON.parse(localStorage.getItem('m_users') || '[]');
   if(users.find(u => u.email === userObj.email)){
     alert("Account email already registered online.");
@@ -611,7 +638,8 @@ function updateCartQty(id, change) {
 function updateCartIndicators() {
   let totalCount = 0;
   Object.values(currentCart).forEach(q => totalCount += q);
-  document.getElementById('cart-count').textContent = totalCount;
+  const indicator = document.getElementById('cart-count');
+  if (indicator) indicator.textContent = totalCount;
 }
 
 function proceedToCheckout() {
@@ -623,7 +651,6 @@ function proceedToCheckout() {
   
   switchPage('page-checkout');
   
-  // Render checkout allocation metrics matrix summary info
   const listContainer = document.getElementById('checkout-summary-list');
   let runningTotal = 0;
   
@@ -667,14 +694,12 @@ function submitFinalOrder(e) {
     paymentReceived: false
   };
 
-  // Convert Payload structural definitions directly into MultiPart data streams for cloud parsing
   const formData = new FormData();
   formData.append('name', `Order-${Date.now()}`);
   formData.append('price', '0');
   formData.append('category', 'System-Order');
   formData.append('description', JSON.stringify(orderPayload));
   
-  // Use a generic placeholder image to hold the metadata payload context
   fetch('banana.jpg').then(r => r.blob()).then(blob => {
     formData.append('image', blob, 'order.jpg');
     return fetch('/api/upload-image', { method: 'POST', body: formData });
@@ -696,56 +721,59 @@ function submitFinalOrder(e) {
 
 // ── ADMIN PANEL LOGIC & ACTIONS ───────────────────────────────
 function renderAdminWorkspaceView() {
-  // 1. Render Orders Table
   const ordersTable = document.getElementById('admin-orders-table');
-  document.getElementById('admin-order-count').textContent = receivedOrders.length;
+  const countDisplay = document.getElementById('admin-order-count');
+  if (countDisplay) countDisplay.textContent = receivedOrders.length;
   
-  ordersTable.innerHTML = receivedOrders.map(order => `
-    <tr>
-      <td>
-        <strong>${order.client?.name || 'Guest User'}</strong><br>
-        Ph: ${order.client?.phone || 'N/A'}<br>
-        Addr: ${order.client?.address || 'N/A'}
-      </td>
-      <td>
-        Date: <strong>${order.params?.date}</strong><br>
-        Occasion: ${order.params?.occasion}<br>
-        Meal: ${order.params?.mealType}
-      </td>
-      <td>
-        ${order.items.map(i => `&bull; ${i.name} (${i.qty})<br>`).join('')}
-      </td>
-      <td>
-        <strong style="color:var(--deep-red);">₹${parseFloat(order.total).toFixed(2)}</strong><br>
-        <small>${order.payment}</small>
-      </td>
-      <td>
-        Callback Request: <span class="status-flag ${order.callbackFlag ? 'flag-pending' : 'flag-done'}">${order.callbackFlag ? 'REQUIRED' : 'NO'}</span><br>
-        Payment State: <span class="status-flag ${order.paymentReceived ? 'flag-done' : 'flag-pending'}">${order.paymentReceived ? 'RECEIVED' : 'PENDING'}</span>
-      </td>
-      <td>
-        <button class="btn btn-saffron" style="padding:0.4rem 0.8rem; font-size:0.75rem; margin-bottom:0.25rem; width:100%;" onclick="togglePaymentFlag('${order.id}')">Toggle Pay</button>
-        <button class="btn btn-danger" style="padding:0.4rem 0.8rem; font-size:0.75rem; width:100%;" onclick="deleteCloudResource('${order.id}')">Delete Order</button>
-      </td>
-    </tr>
-  `).join('');
+  if (ordersTable) {
+    ordersTable.innerHTML = receivedOrders.map(order => `
+      <tr>
+        <td>
+          <strong>${order.client?.name || 'Guest User'}</strong><br>
+          Ph: ${order.client?.phone || 'N/A'}<br>
+          Addr: ${order.client?.address || 'N/A'}
+        </td>
+        <td>
+          Date: <strong>${order.params?.date}</strong><br>
+          Occasion: ${order.params?.occasion}<br>
+          Meal: ${order.params?.mealType}
+        </td>
+        <td>
+          ${order.items.map(i => `&bull; ${i.name} (${i.qty})<br>`).join('')}
+        </td>
+        <td>
+          <strong style="color:var(--deep-red);">₹${parseFloat(order.total).toFixed(2)}</strong><br>
+          <small>${order.payment}</small>
+        </td>
+        <td>
+          Callback Request: <span class="status-flag ${order.callbackFlag ? 'flag-pending' : 'flag-done'}">${order.callbackFlag ? 'REQUIRED' : 'NO'}</span><br>
+          Payment State: <span class="status-flag ${order.paymentReceived ? 'flag-done' : 'flag-pending'}">${order.paymentReceived ? 'RECEIVED' : 'PENDING'}</span>
+        </td>
+        <td>
+          <button class="btn btn-saffron" style="padding:0.4rem 0.8rem; font-size:0.75rem; margin-bottom:0.25rem; width:100%;" onclick="togglePaymentFlag('${order.id}')">Toggle Pay</button>
+          <button class="btn btn-danger" style="padding:0.4rem 0.8rem; font-size:0.75rem; width:100%;" onclick="deleteCloudResource('${order.id}')">Delete Order</button>
+        </td>
+      </tr>
+    `).join('');
+  }
 
-  // 2. Render Menu Grid
   const menuGrid = document.getElementById('admin-menu-grid');
-  menuGrid.innerHTML = menuItems.map(item => `
-    <div class="card menu-card">
-      <img src="${item.image || 'banana.jpg'}" alt="${item.name}">
-      <div class="menu-card-content">
-        <span class="badge-type badge-${item.category.toLowerCase()}">${item.category}</span>
-        <h4 style="font-family:'Playfair Display', serif; font-size:1.1rem;">${item.name}</h4>
-        <p style="font-weight:bold; color:var(--deep-red); margin-bottom:0.5rem;">₹${item.price.toFixed(2)}</p>
-        <div style="display:flex; gap:0.5rem; margin-top:auto;">
-          <button class="btn btn-secondary" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="openEditItemModal('${item.id}')">Edit</button>
-          <button class="btn btn-danger" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="deleteCloudResource('${item.id}')">Delete</button>
+  if (menuGrid) {
+    menuGrid.innerHTML = menuItems.map(item => `
+      <div class="card menu-card">
+        <img src="${item.image || 'banana.jpg'}" alt="${item.name}">
+        <div class="menu-card-content">
+          <span class="badge-type badge-${item.category.toLowerCase()}">${item.category}</span>
+          <h4 style="font-family:'Playfair Display', serif; font-size:1.1rem;">${item.name}</h4>
+          <p style="font-weight:bold; color:var(--deep-red); margin-bottom:0.5rem;">₹${item.price.toFixed(2)}</p>
+          <div style="display:flex; gap:0.5rem; margin-top:auto;">
+            <button class="btn btn-secondary" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="openEditItemModal('${item.id}')">Edit</button>
+            <button class="btn btn-danger" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="deleteCloudResource('${item.id}')">Delete</button>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+  }
 }
 
 function openMenuModal() {
@@ -790,12 +818,10 @@ function handleItemFormSubmit(e) {
   formData.append('category', category);
   formData.append('description', description);
 
-  // Execution Flow Closure
   const executeUpload = (imageBlob) => {
     if(imageBlob) formData.append('image', imageBlob, 'item.jpg');
     
     if(editId) {
-      // Purge matching item index block before re-writing context
       fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: editId }) })
         .then(() => fetch('/api/upload-image', { method: 'POST', body: formData }))
         .then(() => { closeModal('item-modal'); loadSystemStateFromCloud(); });
@@ -851,7 +877,6 @@ function handlePasswordChange(e) {
   e.preventDefault();
   const newPass = document.getElementById('new-admin-pass').value;
   
-  // Find and remove matching password configurations if existing
   const targetConfig = rawCloudCatalog.find(r => r.category === 'System-Config' && r.name === 'AdminPassword');
   const deletionPromise = targetConfig ? 
     fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: targetConfig.id }) }) :
@@ -884,6 +909,7 @@ document.addEventListener('DOMContentLoaded', function() {
   loadSystemStateFromCloud();
   renderNavigation();
 });
+
 </script>
 </body>
 </html>
