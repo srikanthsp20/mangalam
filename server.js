@@ -16,8 +16,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Serves static frontend assets directly from the root project directory
-app.use(express.static(__dirname));
 app.use(express.json());
+// Serve the root folder for index.html, AND serve the public directory for images/styles
+app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // ── Cloudinary Configuration ───────────────────────────────────
 cloudinary.config({
