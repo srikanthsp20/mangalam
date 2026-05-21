@@ -125,7 +125,11 @@ app.delete('/api/delete-image', function (req, res) {
    Using app.use ensures that whether users hit '/', '/admin', or refresh 
    the page, the application loads safely without breaking your layout.
 ─────────────────────────────────────────────────────────────── */
-app.use(function (req, res) {
+/* ── Catch-all: serve index.html for Single Page Routing ──────── 
+   Forces Content-Type to text/html so browsers parse the document accurately.
+─────────────────────────────────────────────────────────────── */
+app.get('/', function (req, res) {
+  res.setHeader('Content-Type', 'text/html');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
