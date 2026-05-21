@@ -15,7 +15,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve your root project folder directly for frontend assets
+// Serves static frontend assets directly from the root project directory
 app.use(express.static(__dirname));
 app.use(express.json());
 
@@ -40,7 +40,7 @@ const storage = new CloudinaryStorage({
                          .toLowerCase();
       return Date.now() + '-' + safeName;
     },
-    // Intercepts structural text details during upload streaming
+    // Intercepts structural text details during upload streaming from any device
     context: (req, file) => {
       return {
         name: req.body.name || 'Unnamed Item',
@@ -62,7 +62,6 @@ const upload = multer({
    Streams both image bytes and textual properties directly into cloud memory.
 ─────────────────────────────────────────────────────────────── */
 app.post('/api/upload-image', function (req, res) {
-  // Use multer upload wrapper
   upload.single('image')(req, res, function (err) {
     if (err) return res.status(400).json({ success: false, error: err.message });
     if (!req.file) return res.status(400).json({ success: false, error: 'No image asset detected.' });
@@ -122,8 +121,11 @@ app.delete('/api/delete-image', function (req, res) {
   });
 });
 
-/* ── Catch-all fallback router (Express v5 configuration) ──────── */
-app.get('(*)', function (req, res) {
+/* ── Safe Catch-all fallback middleware ────────────────────────── 
+   Using app.use ensures that whether users hit '/', '/admin', or refresh 
+   the page, the application loads safely without breaking your layout.
+─────────────────────────────────────────────────────────────── */
+app.use(function (req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
