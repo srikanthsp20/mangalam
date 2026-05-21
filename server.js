@@ -117,7 +117,12 @@ app.get('/api/images', function (req, res) {
 });
 
 /* ── Catch-all: serve index.html for Single Page Routing ──────── */
-app.get('*', function (req, res) {
+/*app.get('*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});*/
+
+/* ── Catch-all: serve index.html for Single Page Routing ──────── */
+app.get('(*)', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
