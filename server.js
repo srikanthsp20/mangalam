@@ -2,8 +2,7 @@
  * Mangalam Catering Services – Node.js/Express Server
  * ----------------------------------------------------
  * Modified for Deployment on Render.com with Cloudinary Storage.
- * Handles menu item image uploads and assets via Cloudinary Cloud API.
- * Ensures data persistency and retrieval from any device online.
+ * Configured for flat-directory layout (index.html in the root folder).
  */
 
 const express = require('express');
@@ -15,32 +14,32 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve public static frontend elements (index.html, styles, etc.)
-app.use(express.static(path.join(__dirname, 'public')));
+// ── Static Asset & Body Parser Settings ────────────────────────
+// Serves static assets directly from the root project directory
+app.use(express.static(__dirname));
 app.use(express.json());
 
 // ── Cloudinary Configuration ───────────────────────────────────
-// These will load securely via environment variables defined on Render
+// These parameters will be securely extracted via Environment Variables on Render
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// ── Cloudinary Multer Engine Definition ───────────────────────
+// ── Cloudinary Storage Engine for Multer ───────────────────────
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'mangalam_catering', // Creates/uses this folder in your Cloudinary Dashboard
+    folder: 'mangalam_catering', // Target folder name inside your Cloudinary Media Library
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
     public_id: (req, file) => {
-      // Strips whitespace and characters to form a clean asset identifier filename
+      // Create a clean, url-friendly file descriptor prefixing timestamps to prevent duplicates
       const ext = path.extname(file.originalname).toLowerCase();
       const safeName = path.basename(file.originalname, ext)
                          .replace(/[^a-z0-9_\-]/gi, '-')
                          .slice(0, 60)
                          .toLowerCase();
-      // Prefixing timestamp prevents overwrite collisions
       return Date.now() + '-' + safeName;
     }
   }
@@ -53,7 +52,7 @@ const upload = multer({
 });
 
 /* ── POST /api/upload-image ─────────────────────────────────────
-   Streams uploads straight into Cloudinary over HTTPS.
+   Intercepts files and pushes them securely to the Cloudinary network.
 ─────────────────────────────────────────────────────────────── */
 app.post('/api/upload-image', function (req, res) {
   upload.single('image')(req, res, function (err) {
@@ -64,8 +63,8 @@ app.post('/api/upload-image', function (req, res) {
       return res.status(400).json({ success: false, error: 'No file uploaded.' });
     }
     
-    // req.file.path returns the secure, static "https://res.cloudinary.com/..." URL
-    // req.file.filename keeps track of the public_id needed to execute remote deletes
+    // req.file.path contains the direct web url (https://res.cloudinary.com/...)
+    // req.file.filename keeps track of the public_id identifier needed for deletions
     res.json({
       success: true,
       filename: req.file.filename,
@@ -75,7 +74,7 @@ app.post('/api/upload-image', function (req, res) {
 });
 
 /* ── DELETE /api/delete-image ───────────────────────────────────
-   Erases target media files instantly from your cloud storage account.
+   Deletes target assets straight from your Cloudinary storage media account.
 ─────────────────────────────────────────────────────────────── */
 app.delete('/api/delete-image', function (req, res) {
   const filename = (req.body && req.body.filename) ? req.body.filename : '';
@@ -93,8 +92,7 @@ app.delete('/api/delete-image', function (req, res) {
 });
 
 /* ── GET /api/images ────────────────────────────────────────────
-   Retrieves all images from the cloud folder to populate your "Library" tab.
-   Allows choosing existing images from any device, anywhere.
+   Fetches uploaded image paths from your active Cloudinary media index.
 ─────────────────────────────────────────────────────────────── */
 app.get('/api/images', function (req, res) {
   cloudinary.search
@@ -103,7 +101,6 @@ app.get('/api/images', function (req, res) {
     .max_results(50)
     .execute()
     .then(result => {
-      // Map properties to match the schema expected by index.html frontend scripts
       const images = result.resources.map(file => ({
         filename: file.public_id,
         url: file.secure_url
@@ -111,19 +108,16 @@ app.get('/api/images', function (req, res) {
       res.json({ images });
     })
     .catch(err => {
-      // Return an empty array smoothly if cloud search permissions aren't initialized yet
+      // Safely fall back to an empty library slice if things fail
       res.json({ images: [] });
     });
 });
 
-/* ── Catch-all: serve index.html for Single Page Routing ──────── */
-/*app.get('*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});*/
-
-/* ── Catch-all: serve index.html for Single Page Routing ──────── */
+/* ── Catch-all: serve index.html for Single Page Routing ──────── 
+   Uses Express v5 compatible routing syntax '(*)' to prevent PathErrors
+─────────────────────────────────────────────────────────────── */
 app.get('(*)', function (req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, function() {
