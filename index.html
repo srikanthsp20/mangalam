@@ -1,32 +1,444 @@
-// ── SYSTEM STATE ENGINE ───────────────────────────────────────
-let rawCloudCatalog = []; 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mangalam Catering Services, Kumbakonam</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ── THEME CONFIGURATION ──────────────────────────────────────── */
+:root {
+  --saffron: #E8871A;
+  --deep-red: #8B1A1A;
+  --gold: #D4A82A;
+  --leaf-green: #4CAF50;
+  --charcoal: #2C2C2C;
+  --white: #FFFFFF;
+  --border: rgba(139, 26, 26, 0.15);
+  --success: #2E7D32;
+  --danger: #C62828;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--charcoal);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #E8F5E9; /* Warm backup mild leaf green */
+  position: relative;
+}
+
+/* Explicit full screen background container to ensure the asset rendering never fails */
+.bg-layer {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('banana.jpg') no-repeat center center fixed;
+  background-size: cover;
+  z-index: -2;
+}
+
+/* Translucent mild green color mask layer for perfect readability text contrast */
+.bg-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(240, 247, 241, 0.93);
+  z-index: -1;
+}
+
+header, main, footer, .modal { z-index: 2; position: relative; }
+
+/* ── HEADER NAVIGATION ────────────────────────────────────────── */
+header {
+  background: var(--deep-red);
+  color: var(--white);
+  padding: 1.25rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+header h1 {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  font-size: 1.75rem;
+}
+.nav-buttons { display: flex; gap: 0.5rem; }
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: #FAF3E0;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: rgba(255,255,255,0.1);
+  color: var(--gold);
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  flex: 1;
+}
+.page { display: none; }
+.page.active { display: block !important; }
+
+/* ── DASHBOARD BOARDS & CARDS ─────────────────────────────────── */
+.welcome-panel {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  margin-top: 3rem;
+}
+.welcome-panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: var(--deep-red);
+  margin-bottom: 1rem;
+}
+.welcome-panel p { color: #444; font-size: 1.2rem; margin-bottom: 2rem; }
+
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+.menu-card { overflow: hidden; padding: 0; display: flex; flex-direction: column; }
+.menu-card img { width: 100%; height: 180px; object-fit: cover; background: #e0ebe0; }
+.menu-card-content { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+
+/* ── FORMS & INTERACTION ELEMENTS ─────────────────────────────── */
+.form-box {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--white);
+  padding: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+.form-box h2, .page h2 {
+  font-family: 'Playfair Display', serif;
+  color: var(--deep-red);
+  margin-bottom: 1.5rem;
+}
+.form-group { margin-bottom: 1.25rem; }
+.form-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem; color: #555; }
+input, select, textarea {
+  width: 100%; padding: 0.75rem; border: 1px solid #CCC; border-radius: 4px;
+  font-family: inherit; font-size: 0.95rem; color: var(--charcoal);
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--deep-red); }
+
+.btn {
+  display: inline-block; padding: 0.75rem 1.5rem; background: var(--deep-red); color: var(--white);
+  border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 1rem; text-align: center;
+}
+.btn:hover { background: #701414; }
+.btn-saffron { background: var(--saffron); }
+.btn-saffron:hover { background: #d47610; }
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #a81c1c; }
+.btn-secondary { background: #7A6A5A; color: white; }
+
+/* ── USER SELECTION VIEW COMPONENTS ──────────────────────────── */
+.badge-type {
+  display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: bold;
+  border-radius: 4px; margin-bottom: 0.5rem; text-transform: uppercase;
+}
+.badge-breakfast { background: #FFF3E0; color: #E65100; }
+.badge-lunch { background: #E8F5E9; color: #2E7D32; }
+.badge-dinner { background: #E3F2FD; color: #1565C0; }
+.badge-combo { background: #F3E5F5; color: #4A148C; }
+
+.qty-control { display: flex; align-items: center; gap: 0.5rem; margin-top: auto; padding-top: 1rem; }
+.qty-btn { width: 32px; height: 32px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; background: #fff; }
+
+/* ── MODALS & TABLES ─────────────────────────────────────────── */
+.modal {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); justify-content: center; align-items: center; padding: 1rem;
+}
+.modal.open { display: flex; }
+.modal-wrapper { background: var(--white); padding: 2rem; border-radius: 8px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #EEE; font-size: 0.9rem; }
+th { background: #F9F5F0; color: var(--deep-red); font-weight: 600; }
+
+.status-flag { display: inline-block; padding: 0.2rem 0.5rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; }
+.flag-pending { background: #FFF3E0; color: #E65100; }
+.flag-done { background: #E8F5E9; color: #2E7D32; }
+
+/* ── FOOTER ──────────────────────────────────────────────────── */
+footer {
+  background: var(--charcoal); color: #BBB; text-align: center; padding: 1.5rem; margin-top: auto; font-size: 0.9rem;
+}
+footer strong { color: var(--white); }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-overlay"></div>
+
+<header>
+  <h1 onclick="routeHome()" style="cursor:pointer;">Mangalam Catering Services, Kumbakonam</h1>
+  <div class="nav-buttons" id="header-nav">
+    </div>
+</header>
+
+<div class="container">
+  
+  <main id="page-home" class="page active">
+    <div class="welcome-panel">
+      <h2>Authentic Traditional Catering</h2>
+      <p>Experience exquisite South Indian culinary traditions curated for your special occasions.</p>
+      <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+        <button class="btn" onclick="switchPage('page-login')">User Login</button>
+        <button class="btn btn-saffron" onclick="switchPage('page-register')">Register New Account</button>
+        <button class="btn btn-secondary" onclick="switchPage('page-admin-login')">Admin Portal</button>
+      </div>
+    </div>
+  </main>
+
+  <section id="page-register" class="page">
+    <div class="form-box">
+      <h2>Create Account</h2>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" required></div>
+        <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone" required></div>
+        <div class="form-group"><label>Address</label><textarea id="reg-address" rows="2" required></textarea></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" required></div>
+        <div class="form-group"><label>Set Password</label><input type="password" id="reg-password" required></div>
+        <button type="submit" class="btn" style="width:100%;">Register & Log In</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="page-login" class="page">
+    <div class="form-box">
+      <h2>User Login</h2>
+      <form onsubmit="handleUserLogin(event)">
+        <div class="form-group"><label>Email Address</label><input type="email" id="login-email" required></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-password" required></div>
+        <button type="submit" class="btn" style="width:100%;">Sign In</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="page-admin-login" class="page">
+    <div class="form-box">
+      <h2>Admin Authentication</h2>
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group"><label>Admin Access Password</label><input type="password" id="admin-pass" required></div>
+        <button type="submit" class="btn" style="width:100%;">Verify Password</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="page-user-dashboard" class="page">
+    <div style="background:white; padding:1.5rem; border-radius:8px; border:1px solid var(--border); margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h3>Welcome back, <span id="user-display-name">Guest</span>!</h3>
+        <p style="font-size:0.85rem; color:#666;">Select menu choices or curated combos, set parameters, and finalize.</p>
+      </div>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        <div style="width:160px;"><label style="font-size:0.8rem; font-weight:bold;">Occasion Date</label><input type="date" id="order-date"></div>
+        <div style="width:140px;"><label style="font-size:0.8rem; font-weight:bold;">Occasion Type</label>
+          <select id="order-occasion">
+            <option value="Wedding">Wedding</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Corporate">Corporate</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div style="width:140px;"><label style="font-size:0.8rem; font-weight:bold;">Type of Meal</label>
+          <select id="order-meal-type">
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
+      <h2>Menu Items & Curated Combos</h2>
+      <button class="btn btn-saffron" onclick="proceedToCheckout()">Proceed to Checkout (<span id="cart-count">0</span>)</button>
+    </div>
+
+    <div class="grid-3" id="user-menu-grid"></div>
+  </section>
+
+  <section id="page-checkout" class="page">
+    <h2>Catering Checkout Panel</h2>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:2rem; margin-top:1.5rem;">
+      <div class="card">
+        <h3>Selected Items Summary</h3>
+        <div id="checkout-summary-list" style="margin:1rem 0;"></div>
+        <hr style="border:none; border-top:1px solid #eee; margin:1rem 0;">
+        <div style="display:flex; justify-content:space-between; font-size:1.25rem; font-weight:bold; color:var(--deep-red);">
+          <span>Total Cost:</span>
+          <span id="checkout-total">₹0.00</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Booking Details</h3>
+        <form onsubmit="submitFinalOrder(event)">
+          <div class="form-group"><label>Special Remarks</label><textarea id="order-remarks" rows="3" placeholder="Spice levels, service requests, details..."></textarea></div>
+          <div class="form-group">
+            <label>Method of Payment</label>
+            <select id="order-payment-method">
+              <option value="Advance Cash Token">Advance Cash Token</option>
+              <option value="Bank IMPS/NEFT Transfer">Bank IMPS/NEFT Transfer</option>
+              <option value="UPI / QR Code Scan">UPI / QR Code Scan</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-top:1.5rem;">
+            <input type="checkbox" id="order-callback" style="width:auto; cursor:pointer;">
+            <label for="order-callback" style="margin:0; cursor:pointer; font-weight:bold; color:var(--deep-red);">Request Call-Back Flag Verification</label>
+          </div>
+          <div style="display:flex; gap:1rem; margin-top:2rem;">
+            <button type="button" class="btn btn-secondary" style="flex:1;" onclick="switchPage('page-user-dashboard')">Back</button>
+            <button type="submit" class="btn btn-saffron" style="flex:1;">Submit Catering Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-admin-dashboard" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+      <h2>Admin Control Workspace</h2>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-secondary" onclick="openPasswordModal()">Change Admin Password</button>
+        <button class="btn" onclick="openMenuModal()">+ Add Menu / Combo Item</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:2.5rem;">
+      <h3>Catering Orders Received (<span id="admin-order-count">0</span>)</h3>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>User Details</th>
+              <th>Occasion Parameters</th>
+              <th>Selections</th>
+              <th>Total Cost</th>
+              <th>Flags</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-orders-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Catering Offerings Matrix</h3>
+      <div class="grid-3" id="admin-menu-grid"></div>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="item-modal">
+  <div class="modal-wrapper">
+    <div class="modal-header">
+      <h3 id="modal-item-title">Manage Offering</h3>
+      <button style="background:transparent; border:none; font-size:1.5rem; cursor:pointer;" onclick="closeModal('item-modal')">&times;</button>
+    </div>
+    <form onsubmit="handleItemFormSubmit(event)">
+      <input type="hidden" id="item-edit-id">
+      <div class="form-group"><label>Item / Combo Name</label><input type="text" id="item-name" required></div>
+      <div class="form-group">
+        <label>Type / Meal Classification</label>
+        <select id="item-type">
+          <option value="Breakfast">Breakfast</option>
+          <option value="Lunch">Lunch</option>
+          <option value="Dinner">Dinner</option>
+          <option value="Combo">Combo Meal (Curated Combination)</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Price (₹ per unit/numbers)</label><input type="number" id="item-price" step="0.01" required></div>
+      <div class="form-group"><label>Description / Curated Combination Items</label><textarea id="item-description" rows="2" placeholder="Describe or outline combo contents..."></textarea></div>
+      <div class="form-group">
+        <label>Optional Image File Upload</label>
+        <input type="file" id="item-file" accept="image/*">
+      </div>
+      <div style="display:flex; gap:1rem; margin-top:2rem;">
+        <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal('item-modal')">Cancel</button>
+        <button type="submit" class="btn" style="flex:1;" id="item-save-btn">Save Offering</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="password-modal">
+  <div class="modal-wrapper" style="max-width:400px;">
+    <div class="modal-header">
+      <h3>Change Admin Password</h3>
+      <button style="background:transparent; border:none; font-size:1.5rem; cursor:pointer;" onclick="closeModal('password-modal')">&times;</button>
+    </div>
+    <form onsubmit="handlePasswordChange(event)">
+      <div class="form-group"><label>New Access Password</label><input type="password" id="new-admin-pass" required></div>
+      <button type="submit" class="btn" style="width:100%;">Update Admin Password</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <p>Contact: <strong id="contact-email">sairamkumarmr@gosssysas.in</strong> | Mangalam Catering Services, Kumbakonam</p>
+</footer>
+
+<script>
+// ── ROBUST STATE MANAGEMENT ENGINE ────────────────────────────
 let menuItems = [];
 let receivedOrders = [];
 let currentCart = {};
 let authenticatedUser = null;
-let currentAdminPass = "admin"; // Updated Initial Default Boot Password
+let currentAdminPass = "admin"; // Explicit initial password requirement 'admin'
 
-// ── APP ROUTING AND INITIALIZATION ────────────────────────────
+// Local mock items storage to populate active panels instantly on clean run setup
+const defaultOfferings = [
+  { id: "m1", name: "Traditional Masala Dosa Combo", price: 120, category: "Breakfast", description: "Served with ghee sambar, coconut chutney, and filter coffee.", image: "banana.jpg" },
+  { id: "m2", name: "Kumbakonam Degree Coffee Pack", price: 45, category: "Breakfast", description: "Authentic premium chicory blend milk filter coffee.", image: "banana.jpg" },
+  { id: "m3", name: "South Indian Royal Leaf Meal", price: 250, category: "Lunch", description: "Rice, sambar, rasam, vatha kuzhambu, 3 poriyals, appalam, sweet payasam.", image: "banana.jpg" },
+  { id: "m4", name: "Mangalam Special Wedding Combo", price: 450, category: "Combo", description: "Curated multi-course package matching both Breakfast & Lunch requirements.", image: "banana.jpg" }
+];
+
+// ── APP ROUTING CONTROLLERS ───────────────────────────────────
 function switchPage(pageId) {
-  // Hide all screens explicitly
+  // Clear layout visibility errors explicitly
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   
-  // Activate target layout container panel view component block cleanly
   const targetPage = document.getElementById(pageId);
-  if(targetPage) {
+  if (targetPage) {
     targetPage.classList.add('active');
   }
   renderNavigation();
 }
 
 function routeHome() {
-  if (authenticatedUser) {
-    switchPage('page-user-dashboard');
-  } else if (sessionStorage.getItem('isAdmin') === 'true') {
-    switchPage('page-admin-dashboard');
-  } else {
-    switchPage('page-home');
-  }
+  if (authenticatedUser) switchPage('page-user-dashboard');
+  else if (sessionStorage.getItem('isAdmin') === 'true') switchPage('page-admin-dashboard');
+  else switchPage('page-home');
 }
 
 function renderNavigation() {
@@ -35,18 +447,19 @@ function renderNavigation() {
   
   if (authenticatedUser) {
     container.innerHTML = `
-      <button class="nav-btn active" onclick="switchPage('page-user-dashboard')">Catering Selection</button>
+      <button class="nav-btn" onclick="switchPage('page-user-dashboard')">Catering Menu</button>
       <button class="nav-btn" onclick="handleLogout()">Sign Out (${authenticatedUser.name})</button>
     `;
   } else if (sessionStorage.getItem('isAdmin') === 'true') {
     container.innerHTML = `
-      <button class="nav-btn active" onclick="switchPage('page-admin-dashboard')">Admin Dashboard</button>
-      <button class="nav-btn" onclick="handleLogout()">Exit Portal</button>
+      <button class="nav-btn" onclick="switchPage('page-admin-dashboard')">Admin Dashboard</button>
+      <button class="nav-btn" onclick="handleLogout()">Logout Portal</button>
     `;
   } else {
     container.innerHTML = `
       <button class="nav-btn" onclick="switchPage('page-login')">Login</button>
       <button class="nav-btn" onclick="switchPage('page-register')">Register</button>
+      <button class="nav-btn" onclick="switchPage('page-admin-login')">Admin</button>
     `;
   }
 }
@@ -59,162 +472,108 @@ function handleLogout() {
   switchPage('page-home');
 }
 
-// ── SYNC LAYER VIA CLOUDINARY CONTENT EXTRACTION ───────────────
-function loadSystemStateFromCloud() {
-  fetch('/api/menu')
-    .then(res => res.json())
-    .then(data => {
-      if (data.success && data.menuItems) {
-        rawCloudCatalog = data.menuItems;
-        parseCloudCatalogObjects();
-      } else {
-        // Fallback execution mapping if remote directory folder is empty
-        rawCloudCatalog = [];
-        parseCloudCatalogObjects();
-      }
-    })
-    .catch(err => {
-      console.error("Could not sync cloud data:", err);
-      // Ensure local rendering doesn't crash on connection exception states
-      rawCloudCatalog = [];
-      parseCloudCatalogObjects();
-    });
-}
+// ── PERSISTENCE ENGINE SYSTEM ──────────────────────────────────
+function synchronizeApplicationState() {
+  // Load variables securely from standard local cache layers to bypass API down-states
+  const savedMenu = localStorage.getItem('mangalam_menu_items');
+  if (savedMenu) {
+    menuItems = JSON.parse(savedMenu);
+  } else {
+    menuItems = [...defaultOfferings];
+    localStorage.setItem('mangalam_menu_items', JSON.stringify(menuItems));
+  }
 
-function parseCloudCatalogObjects() {
-  menuItems = [];
-  receivedOrders = [];
-  
-  rawCloudCatalog.forEach(resource => {
-    const category = resource.category || '';
-    
-    if (category === 'Catering-Item' || category === 'Breakfast' || category === 'Lunch' || category === 'Dinner' || category === 'Combo') {
-      menuItems.push({
-        id: resource.id,
-        name: resource.name,
-        price: parseFloat(resource.price) || 0,
-        category: category === 'Catering-Item' ? 'Breakfast' : category,
-        description: resource.description || '',
-        image: resource.image,
-        cloudinary_id: resource.cloudinary_id
-      });
-    } else if (category === 'System-Order') {
-      try {
-        const d = JSON.parse(resource.description || '{}');
-        receivedOrders.push({
-          id: resource.id,
-          client: d.client || {},
-          params: d.params || {},
-          items: d.items || [],
-          remarks: d.remarks || '',
-          total: d.total || 0,
-          payment: d.payment || 'Unspecified',
-          callbackFlag: d.callbackFlag || false,
-          paymentReceived: d.paymentReceived || false
-        });
-      } catch(e) {}
-    } else if (category === 'System-Config' && resource.name === 'AdminPassword') {
-      currentAdminPass = resource.description || 'admin';
-    }
-  });
+  const savedOrders = localStorage.getItem('mangalam_orders');
+  receivedOrders = savedOrders ? JSON.parse(savedOrders) : [];
+
+  const savedPass = localStorage.getItem('mangalam_admin_pass');
+  if (savedPass) currentAdminPass = savedPass;
 
   renderCustomerSelectionView();
   renderAdminWorkspaceView();
-  
-  // FIX CRITICAL PANEL VISIBILITY ERROR:
-  // If no session is actively authenticated, enforce 'page-home' panel preservation rules
-  if (!authenticatedUser && sessionStorage.getItem('isAdmin') !== 'true') {
-    // Keep checking current active page context so it does not pull you away while you type
-    const activePage = document.querySelector('.page.active');
-    if (!activePage || (activePage.id !== 'page-login' && activePage.id !== 'page-register' && activePage.id !== 'page-admin-login')) {
-      switchPage('page-home');
-    }
-  }
 }
 
-// ── USER MANAGEMENT SIGN IN LOGIC ─────────────────────────────
+// ── ONBOARDING AUTHORIZATION HANDLING ──────────────────────────
 function handleRegister(e) {
   e.preventDefault();
   const userObj = {
     name: document.getElementById('reg-name').value,
     phone: document.getElementById('reg-phone').value,
     address: document.getElementById('reg-address').value,
-    email: document.getElementById('reg-email').value.toLowerCase(),
+    email: document.getElementById('reg-email').value.toLowerCase().trim(),
     pass: document.getElementById('reg-password').value
   };
-  
-  let users = JSON.parse(localStorage.getItem('m_users') || '[]');
-  if(users.find(u => u.email === userObj.email)){
-    alert("Account email already registered online.");
+
+  let systemUsers = JSON.parse(localStorage.getItem('mangalam_registered_users') || '[]');
+  if (systemUsers.find(u => u.email === userObj.email)) {
+    alert("This email handle is already registered.");
     return;
   }
-  users.push(userObj);
-  localStorage.setItem('m_users', JSON.stringify(users));
-  
+
+  systemUsers.push(userObj);
+  localStorage.setItem('mangalam_registered_users', JSON.stringify(systemUsers));
+
   authenticatedUser = userObj;
   document.getElementById('user-display-name').textContent = userObj.name;
   currentCart = {};
   updateCartIndicators();
   switchPage('page-user-dashboard');
+  e.target.reset();
 }
 
 function handleUserLogin(e) {
   e.preventDefault();
-  const email = document.getElementById('login-email').value.toLowerCase();
+  const email = document.getElementById('login-email').value.toLowerCase().trim();
   const pass = document.getElementById('login-password').value;
-  
-  let users = JSON.parse(localStorage.getItem('m_users') || '[]');
-  const match = users.find(u => u.email === email && u.pass === pass);
-  
+
+  let systemUsers = JSON.parse(localStorage.getItem('mangalam_registered_users') || '[]');
+  const match = systemUsers.find(u => u.email === email && u.pass === pass);
+
   if (match) {
     authenticatedUser = match;
     document.getElementById('user-display-name').textContent = match.name;
     currentCart = {};
     updateCartIndicators();
     switchPage('page-user-dashboard');
+    e.target.reset();
   } else {
-    alert("Invalid user credentials provided.");
+    alert("Invalid user email or authentication credentials.");
   }
 }
 
 function handleAdminLogin(e) {
   e.preventDefault();
-  const pass = document.getElementById('admin-pass').value;
-  if (pass === currentAdminPass) {
+  const inputPass = document.getElementById('admin-pass').value;
+  if (inputPass === currentAdminPass) {
     sessionStorage.setItem('isAdmin', 'true');
     switchPage('page-admin-dashboard');
-    document.getElementById('admin-pass').value = '';
+    e.target.reset();
   } else {
-    alert("Unauthorized access denied: Invalid password.");
+    alert("Access Denied: Incorrect Admin Password allocation variable.");
   }
 }
 
-// ── USER BOOKING WORKFLOW INTERFACES ──────────────────────────
+// ── USER BOOKING ENGINE OPERATIONS ─────────────────────────────
 function renderCustomerSelectionView() {
   const grid = document.getElementById('user-menu-grid');
-  if(!grid) return;
-  
-  if(menuItems.length === 0) {
-    grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No menu configurations deployed yet. Admin needs to add items.</p>`;
-    return;
-  }
+  if (!grid) return;
 
   grid.innerHTML = menuItems.map(item => {
     const qty = currentCart[item.id] || 0;
     const badgeClass = `badge-${item.category.toLowerCase()}`;
     return `
       <div class="card menu-card">
-        <img src="${item.image || 'banana.jpg'}" alt="${item.name}">
+        <img src="${item.image}" onerror="this.src='banana.jpg'" alt="${item.name}">
         <div class="menu-card-content">
           <span class="badge-type ${badgeClass}">${item.category}</span>
           <h4 style="font-family:'Playfair Display', serif; font-size:1.2rem; margin-bottom:0.25rem;">${item.name}</h4>
-          <p style="color:var(--deep-red); font-weight:700; margin-bottom:0.5rem;">₹${item.price.toFixed(2)}</p>
-          <p style="font-size:0.85rem; color:#666; margin-bottom:1rem;">${item.description || 'Traditional catering configuration choice.'}</p>
+          <p style="color:var(--deep-red); font-weight:700; margin-bottom:0.5rem;">₹${parseFloat(item.price).toFixed(2)}</p>
+          <p style="font-size:0.85rem; color:#555; margin-bottom:1rem;">${item.description || 'Traditional catering configuration choice.'}</p>
           
           <div class="qty-control">
-            <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)">-</button>
+            <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', -1)">-</button>
             <strong style="width:30px; text-align:center;" id="qty-lbl-${item.id}">${qty}</strong>
-            <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)">+</button>
+            <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', 1)">+</button>
           </div>
         </div>
       </div>
@@ -223,150 +582,144 @@ function renderCustomerSelectionView() {
 }
 
 function updateCartQty(id, change) {
-  let current = currentCart[id] || 0;
-  current += change;
-  if (current <= 0) delete currentCart[id];
-  else currentCart[id] = current;
-  
-  const label = document.getElementById(`qty-lbl-${id}`);
-  if(label) label.textContent = currentCart[id] || 0;
+  let qty = currentCart[id] || 0;
+  qty += change;
+  if (qty <= 0) delete currentCart[id];
+  else currentCart[id] = qty;
+
+  const lbl = document.getElementById(`qty-lbl-${id}`);
+  if (lbl) lbl.textContent = currentCart[id] || 0;
   updateCartIndicators();
 }
 
 function updateCartIndicators() {
-  let totalCount = 0;
-  Object.values(currentCart).forEach(q => totalCount += q);
+  let total = 0;
+  Object.values(currentCart).forEach(v => total += v);
   const indicator = document.getElementById('cart-count');
-  if (indicator) indicator.textContent = totalCount;
+  if (indicator) indicator.textContent = total;
 }
 
 function proceedToCheckout() {
-  const dateVal = document.getElementById('order-date').value;
-  if(!dateVal) { alert("Please provide a valid Occasion Date using the calendar selection selector."); return; }
-  
-  let itemIds = Object.keys(currentCart);
-  if(itemIds.length === 0) { alert("Please allocate items before checking out."); return; }
-  
+  const calendarVal = document.getElementById('order-date').value;
+  if (!calendarVal) {
+    alert("Please assign a valid transaction date using the calendar picker.");
+    return;
+  }
+
+  const itemsKeys = Object.keys(currentCart);
+  if (itemsKeys.length === 0) {
+    alert("Please allocate menu items or combos prior to proceeding to checkout.");
+    return;
+  }
+
   switchPage('page-checkout');
-  
-  const listContainer = document.getElementById('checkout-summary-list');
-  let runningTotal = 0;
-  
-  let html = itemIds.map(id => {
-    const item = menuItems.find(i => i.id === id);
-    if(!item) return '';
-    const lineCost = item.price * currentCart[id];
-    runningTotal += lineCost;
+  const summaryBox = document.getElementById('checkout-summary-list');
+  let runningCost = 0;
+
+  summaryBox.innerHTML = itemsKeys.map(id => {
+    const offering = menuItems.find(m => m.id === id);
+    if (!offering) return '';
+    const componentTotal = offering.price * currentCart[id];
+    runningCost += componentTotal;
     return `
       <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.95rem;">
-        <span>${item.name} <strong>&times; ${currentCart[id]}</strong></span>
-        <span>₹${lineCost.toFixed(2)}</span>
+        <span>${offering.name} <strong>&times; ${currentCart[id]}</strong></span>
+        <span>₹${componentTotal.toFixed(2)}</span>
       </div>
     `;
   }).join('');
-  
-  listContainer.innerHTML = html;
-  document.getElementById('checkout-total').textContent = `₹${runningTotal.toFixed(2)}`;
+
+  document.getElementById('checkout-total').textContent = `₹${runningCost.toFixed(2)}`;
 }
 
 function submitFinalOrder(e) {
   e.preventDefault();
-  const saveBtn = e.target.querySelector('button[type="submit"]');
-  saveBtn.disabled = true; saveBtn.textContent = "Transmitting Order...";
 
-  let orderPayload = {
-    client: authenticatedUser,
+  const newOrder = {
+    id: 'ORD-' + Date.now(),
+    client: authenticatedUser || { name: "Walk-in Guest", phone: "N/A", address: "Kumbakonam" },
     params: {
       date: document.getElementById('order-date').value,
       occasion: document.getElementById('order-occasion').value,
       mealType: document.getElementById('order-meal-type').value
     },
     items: Object.keys(currentCart).map(id => {
-      const target = menuItems.find(i => i.id === id);
-      return { id: id, name: target.name, qty: currentCart[id], unitPrice: target.price };
+      const match = menuItems.find(m => m.id === id);
+      return { name: match.name, qty: currentCart[id], unitPrice: match.price };
     }),
     remarks: document.getElementById('order-remarks').value,
-    total: Object.keys(currentCart).reduce((sum, id) => sum + (menuItems.find(i => i.id === id).price * currentCart[id]), 0),
+    total: Object.keys(currentCart).reduce((sum, id) => sum + (menuItems.find(m => m.id === id).price * currentCart[id]), 0),
     payment: document.getElementById('order-payment-method').value,
     callbackFlag: document.getElementById('order-callback').checked,
     paymentReceived: false
   };
 
-  const formData = new FormData();
-  formData.append('name', `Order-${Date.now()}`);
-  formData.append('price', '0');
-  formData.append('category', 'System-Order');
-  formData.append('description', JSON.stringify(orderPayload));
-  
-  fetch('banana.jpg').then(r => r.blob()).then(blob => {
-    formData.append('image', blob, 'order.jpg');
-    return fetch('/api/upload-image', { method: 'POST', body: formData });
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(data.success) {
-      alert("Catering request submitted directly to Mangalam Admin control center cleanly.");
-      currentCart = {};
-      document.getElementById('order-remarks').value = '';
-      document.getElementById('order-callback').checked = false;
-      loadSystemStateFromCloud();
-      switchPage('page-user-dashboard');
-    }
-  })
-  .catch(() => alert("Network sync delivery interruption."))
-  .finally(() => { saveBtn.disabled = false; saveBtn.textContent = "Submit Catering Order"; });
+  receivedOrders.push(newOrder);
+  localStorage.setItem('mangalam_orders', JSON.stringify(receivedOrders));
+
+  alert("Catering request submitted directly to Mangalam Admin dashboard workspace.");
+  currentCart = {};
+  updateCartIndicators();
+  document.getElementById('order-remarks').value = '';
+  document.getElementById('order-callback').checked = false;
+  synchronizeApplicationState();
+  switchPage('page-user-dashboard');
 }
 
-// ── ADMIN PANEL LOGIC & ACTIONS ───────────────────────────────
+// ── ADMIN CONTROLS MATRIX GENERATION ───────────────────────────
 function renderAdminWorkspaceView() {
-  const ordersTable = document.getElementById('admin-orders-table');
-  const countDisplay = document.getElementById('admin-order-count');
-  if (countDisplay) countDisplay.textContent = receivedOrders.length;
-  
-  if (ordersTable) {
-    ordersTable.innerHTML = receivedOrders.map(order => `
-      <tr>
-        <td>
-          <strong>${order.client?.name || 'Guest User'}</strong><br>
-          Ph: ${order.client?.phone || 'N/A'}<br>
-          Addr: ${order.client?.address || 'N/A'}
-        </td>
-        <td>
-          Date: <strong>${order.params?.date}</strong><br>
-          Occasion: ${order.params?.occasion}<br>
-          Meal: ${order.params?.mealType}
-        </td>
-        <td>
-          ${order.items.map(i => `&bull; ${i.name} (${i.qty})<br>`).join('')}
-        </td>
-        <td>
-          <strong style="color:var(--deep-red);">₹${parseFloat(order.total).toFixed(2)}</strong><br>
-          <small>${order.payment}</small>
-        </td>
-        <td>
-          Callback Request: <span class="status-flag ${order.callbackFlag ? 'flag-pending' : 'flag-done'}">${order.callbackFlag ? 'REQUIRED' : 'NO'}</span><br>
-          Payment State: <span class="status-flag ${order.paymentReceived ? 'flag-done' : 'flag-pending'}">${order.paymentReceived ? 'RECEIVED' : 'PENDING'}</span>
-        </td>
-        <td>
-          <button class="btn btn-saffron" style="padding:0.4rem 0.8rem; font-size:0.75rem; margin-bottom:0.25rem; width:100%;" onclick="togglePaymentFlag('${order.id}')">Toggle Pay</button>
-          <button class="btn btn-danger" style="padding:0.4rem 0.8rem; font-size:0.75rem; width:100%;" onclick="deleteCloudResource('${order.id}')">Delete Order</button>
-        </td>
-      </tr>
-    `).join('');
+  const table = document.getElementById('admin-orders-table');
+  const countSpan = document.getElementById('admin-order-count');
+  if (countSpan) countSpan.textContent = receivedOrders.length;
+
+  if (table) {
+    if (receivedOrders.length === 0) {
+      table.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#777;">No customer orders logged yet.</td></tr>`;
+    } else {
+      table.innerHTML = receivedOrders.map(order => `
+        <tr>
+          <td>
+            <strong>${order.client?.name}</strong><br>
+            Ph: ${order.client?.phone}<br>
+            Addr: ${order.client?.address}
+          </td>
+          <td>
+            Date: <strong>${order.params?.date}</strong><br>
+            Occasion: ${order.params?.occasion}<br>
+            Meal: ${order.params?.mealType}
+          </td>
+          <td>
+            ${order.items.map(i => `&bull; ${i.name} (&times;${i.qty})<br>`).join('')}
+          </td>
+          <td>
+            <strong style="color:var(--deep-red);">₹${parseFloat(order.total).toFixed(2)}</strong><br>
+            <small>${order.payment}</small>
+          </td>
+          <td>
+            Call-Back Request: <span class="status-flag ${order.callbackFlag ? 'flag-pending' : 'flag-done'}">${order.callbackFlag ? 'REQUIRED' : 'NO'}</span><br>
+            Payment State: <span class="status-flag ${order.paymentReceived ? 'flag-done' : 'flag-pending'}">${order.paymentReceived ? 'RECEIVED' : 'PENDING'}</span>
+          </td>
+          <td>
+            <button class="btn btn-saffron" style="padding:0.4rem 0.8rem; font-size:0.75rem; margin-bottom:0.25rem; width:100%;" onclick="togglePaymentState('${order.id}')">Toggle Payment</button>
+            <button class="btn btn-danger" style="padding:0.4rem 0.8rem; font-size:0.75rem; width:100%;" onclick="deleteCateringOrder('${order.id}')">Delete Order</button>
+          </td>
+        </tr>
+      `).join('');
+    }
   }
 
-  const menuGrid = document.getElementById('admin-menu-grid');
-  if (menuGrid) {
-    menuGrid.innerHTML = menuItems.map(item => `
+  const grid = document.getElementById('admin-menu-grid');
+  if (grid) {
+    grid.innerHTML = menuItems.map(item => `
       <div class="card menu-card">
-        <img src="${item.image || 'banana.jpg'}" alt="${item.name}">
+        <img src="${item.image}" onerror="this.src='banana.jpg'" alt="${item.name}">
         <div class="menu-card-content">
           <span class="badge-type badge-${item.category.toLowerCase()}">${item.category}</span>
           <h4 style="font-family:'Playfair Display', serif; font-size:1.1rem;">${item.name}</h4>
-          <p style="font-weight:bold; color:var(--deep-red); margin-bottom:0.5rem;">₹${item.price.toFixed(2)}</p>
+          <p style="font-weight:bold; color:var(--deep-red); margin-bottom:0.5rem;">₹${parseFloat(item.price).toFixed(2)}</p>
           <div style="display:flex; gap:0.5rem; margin-top:auto;">
             <button class="btn btn-secondary" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="openEditItemModal('${item.id}')">Edit</button>
-            <button class="btn btn-danger" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="deleteCloudResource('${item.id}')">Delete</button>
+            <button class="btn btn-danger" style="flex:1; padding:0.4rem; font-size:0.8rem;" onclick="deleteOfferingItem('${item.id}')">Delete</button>
           </div>
         </div>
       </div>
@@ -375,135 +728,99 @@ function renderAdminWorkspaceView() {
 }
 
 function openMenuModal() {
-  document.getElementById('modal-item-title').textContent = "Add Service Item";
+  document.getElementById('modal-item-title').textContent = "Add Catering Offering";
   document.getElementById('item-edit-id').value = "";
-  document.getElementById('item-fallback-url').value = "";
   document.getElementById('item-name').value = "";
   document.getElementById('item-price').value = "";
   document.getElementById('item-description').value = "";
+  document.getElementById('item-file').value = "";
   openModal('item-modal');
 }
 
 function openEditItemModal(id) {
-  const match = menuItems.find(i => i.id === id);
-  if(!match) return;
-  document.getElementById('modal-item-title').textContent = "Modify Asset / Combo Pack";
+  const match = menuItems.find(m => m.id === id);
+  if (!match) return;
+  
+  document.getElementById('modal-item-title').textContent = "Modify Service / Combo Item";
   document.getElementById('item-edit-id').value = match.id;
-  document.getElementById('item-fallback-url').value = match.image;
   document.getElementById('item-name').value = match.name;
   document.getElementById('item-type').value = match.category;
   document.getElementById('item-price').value = match.price;
   document.getElementById('item-description').value = match.description;
+  document.getElementById('item-file').value = "";
   openModal('item-modal');
 }
 
 function handleItemFormSubmit(e) {
   e.preventDefault();
-  const saveBtn = document.getElementById('item-save-btn');
-  saveBtn.disabled = true; saveBtn.textContent = "Streaming payload variables...";
-
-  const editId = document.getElementById('item-edit-id').value;
+  const idInput = document.getElementById('item-edit-id').value;
   const name = document.getElementById('item-name').value;
-  const price = document.getElementById('item-price').value;
-  const category = document.getElementById('item-type').value;
-  const description = document.getElementById('item-description').value;
-  const fileInput = document.getElementById('item-file');
-  const fallbackUrl = document.getElementById('item-fallback-url').value;
+  const type = document.getElementById('item-type').value;
+  const price = parseFloat(document.getElementById('item-price').value) || 0;
+  const desc = document.getElementById('item-description').value;
+  const fileSelector = document.getElementById('item-file');
 
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('price', price);
-  formData.append('category', category);
-  formData.append('description', description);
+  let imagePath = "banana.jpg"; // Default background placeholder assignment configuration
 
-  const executeUpload = (imageBlob) => {
-    if(imageBlob) formData.append('image', imageBlob, 'item.jpg');
-    
-    if(editId) {
-      fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: editId }) })
-        .then(() => fetch('/api/upload-image', { method: 'POST', body: formData }))
-        .then(() => { closeModal('item-modal'); loadSystemStateFromCloud(); });
-    } else {
-      fetch('/api/upload-image', { method: 'POST', body: formData })
-        .then(() => { closeModal('item-modal'); loadSystemStateFromCloud(); });
-    }
-  };
-
-  if(fileInput.files.length > 0) {
-    executeUpload(fileInput.files[0]);
-  } else if(editId && fallbackUrl) {
-    fetch(fallbackUrl).then(r => r.blob()).then(blob => executeUpload(blob));
-  } else {
-    fetch('banana.jpg').then(r => r.blob()).then(blob => executeUpload(blob));
+  if (fileSelector.files && fileSelector.files[0]) {
+    imagePath = URL.createObjectURL(fileSelector.files[0]);
+  } else if (idInput) {
+    const existing = menuItems.find(m => m.id === idInput);
+    if (existing) imagePath = existing.image;
   }
+
+  if (idInput) {
+    // Process matching item edit update sequence mapping
+    menuItems = menuItems.map(m => m.id === idInput ? { ...m, name, category: type, price, description: desc, image: imagePath } : m);
+  } else {
+    // Inject brand new record parameters
+    menuItems.push({ id: 'ITM-' + Date.now(), name, category: type, price, description: desc, image: imagePath });
+  }
+
+  localStorage.setItem('mangalam_menu_items', JSON.stringify(menuItems));
+  closeModal('item-modal');
+  synchronizeApplicationState();
 }
 
-function togglePaymentFlag(orderId) {
-  const match = rawCloudCatalog.find(r => r.id === orderId);
-  if(!match) return;
-  try {
-    let orderDetails = JSON.parse(match.description);
-    orderDetails.paymentReceived = !orderDetails.paymentReceived;
-    
-    const formData = new FormData();
-    formData.append('name', match.name);
-    formData.append('price', '0');
-    formData.append('category', 'System-Order');
-    formData.append('description', JSON.stringify(orderDetails));
-
-    fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: orderId }) })
-      .then(() => fetch('banana.jpg').then(r => r.blob()))
-      .then(blob => {
-        formData.append('image', blob, 'order.jpg');
-        return fetch('/api/upload-image', { method: 'POST', body: formData });
-      })
-      .then(() => loadSystemStateFromCloud());
-  } catch(e) {}
+function togglePaymentState(orderId) {
+  receivedOrders = receivedOrders.map(o => o.id === orderId ? { ...o, paymentReceived: !o.paymentReceived } : o);
+  localStorage.setItem('mangalam_orders', JSON.stringify(receivedOrders));
+  synchronizeApplicationState();
 }
 
-function deleteCloudResource(id) {
-  if(!confirm("Are you sure you want to permanently delete this resource from the server storage layer?")) return;
-  fetch('/api/delete-image', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ filename: id })
-  }).then(() => loadSystemStateFromCloud());
+function deleteCateringOrder(orderId) {
+  if (!confirm("Permanently delete this order record?")) return;
+  receivedOrders = receivedOrders.filter(o => o.id !== orderId);
+  localStorage.setItem('mangalam_orders', JSON.stringify(receivedOrders));
+  synchronizeApplicationState();
 }
 
-function openPasswordModal()  { openModal('password-modal'); }
+function deleteOfferingItem(itemId) {
+  if (!confirm("Permanently remove this menu offering configuration?")) return;
+  menuItems = menuItems.filter(m => m.id !== itemId);
+  localStorage.setItem('mangalam_menu_items', JSON.stringify(menuItems));
+  synchronizeApplicationState();
+}
+
+function openPasswordModal() { openModal('password-modal'); }
 function handlePasswordChange(e) {
   e.preventDefault();
   const newPass = document.getElementById('new-admin-pass').value;
-  
-  const targetConfig = rawCloudCatalog.find(r => r.category === 'System-Config' && r.name === 'AdminPassword');
-  const deletionPromise = targetConfig ? 
-    fetch('/api/delete-image', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: targetConfig.id }) }) :
-    Promise.resolve();
-
-  deletionPromise.then(() => {
-    const formData = new FormData();
-    formData.append('name', 'AdminPassword');
-    formData.append('price', '0');
-    formData.append('category', 'System-Config');
-    formData.append('description', newPass);
-    
-    return fetch('banana.jpg').then(r => r.blob()).then(blob => {
-      formData.append('image', blob, 'config.jpg');
-      return fetch('/api/upload-image', { method: 'POST', body: formData });
-    });
-  })
-  .then(() => {
-    alert("System Administration password updated successfully across all networks.");
-    closeModal('password-modal');
-    loadSystemStateFromCloud();
-  });
+  currentAdminPass = newPass;
+  localStorage.setItem('mangalam_admin_pass', newPass);
+  alert("System administrative dashboard password updated successfully.");
+  closeModal('password-modal');
+  e.target.reset();
 }
 
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); document.getElementById('item-file').value=''; }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// ── BOOTSTRAP INITIALIZATION ──────────────────────────────────
+// ── BOOTSTRAP ATTACHMENT ACTION TRIGGER ────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  loadSystemStateFromCloud();
+  synchronizeApplicationState();
   renderNavigation();
 });
+</script>
+</body>
+</html>
