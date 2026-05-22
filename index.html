@@ -606,7 +606,8 @@ let currentFilter = "All";
 // ── NAVIGATION ────────────────────────────────────────────────
 function switchPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) targetPage.classList.add('active');
   renderNavigation();
 }
 
@@ -623,7 +624,7 @@ function renderNavigation() {
   if (authenticatedUser) {
     container.innerHTML = `
       <button class="nav-btn" onclick="switchPage('page-user-dashboard')">📋 Menu</button>
-      <button class="nav-btn" onclick="handleLogout()">🚪 Logout (${authenticatedUser.name})</button>
+      <button class="nav-btn" onclick="handleLogout()">🚪 Logout (${escapeHtml(authenticatedUser.name)})</button>
     `;
   } else if (sessionStorage.getItem('isAdmin') === 'true') {
     container.innerHTML = `
@@ -637,6 +638,16 @@ function renderNavigation() {
       <button class="nav-btn" onclick="switchPage('page-admin-login')">👑 Admin</button>
     `;
   }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
 }
 
 function handleLogout() {
@@ -676,6 +687,13 @@ function handleRegister(e) {
   updateCartCount();
   switchPage('page-user-dashboard');
   alert('Registration successful! Welcome to Mangalam Catering!');
+  
+  // Clear form
+  document.getElementById('reg-name').value = '';
+  document.getElementById('reg-address').value = '';
+  document.getElementById('reg-phone').value = '';
+  document.getElementById('reg-email').value = '';
+  document.getElementById('reg-password').value = '';
 }
 
 function handleUserLogin(e) {
@@ -693,6 +711,7 @@ function handleUserLogin(e) {
     switchPage('page-user-dashboard');
     document.getElementById('login-email').value = '';
     document.getElementById('login-password').value = '';
+    loadMenuItems(); // Refresh menu items
   } else {
     alert('Invalid credentials! Please register first.');
   }
@@ -715,15 +734,26 @@ function handleAdminLogin(e) {
 // ── MENU MANAGEMENT ───────────────────────────────────────────
 async function loadMenuItems() {
   try {
+    console.log('Loading menu items...');
     const response = await fetch('/api/menu-items');
     const data = await response.json();
+    
     if (data.success && data.menuItems) {
       menuItems = data.menuItems;
+      console.log(`Loaded ${menuItems.length} menu items`);
+      renderUserMenu();
+      renderAdminMenu();
+    } else {
+      console.warn('No menu items received:', data);
+      menuItems = [];
       renderUserMenu();
       renderAdminMenu();
     }
   } catch (error) {
     console.error('Error loading menu:', error);
+    menuItems = [];
+    renderUserMenu();
+    renderAdminMenu();
   }
 }
 
@@ -749,19 +779,23 @@ function renderUserMenu() {
   grid.innerHTML = filteredItems.map(item => {
     const qty = currentCart[item.id] || 0;
     const badgeClass = `badge-${item.category}`;
+    const displayName = item.name || 'Unnamed Item';
+    const displayPrice = item.price || 0;
+    const displayDesc = item.description || 'Delicious traditional preparation';
+    const imageUrl = item.image || 'https://via.placeholder.com/300x200?text=No+Image';
     
     return `
       <div class="card menu-card">
-        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" alt="${item.name}">
+        <img src="${imageUrl}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" alt="${escapeHtml(displayName)}">
         <div class="menu-card-content">
-          <span class="badge-type ${badgeClass}">${item.category}</span>
-          <h3 style="font-family:Playfair Display,serif; margin:0.5rem 0;">${item.name}</h3>
-          <p style="color:var(--deep-red); font-size:1.25rem; font-weight:bold;">₹${item.price.toFixed(2)}</p>
-          <p style="font-size:0.85rem; color:#666; margin:0.5rem 0;">${item.description || 'Delicious traditional preparation'}</p>
+          <span class="badge-type ${badgeClass}">${escapeHtml(item.category)}</span>
+          <h3 style="font-family:Playfair Display,serif; margin:0.5rem 0;">${escapeHtml(displayName)}</h3>
+          <p style="color:var(--deep-red); font-size:1.25rem; font-weight:bold;">₹${displayPrice.toFixed(2)}</p>
+          <p style="font-size:0.85rem; color:#666; margin:0.5rem 0;">${escapeHtml(displayDesc)}</p>
           <div class="qty-control">
-            <button class="qty-btn" onclick="updateCart('${item.id}', -1)">−</button>
+            <button class="qty-btn" onclick="updateCart('${item.id.replace(/'/g, "\\'")}', -1)">−</button>
             <strong style="min-width:40px; text-align:center;">${qty}</strong>
-            <button class="qty-btn" onclick="updateCart('${item.id}', 1)">+</button>
+            <button class="qty-btn" onclick="updateCart('${item.id.replace(/'/g, "\\'")}', 1)">+</button>
           </div>
         </div>
       </div>
@@ -780,14 +814,14 @@ function renderAdminMenu() {
   
   grid.innerHTML = menuItems.map(item => `
     <div class="card menu-card">
-      <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" alt="${item.name}">
+      <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" alt="${escapeHtml(item.name)}">
       <div class="menu-card-content">
-        <h3>${item.name}</h3>
-        <p style="color:var(--deep-red); font-weight:bold;">₹${item.price.toFixed(2)}</p>
-        <p style="font-size:0.8rem; color:#666;">${item.category}</p>
-        <p style="font-size:0.8rem; margin:0.5rem 0;">${item.description || ''}</p>
+        <h3>${escapeHtml(item.name)}</h3>
+        <p style="color:var(--deep-red); font-weight:bold;">₹${(item.price || 0).toFixed(2)}</p>
+        <p style="font-size:0.8rem; color:#666;">${escapeHtml(item.category)}</p>
+        <p style="font-size:0.8rem; margin:0.5rem 0;">${escapeHtml(item.description || '')}</p>
         <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-          <button class="btn btn-danger" style="flex:1; padding:0.3rem;" onclick="deleteMenuItem('${item.id}')">Delete</button>
+          <button class="btn btn-danger" style="flex:1; padding:0.3rem;" onclick="deleteMenuItem('${item.id.replace(/'/g, "\\'")}')">Delete</button>
         </div>
       </div>
     </div>
@@ -797,13 +831,23 @@ function renderAdminMenu() {
 async function handleItemFormSubmit(e) {
   e.preventDefault();
   const fileInput = document.getElementById('item-file');
-  const itemName = document.getElementById('item-name').value;
+  const itemName = document.getElementById('item-name').value.trim();
   const itemPrice = document.getElementById('item-price').value;
   const itemCategory = document.getElementById('item-category').value;
-  const itemDesc = document.getElementById('item-description').value;
+  const itemDesc = document.getElementById('item-description').value.trim();
   
   if (!fileInput.files[0]) {
     alert('Please select an image for the menu item!');
+    return;
+  }
+  
+  if (!itemName) {
+    alert('Please enter an item name!');
+    return;
+  }
+  
+  if (!itemPrice || itemPrice <= 0) {
+    alert('Please enter a valid price!');
     return;
   }
   
@@ -816,30 +860,49 @@ async function handleItemFormSubmit(e) {
   formData.append('mealType', itemCategory);
   formData.append('isCombo', itemCategory === 'Combo' ? 'true' : 'false');
   
+  const saveBtn = document.querySelector('#item-modal .btn[type="submit"]');
+  const originalText = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Uploading...';
+  
   try {
-    const response = await fetch('/api/upload-item', { method: 'POST', body: formData });
+    console.log('Uploading item...');
+    const response = await fetch('/api/upload-item', { 
+      method: 'POST', 
+      body: formData 
+    });
     const data = await response.json();
     
     if (data.success) {
-      alert('Menu item added successfully!');
+      alert(`Menu item "${itemName}" added successfully!`);
       closeModal('item-modal');
+      
+      // Clear form
       document.getElementById('item-file').value = '';
       document.getElementById('item-name').value = '';
       document.getElementById('item-price').value = '';
       document.getElementById('item-description').value = '';
+      document.getElementById('item-category').value = 'Breakfast';
+      
+      // Reload menu items
       await loadMenuItems();
     } else {
       alert('Failed to upload: ' + (data.error || 'Unknown error'));
     }
   } catch (error) {
+    console.error('Upload error:', error);
     alert('Error uploading item: ' + error.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalText;
   }
 }
 
 async function deleteMenuItem(itemId) {
-  if (!confirm('Delete this menu item permanently?')) return;
+  if (!confirm('Delete this menu item permanently? This action cannot be undone.')) return;
   
   try {
+    console.log('Deleting item:', itemId);
     const response = await fetch('/api/delete-item', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -851,9 +914,10 @@ async function deleteMenuItem(itemId) {
       alert('Item deleted successfully!');
       await loadMenuItems();
     } else {
-      alert('Delete failed!');
+      alert('Delete failed! Please try again.');
     }
   } catch (error) {
+    console.error('Delete error:', error);
     alert('Error deleting item: ' + error.message);
   }
 }
@@ -893,11 +957,11 @@ function proceedToCheckout() {
   for (const [id, qty] of Object.entries(currentCart)) {
     const item = menuItems.find(i => i.id === id);
     if (item) {
-      const itemTotal = item.price * qty;
+      const itemTotal = (item.price || 0) * qty;
       total += itemTotal;
       itemsHtml += `
         <li style="padding:0.5rem 0; border-bottom:1px solid #eee;">
-          <strong>${item.name}</strong> x ${qty} = ₹${itemTotal.toFixed(2)}
+          <strong>${escapeHtml(item.name)}</strong> x ${qty} = ₹${itemTotal.toFixed(2)}
         </li>
       `;
     }
@@ -909,7 +973,7 @@ function proceedToCheckout() {
   switchPage('page-checkout');
 }
 
-async function submitFinalOrder(e) {
+function submitFinalOrder(e) {
   e.preventDefault();
   
   const order = {
@@ -934,15 +998,15 @@ async function submitFinalOrder(e) {
         name: item.name,
         price: item.price,
         quantity: qty,
-        total: item.price * qty
+        total: (item.price || 0) * qty
       };
-      order.totalCost += item.price * qty;
+      order.totalCost += (item.price || 0) * qty;
     }
   }
   
-  // Save to localStorage for cross-device sync
+  // Save to localStorage
   const orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
-  orders.push(order);
+  orders.unshift(order); // Add to beginning
   localStorage.setItem('catering_orders', JSON.stringify(orders));
   
   alert(`Order placed successfully!\nOrder ID: ${order.orderId}\nTotal: ₹${order.totalCost.toFixed(2)}\nWe will contact you soon!`);
@@ -972,13 +1036,29 @@ function loadOrders() {
   
   tableBody.innerHTML = orders.map(order => `
     <tr>
-      <td><strong>${order.orderId}</strong><br><small>${new Date(order.createdAt).toLocaleDateString()}</small></td>
-      <td>${order.user?.name || 'Guest'}<br><small>${order.user?.phone || '-'}</small></td>
-      <td>${order.occasion}<br><small>${order.orderDate}</small></td>
-      <td>${Object.values(order.items).map(i => `${i.name} x${i.quantity}`).join('<br>')}</td>
-      <td><strong>₹${order.totalCost.toFixed(2)}</strong></td>
-      <td><span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></td>
-      <td class="order-actions">
+      <td style="vertical-align:top;">
+        <strong>${order.orderId}</strong><br>
+        <small>${new Date(order.createdAt).toLocaleString()}</small>
+      </td>
+      <td style="vertical-align:top;">
+        ${escapeHtml(order.user?.name || 'Guest')}<br>
+        <small>${escapeHtml(order.user?.phone || '-')}</small><br>
+        <small>${escapeHtml(order.user?.email || '-')}</small>
+      </td>
+      <td style="vertical-align:top;">
+        <strong>${order.occasion}</strong><br>
+        <small>Date: ${order.orderDate}</small><br>
+        <small>Meal: ${order.mealType}</small>
+      </td>
+      <td style="vertical-align:top;">
+        ${Object.values(order.items).map(i => `${escapeHtml(i.name)} x${i.quantity}`).join('<br>')}
+      </td>
+      <td style="vertical-align:top;"><strong>₹${order.totalCost.toFixed(2)}</strong></td>
+      <td style="vertical-align:top;">
+        <span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span>
+        ${order.callbackRequested ? '<br><small>📞 Callback</small>' : ''}
+      </td>
+      <td class="order-actions" style="vertical-align:top;">
         <button class="btn btn-success" onclick="updateOrderStatus('${order.orderId}', 'completed')">✓ Complete</button>
         <button class="btn btn-saffron" onclick="updateOrderStatus('${order.orderId}', 'paid')">💰 Paid</button>
         <button class="btn btn-danger" onclick="deleteOrder('${order.orderId}')">🗑 Delete</button>
@@ -1044,15 +1124,29 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
 
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal')) {
+    e.target.classList.remove('open');
+  }
+});
+
 // ── INITIALIZATION ────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  loadMenuItems();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadMenuItems();
   renderNavigation();
   
   // Set default date to today
   const today = new Date().toISOString().split('T')[0];
   const dateInput = document.getElementById('order-date');
   if (dateInput) dateInput.value = today;
+  
+  // Refresh orders every 5 seconds if admin is logged in
+  setInterval(() => {
+    if (sessionStorage.getItem('isAdmin') === 'true') {
+      loadOrders();
+    }
+  }, 5000);
 });
 </script>
 </body>
