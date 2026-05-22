@@ -1,363 +1,612 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mangalam Catering Portal</title>
-  <style>
-    /* ── SYSTEM DESIGN TOKENS & THEMING ───────────────────────── */
-    :root {
-      --deep-red: #8B0000;
-      --gold: #DAA520;
-      --dark-charcoal: #222222;
-      --light-gray: #f8f9fa;
-      --pure-white: #ffffff;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mangalam Catering Services, Kumbakonam</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --saffron: #E8871A;
+  --deep-red: #8B1A1A;
+  --gold: #D4A82A;
+  --leaf-green: #4CAF50;
+  --charcoal: #2C2C2C;
+  --white: #FFFFFF;
+  --border: rgba(139, 26, 26, 0.15);
+  --success: #2E7D32;
+  --danger: #C62828;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      background: #f4f6f8;
-      color: var(--dark-charcoal);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--charcoal);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
 
-    /* ── NAVIGATION COMPONENTS ────────────────────── */
-    header {
-      background-color: var(--deep-red);
-      border-bottom: 4px solid var(--gold);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--pure-white);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+/* Banana background with light green overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('https://res.cloudinary.com/demo/image/upload/v1312461206/banana.jpg') no-repeat center center fixed;
+  background-size: cover;
+  opacity: 0.3;
+  z-index: -2;
+}
 
-    .brand-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(232, 245, 233, 0.95);
+  z-index: -1;
+}
 
-    .nav-group {
-      display: flex;
-      gap: 1rem;
-    }
+header, main, footer, .modal { z-index: 2; position: relative; }
 
-    .nav-btn {
-      background: transparent;
-      border: 1px solid var(--gold);
-      color: var(--pure-white);
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      font-weight: 600;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-    }
+header {
+  background: var(--deep-red);
+  color: var(--white);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-    .nav-btn:hover {
-      background-color: var(--gold);
-      color: var(--dark-charcoal);
-    }
+header h1 {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
 
-    /* ── ROUTING WORKSPACE LAYOUT PANELS ─────────────────────── */
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      width: 100%;
-      padding: 0 1rem;
-      flex: 1;
-    }
+.nav-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
-    .page {
-      display: none;
-    }
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: #FAF3E0;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
 
-    .page.active {
-      display: block;
-    }
+.nav-btn:hover, .nav-btn.active {
+  background: rgba(255,255,255,0.1);
+  color: var(--gold);
+}
 
-    /* ── COMPONENT UI CARDS & GRID RESPONSIVENESS ────────────── */
-    .card {
-      background: var(--pure-white);
-      border-radius: 8px;
-      padding: 2rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
-      border-top: 3px solid var(--deep-red);
-    }
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  flex: 1;
+}
 
-    h2, h3 {
-      margin-bottom: 1.5rem;
-      color: var(--deep-red);
-    }
+.page { display: none; }
+.page.active { display: block !important; }
 
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
+/* Cards & Grids */
+.welcome-panel {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  margin-top: 2rem;
+}
 
-    .menu-card {
-      background: var(--pure-white);
-      border: 1px solid #e1e4e8;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-      transition: transform 0.2s ease;
-    }
+.welcome-panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--deep-red);
+  margin-bottom: 1rem;
+}
 
-    .menu-card:hover {
-      transform: translateY(-5px);
-    }
+.grid-3 { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  gap: 1.5rem; 
+  margin-top: 1.5rem; 
+}
 
-    .menu-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      background-color: #eee;
-    }
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
 
-    .menu-card-content {
-      padding: 1.25rem;
-    }
+.menu-card { 
+  overflow: hidden; 
+  padding: 0; 
+  display: flex; 
+  flex-direction: column;
+  transition: transform 0.2s;
+}
 
-    .badge-type {
-      display: inline-block;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-      background-color: var(--gold);
-      color: #000;
-      font-weight: bold;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
-    }
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
 
-    /* ── BASELINE FORM DESIGN UI ──────────────────────────────── */
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
+.menu-card img { 
+  width: 100%; 
+  height: 200px; 
+  object-fit: cover; 
+  background: #e0ebe0;
+}
 
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
+.menu-card-content { 
+  padding: 1.25rem; 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+}
 
-    .form-control {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
+/* Forms */
+.form-box {
+  max-width: 500px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
 
-    .btn {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1rem;
-    }
+.form-box h2, .page h2 {
+  font-family: 'Playfair Display', serif;
+  color: var(--deep-red);
+  margin-bottom: 1.5rem;
+}
 
-    .btn-primary { background-color: var(--deep-red); color: var(--pure-white); }
-    .btn-primary:hover { opacity: 0.9; }
-    .btn-success { background-color: #28a745; color: var(--pure-white); }
-    .btn-danger { background-color: #dc3545; color: var(--pure-white); }
+.form-group { margin-bottom: 1.25rem; }
 
-    .qty-control {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
+.form-group label { 
+  display: block; 
+  margin-bottom: 0.4rem; 
+  font-weight: 500; 
+  font-size: 0.9rem; 
+  color: #555;
+}
 
-    .qty-btn {
-      width: 32px;
-      height: 32px;
-      border: 1px solid #ccc;
-      background: #fff;
-      cursor: pointer;
-      font-weight: bold;
-      border-radius: 4px;
-    }
+input, select, textarea {
+  width: 100%; 
+  padding: 0.7rem; 
+  border: 1px solid #CCC; 
+  border-radius: 4px;
+  font-family: inherit; 
+  font-size: 0.95rem;
+}
 
-    /* MODAL POPUPS FOR ADMIN ADD ITEM SECTION */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center; align-items: center;
-      z-index: 1000;
-    }
-    .modal.open { display: flex; }
-    .modal-content {
-      background: white; padding: 2rem; border-radius: 8px;
-      width: 100%; max-width: 500px; position: relative;
-    }
-  </style>
+input:focus, select:focus, textarea:focus { 
+  outline: none; 
+  border-color: var(--deep-red); 
+}
+
+.btn {
+  display: inline-block; 
+  padding: 0.7rem 1.5rem; 
+  background: var(--deep-red); 
+  color: var(--white);
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-weight: 500; 
+  font-size: 1rem; 
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.btn:hover { background: #701414; }
+.btn-saffron { background: var(--saffron); }
+.btn-saffron:hover { background: #d47610; }
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #a81c1c; }
+.btn-secondary { background: #7A6A5A; }
+.btn-success { background: var(--success); }
+
+/* Badges */
+.badge-type {
+  display: inline-block; 
+  padding: 0.25rem 0.75rem; 
+  font-size: 0.75rem; 
+  font-weight: bold;
+  border-radius: 20px; 
+  margin-bottom: 0.5rem;
+}
+
+.badge-Breakfast { background: #FFF3E0; color: #E65100; }
+.badge-Lunch { background: #E8F5E9; color: #2E7D32; }
+.badge-Dinner { background: #E3F2FD; color: #1565C0; }
+.badge-Combo { background: #F3E5F5; color: #4A148C; }
+
+/* Quantity Controls */
+.qty-control { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+  margin-top: auto; 
+  padding-top: 1rem; 
+}
+
+.qty-btn { 
+  width: 32px; 
+  height: 32px; 
+  border-radius: 4px; 
+  border: 1px solid #ccc; 
+  cursor: pointer; 
+  background: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.qty-btn:hover {
+  background: var(--saffron);
+  color: white;
+  border-color: var(--saffron);
+}
+
+/* Modal */
+.modal {
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  background: rgba(0,0,0,0.5); 
+  justify-content: center; 
+  align-items: center; 
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.modal.open { display: flex; }
+
+.modal-wrapper { 
+  background: var(--white); 
+  padding: 2rem; 
+  border-radius: 12px; 
+  width: 100%; 
+  max-width: 600px; 
+  max-height: 90vh; 
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Tables */
+table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  margin-top: 1rem; 
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td { 
+  padding: 1rem; 
+  text-align: left; 
+  border-bottom: 1px solid #EEE; 
+  font-size: 0.85rem;
+}
+
+th { 
+  background: #F9F5F0; 
+  color: var(--deep-red); 
+  font-weight: 600;
+}
+
+tr:hover {
+  background: #f5f5f5;
+}
+
+.status-badge {
+  display: inline-block; 
+  padding: 0.25rem 0.75rem; 
+  font-size: 0.75rem; 
+  border-radius: 20px; 
+  font-weight: bold;
+}
+
+.status-pending { background: #FFF3E0; color: #E65100; }
+.status-completed { background: #E8F5E9; color: #2E7D32; }
+.status-paid { background: #E3F2FD; color: #1565C0; }
+
+.order-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.order-actions button {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.7rem;
+}
+
+footer {
+  background: var(--charcoal); 
+  color: #BBB; 
+  text-align: center; 
+  padding: 1.5rem; 
+  margin-top: auto; 
+  font-size: 0.85rem;
+}
+
+footer strong { color: var(--white); }
+
+@media (max-width: 768px) {
+  header h1 { font-size: 1.2rem; }
+  .grid-3 { grid-template-columns: 1fr; }
+  th, td { padding: 0.5rem; font-size: 0.75rem; }
+}
+</style>
 </head>
 <body>
 
-  <header>
-    <div class="brand-title" onclick="routeHome()" style="cursor:pointer;">Mangalam Catering</div>
-    <div class="nav-group" id="header-nav"></div>
-  </header>
+<header>
+  <h1 onclick="routeHome()">Mangalam Catering Services, Kumbakonam</h1>
+  <div class="nav-buttons" id="header-nav"></div>
+</header>
 
-  <div class="container">
+<div class="container">
+  <!-- HOME PAGE -->
+  <main id="page-home" class="page active">
+    <div class="welcome-panel">
+      <h2>Authentic Traditional Catering</h2>
+      <p>Experience exquisite South Indian culinary traditions curated for your special occasions.</p>
+      <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin-top:2rem;">
+        <button class="btn" onclick="switchPage('page-login')">User Login</button>
+        <button class="btn btn-saffron" onclick="switchPage('page-register')">Register New Account</button>
+        <button class="btn btn-secondary" onclick="switchPage('page-admin-login')">Admin Portal</button>
+      </div>
+    </div>
+  </main>
 
-    <div id="page-home" class="page active">
-      <div class="card" style="text-align: center; padding: 4rem 2rem;">
-        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Premium Wedding & Event Catering</h2>
-        <p style="font-size: 1.2rem; color: #555; max-width: 700px; margin: 0 auto 2rem auto;">
-          Experience pristine culinary dining traditions for your premium event celebrations. Register or sign into your profile to look through custom booking offerings.
-        </p>
-        <div>
-          <button class="btn btn-primary" onclick="switchPage('page-register')">Create Client Account</button>
+  <!-- REGISTER PAGE -->
+  <section id="page-register" class="page">
+    <div class="form-box">
+      <h2>Create Account</h2>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="reg-name" required></div>
+        <div class="form-group"><label>Address *</label><textarea id="reg-address" rows="2" required></textarea></div>
+        <div class="form-group"><label>Phone Number *</label><input type="tel" id="reg-phone" required></div>
+        <div class="form-group"><label>Email Address *</label><input type="email" id="reg-email" required></div>
+        <div class="form-group"><label>Set Password *</label><input type="password" id="reg-password" required></div>
+        <button type="submit" class="btn" style="width:100%;">Register</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- LOGIN PAGE -->
+  <section id="page-login" class="page">
+    <div class="form-box">
+      <h2>User Login</h2>
+      <form onsubmit="handleUserLogin(event)">
+        <div class="form-group"><label>Email Address</label><input type="email" id="login-email" required></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-password" required></div>
+        <button type="submit" class="btn" style="width:100%;">Login</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ADMIN LOGIN PAGE -->
+  <section id="page-admin-login" class="page">
+    <div class="form-box">
+      <h2>Admin Authentication</h2>
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group"><label>Admin Password</label><input type="password" id="admin-pass" required></div>
+        <button type="submit" class="btn" style="width:100%;">Access Dashboard</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- USER DASHBOARD -->
+  <section id="page-user-dashboard" class="page">
+    <div style="background:white; padding:1.5rem; border-radius:8px; margin-bottom:2rem;">
+      <h3>Welcome, <span id="user-display-name">Guest</span>!</h3>
+      
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-top:1.5rem;">
+        <div><label style="font-weight:bold;">Occasion Date *</label><input type="date" id="order-date" required></div>
+        <div><label style="font-weight:bold;">Occasion Type</label>
+          <select id="order-occasion">
+            <option value="Wedding">Wedding</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Corporate">Corporate</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div><label style="font-weight:bold;">Meal Type Filter</label>
+          <select id="meal-type-filter" onchange="filterMenuItems()">
+            <option value="All">All Items</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="Combo">Combo Meals</option>
+          </select>
         </div>
       </div>
     </div>
 
-    <div id="page-register" class="page">
-      <div class="card" style="max-width: 500px; margin: 0 auto;">
-        <h3>Client Registration Portal</h3>
-        <form id="form-register" onsubmit="handleRegister(event)">
-          <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" class="form-control" required></div>
-          <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone" class="form-control" required></div>
-          <div class="form-group"><label>Event Location Address</label><input type="text" id="reg-address" class="form-control" required></div>
-          <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" class="form-control" required></div>
-          <div class="form-group"><label>Account Password</label><input type="password" id="reg-password" class="form-control" required></div>
-          <button type="submit" class="btn btn-primary" style="width:100%;">Complete Registration</button>
-        </form>
-      </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap;">
+      <h2>Our Menu & Combo Items</h2>
+      <button class="btn btn-saffron" onclick="proceedToCheckout()">🛒 Checkout (<span id="cart-count">0</span>)</button>
     </div>
 
-    <div id="page-login" class="page">
-      <div class="card" style="max-width: 500px; margin: 0 auto;">
-        <h3>Customer Sign In</h3>
-        <form id="form-login" onsubmit="handleUserLogin(event)">
-          <div class="form-group"><label>Email Address</label><input type="email" id="login-email" class="form-control" required></div>
-          <div class="form-group"><label>Password</label><input type="password" id="login-password" class="form-control" required></div>
-          <button type="submit" class="btn btn-primary" style="width:100%;">Sign Into Account</button>
-        </form>
-      </div>
-    </div>
+    <div class="grid-3" id="user-menu-grid"></div>
+  </section>
 
-    <div id="page-admin-login" class="page">
-      <div class="card" style="max-width: 500px; margin: 0 auto;">
-        <h3>Management Security Gate</h3>
-        <form id="form-admin-login" onsubmit="handleAdminLogin(event)">
-          <div class="form-group"><label>Administrative Password Key</label><input type="password" id="admin-pass" class="form-control" required></div>
-          <button type="submit" class="btn btn-primary" style="width:100%;">Unlock Dashboard</button>
-        </form>
-      </div>
-    </div>
-
-    <div id="page-user-dashboard" class="page">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2>Welcome Back, <span id="user-display-name">Guest</span>!</h2>
-        <div class="cart-indicator" style="font-weight: bold; font-size: 1.1rem; color: var(--deep-red);">
-          🛒 Basket Items: <span id="cart-count">0</span>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 2rem;">
-        <h3>1. Select Event Date Target</h3>
-        <div class="form-group">
-          <label for="order-date">Catering Delivery Calendar Target:</label>
-          <input type="date" id="order-date" class="form-control" style="max-width: 300px;" required>
-        </div>
-      </div>
-
+  <!-- CHECKOUT PAGE -->
+  <section id="page-checkout" class="page">
+    <h2>Order Summary & Checkout</h2>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:2rem; margin-top:1.5rem;">
       <div class="card">
-        <h3>2. Catering Offerings Matrix</h3>
-        <div class="grid-3" id="user-menu-grid"></div>
-      </div>
-
-      <div style="text-align: right; margin-top: 2rem;">
-        <button type="button" class="btn btn-success" onclick="proceedToCheckout()">Proceed to Checkout Order Summary ➡️</button>
-      </div>
-    </div>
-
-    <div id="page-admin-dashboard" class="page">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2>Management Control Console</h2>
-        <div style="display:flex; gap:1rem;">
-          <button class="btn btn-success" onclick="openMenuModal()">＋ Add Custom Offering</button>
-          <button class="btn btn-primary" onclick="openPasswordModal()">⚙️ Update Gate Key</button>
+        <h3>Selected Items</h3>
+        <div id="checkout-summary-list" style="margin:1rem 0; max-height: 400px; overflow-y: auto;"></div>
+        <hr>
+        <div style="display:flex; justify-content:space-between; font-size:1.25rem; font-weight:bold; color:var(--deep-red); margin-top:1rem;">
+          <span>Total Amount:</span>
+          <span id="checkout-total">₹0.00</span>
         </div>
       </div>
-
+      
       <div class="card">
-        <h3>Live Active Cloud Library Options</h3>
-        <div class="grid-3" id="admin-menu-grid"></div>
-      </div>
-    </div>
-
-    <div id="page-checkout" class="page">
-      <div class="card" style="max-width: 600px; margin: 0 auto;">
-        <h3>Catering Order Summary Confirmation</h3>
-        <p style="margin-bottom: 1rem; color:#666;">Confirm items and details below to log your booking directly to administrative pipeline databases.</p>
+        <h3>Booking Details</h3>
         <form onsubmit="submitFinalOrder(event)">
-          <button type="submit" class="btn btn-success" style="width:100%; padding:1rem; margin-top:1.5rem;">Securely Transmit Catering Order Request</button>
-          <button type="button" class="btn btn-danger" style="width:100%; margin-top:0.5rem; background:#aaa;" onclick="switchPage('page-user-dashboard')">Return to Offerings Grid</button>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select id="order-payment-method" required>
+              <option value="Cash on Delivery">Cash on Delivery</option>
+              <option value="Advance Token">Advance Token (30%)</option>
+              <option value="Full Advance">Full Advance Payment</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="UPI">UPI / QR Code</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Special Remarks / Instructions</label>
+            <textarea id="order-remarks" rows="3" placeholder="Dietary preferences, spice levels, service requests..."></textarea>
+          </div>
+          <div class="form-group">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+              <input type="checkbox" id="order-callback" style="width:auto;">
+              <span>Request Call-Back for Confirmation</span>
+            </label>
+          </div>
+          <div style="display:flex; gap:1rem; margin-top:2rem;">
+            <button type="button" class="btn btn-secondary" style="flex:1;" onclick="switchPage('page-user-dashboard')">Back to Menu</button>
+            <button type="submit" class="btn btn-saffron" style="flex:1;">Place Order</button>
+          </div>
         </form>
       </div>
     </div>
+  </section>
 
-  </div> 
-
-  <div id="item-modal" class="modal">
-    <div class="modal-content">
-      <h3>Add Catering Menu / Combo Item</h3>
-      <form id="form-add-item" onsubmit="handleItemFormSubmit(event)">
-        <div class="form-group"><label>Dish or Package Display Label Name</label><input type="text" id="item-name" class="form-control" placeholder="e.g., Luxury Marriage Veg Combo" required></div>
-        <div class="form-group"><label>Choose Local Device Image Asset File</label><input type="file" id="item-file" class="form-control" accept="image/*" required></div>
-        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
-          <button type="button" class="btn" style="background:#ccc;" onclick="closeModal('item-modal')">Cancel</button>
-          <button type="submit" id="item-save-btn" class="btn btn-success">Save Offering</button>
-        </div>
-      </form>
+  <!-- ADMIN DASHBOARD -->
+  <section id="page-admin-dashboard" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+      <h2>Admin Control Panel</h2>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="openPasswordModal()">Change Password</button>
+        <button class="btn btn-saffron" onclick="openMenuModal()">+ Add New Item</button>
+      </div>
     </div>
-  </div>
 
-  <div id="password-modal" class="modal">
-    <div class="modal-content">
-      <h3>Alter Administrative Portal Access Key</h3>
-      <form id="form-change-pass" onsubmit="handlePasswordChange(event)">
-        <div class="form-group"><label>New Security Pass Key String</label><input type="password" id="new-admin-pass" class="form-control" required></div>
-        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
-          <button type="button" class="btn" style="background:#ccc;" onclick="closeModal('password-modal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Update Password</button>
-        </div>
-      </form>
+    <div class="card" style="margin-bottom:2rem;">
+      <h3>📋 Customer Orders (<span id="admin-order-count">0</span>)</h3>
+      <div style="overflow-x:auto;">
+        <table id="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date & Occasion</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-orders-table"></tbody>
+        </table>
+      </div>
     </div>
+
+    <div class="card">
+      <h3>🍽️ Menu Items Management</h3>
+      <div class="grid-3" id="admin-menu-grid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- MODALS -->
+<div class="modal" id="item-modal">
+  <div class="modal-wrapper">
+    <div class="modal-header">
+      <h3 id="modal-title">Add Menu Item</h3>
+      <button onclick="closeModal('item-modal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+    </div>
+    <form onsubmit="handleItemFormSubmit(event)">
+      <input type="hidden" id="item-edit-id">
+      <div class="form-group"><label>Item Name *</label><input type="text" id="item-name" required></div>
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="item-category" required>
+          <option value="Breakfast">Breakfast</option>
+          <option value="Lunch">Lunch</option>
+          <option value="Dinner">Dinner</option>
+          <option value="Combo">Combo Meal</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Price (₹) *</label><input type="number" id="item-price" step="0.01" required></div>
+      <div class="form-group"><label>Description</label><textarea id="item-description" rows="2" placeholder="Describe the item or combo contents..."></textarea></div>
+      <div class="form-group"><label>Item Image *</label><input type="file" id="item-file" accept="image/*" required></div>
+      <div style="display:flex; gap:1rem;">
+        <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal('item-modal')">Cancel</button>
+        <button type="submit" class="btn" style="flex:1;">Save Item</button>
+      </div>
+    </form>
   </div>
+</div>
+
+<div class="modal" id="password-modal">
+  <div class="modal-wrapper" style="max-width:400px;">
+    <div class="modal-header">
+      <h3>Change Admin Password</h3>
+      <button onclick="closeModal('password-modal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+    </div>
+    <form onsubmit="handlePasswordChange(event)">
+      <div class="form-group"><label>New Password</label><input type="password" id="new-admin-pass" required></div>
+      <button type="submit" class="btn" style="width:100%;">Update Password</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <p>Contact: <strong>mangalam.catering@example.com</strong> | Mangalam Catering Services, Kumbakonam | Authentic Traditional Catering Since 1985</p>
+</footer>
 
 <script>
-// ── SYSTEM STATE ENGINE ───────────────────────────────────────
+// ── GLOBAL STATE ──────────────────────────────────────────────
 let menuItems = [];
-let receivedOrders = [];
 let currentCart = {};
 let authenticatedUser = null;
-let currentAdminPass = "admin"; // Default password
+let currentAdminPass = "admin";
+let currentFilter = "All";
 
-// ── APP ROUTING AND NAVIGATION CONTROLLERS ────────────────────
+// ── NAVIGATION ────────────────────────────────────────────────
 function switchPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const targetPage = document.getElementById(pageId);
-  if (targetPage) targetPage.classList.add('active');
+  document.getElementById(pageId).classList.add('active');
   renderNavigation();
 }
 
@@ -373,19 +622,19 @@ function renderNavigation() {
   
   if (authenticatedUser) {
     container.innerHTML = `
-      <button class="nav-btn" onclick="switchPage('page-user-dashboard')">Catering Menu</button>
-      <button class="nav-btn" onclick="handleLogout()">Sign Out (${authenticatedUser.name})</button>
+      <button class="nav-btn" onclick="switchPage('page-user-dashboard')">📋 Menu</button>
+      <button class="nav-btn" onclick="handleLogout()">🚪 Logout (${authenticatedUser.name})</button>
     `;
   } else if (sessionStorage.getItem('isAdmin') === 'true') {
     container.innerHTML = `
-      <button class="nav-btn" onclick="switchPage('page-admin-dashboard')">Admin Dashboard</button>
-      <button class="nav-btn" onclick="handleLogout()">Logout Portal</button>
+      <button class="nav-btn" onclick="switchPage('page-admin-dashboard')">⚙️ Dashboard</button>
+      <button class="nav-btn" onclick="handleLogout()">🚪 Logout</button>
     `;
   } else {
     container.innerHTML = `
-      <button class="nav-btn" onclick="switchPage('page-login')">Login</button>
-      <button class="nav-btn" onclick="switchPage('page-register')">Register</button>
-      <button class="nav-btn" onclick="switchPage('page-admin-login')">Admin</button>
+      <button class="nav-btn" onclick="switchPage('page-login')">🔑 Login</button>
+      <button class="nav-btn" onclick="switchPage('page-register')">📝 Register</button>
+      <button class="nav-btn" onclick="switchPage('page-admin-login')">👑 Admin</button>
     `;
   }
 }
@@ -394,77 +643,58 @@ function handleLogout() {
   authenticatedUser = null;
   sessionStorage.removeItem('isAdmin');
   currentCart = {};
-  updateCartIndicators();
+  updateCartCount();
   switchPage('page-home');
 }
 
-// ── CORE DATA SYNC: FETCH FROM API (DATABASE/CLOUDINARY) ──────
-async function synchronizeApplicationState() {
-  try {
-    // Fetch Menu Items from the server API
-    const response = await fetch('/api/menu');
-    const data = await response.json();
-    
-    if (data.success && data.menuItems) {
-      menuItems = data.menuItems;
-      console.log('Loaded menu items:', menuItems);
-    } else {
-      console.warn('No menu items received from API');
-      menuItems = [];
-    }
-    
-    renderCustomerSelectionView();
-    renderAdminWorkspaceView();
-  } catch (err) {
-    console.error("Cloud sync error:", err);
-    menuItems = [];
-    renderCustomerSelectionView();
-    renderAdminWorkspaceView();
-  }
-}
-
-// ── SHARED ONLINE REGISTRATION MANAGEMENT ─────────────────────
+// ── USER MANAGEMENT ───────────────────────────────────────────
 function handleRegister(e) {
   e.preventDefault();
-  const userObj = {
+  const users = JSON.parse(localStorage.getItem('catering_users') || '[]');
+  
+  const newUser = {
+    id: Date.now(),
     name: document.getElementById('reg-name').value,
-    phone: document.getElementById('reg-phone').value,
     address: document.getElementById('reg-address').value,
-    email: document.getElementById('reg-email').value.toLowerCase().trim(),
-    pass: document.getElementById('reg-password').value
+    phone: document.getElementById('reg-phone').value,
+    email: document.getElementById('reg-email').value.toLowerCase(),
+    password: document.getElementById('reg-password').value,
+    registeredAt: new Date().toISOString()
   };
-
-  // Store user in localStorage for persistence
-  let users = JSON.parse(localStorage.getItem('catering_users') || '[]');
-  users.push(userObj);
+  
+  if (users.find(u => u.email === newUser.email)) {
+    alert('Email already registered! Please login.');
+    return;
+  }
+  
+  users.push(newUser);
   localStorage.setItem('catering_users', JSON.stringify(users));
   
-  authenticatedUser = userObj;
-  document.getElementById('user-display-name').textContent = userObj.name;
+  authenticatedUser = newUser;
+  document.getElementById('user-display-name').textContent = newUser.name;
   currentCart = {};
-  updateCartIndicators();
+  updateCartCount();
   switchPage('page-user-dashboard');
-  alert("Registration successful!");
+  alert('Registration successful! Welcome to Mangalam Catering!');
 }
 
 function handleUserLogin(e) {
   e.preventDefault();
-  const email = document.getElementById('login-email').value.toLowerCase().trim();
+  const email = document.getElementById('login-email').value.toLowerCase();
   const password = document.getElementById('login-password').value;
-  
-  let users = JSON.parse(localStorage.getItem('catering_users') || '[]');
-  const user = users.find(u => u.email === email && u.pass === password);
+  const users = JSON.parse(localStorage.getItem('catering_users') || '[]');
+  const user = users.find(u => u.email === email && u.password === password);
   
   if (user) {
     authenticatedUser = user;
     document.getElementById('user-display-name').textContent = user.name;
     currentCart = {};
-    updateCartIndicators();
+    updateCartCount();
     switchPage('page-user-dashboard');
     document.getElementById('login-email').value = '';
     document.getElementById('login-password').value = '';
   } else {
-    alert("Invalid credentials. Please register first.");
+    alert('Invalid credentials! Please register first.');
   }
 }
 
@@ -474,42 +704,64 @@ function handleAdminLogin(e) {
   if (inputPass === currentAdminPass) {
     sessionStorage.setItem('isAdmin', 'true');
     switchPage('page-admin-dashboard');
-    e.target.reset();
+    loadMenuItems();
+    loadOrders();
+    document.getElementById('admin-pass').value = '';
   } else {
-    alert("Access Denied: Incorrect Admin Password.");
+    alert('Access Denied! Incorrect admin password.');
   }
 }
 
-// ── OPERATIONS & BASKET WORKFLOWS ──────────────────────────────
-function renderCustomerSelectionView() {
+// ── MENU MANAGEMENT ───────────────────────────────────────────
+async function loadMenuItems() {
+  try {
+    const response = await fetch('/api/menu-items');
+    const data = await response.json();
+    if (data.success && data.menuItems) {
+      menuItems = data.menuItems;
+      renderUserMenu();
+      renderAdminMenu();
+    }
+  } catch (error) {
+    console.error('Error loading menu:', error);
+  }
+}
+
+function filterMenuItems() {
+  currentFilter = document.getElementById('meal-type-filter').value;
+  renderUserMenu();
+}
+
+function renderUserMenu() {
   const grid = document.getElementById('user-menu-grid');
   if (!grid) return;
-
-  if (menuItems.length === 0) {
-    grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No active items found on server storage. Go to Admin Portal to upload food menu pictures!</p>`;
+  
+  let filteredItems = menuItems;
+  if (currentFilter !== 'All') {
+    filteredItems = menuItems.filter(item => item.category === currentFilter);
+  }
+  
+  if (filteredItems.length === 0) {
+    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem;">No menu items available. Please check back later!</p>';
     return;
   }
-
-  grid.innerHTML = menuItems.map(item => {
+  
+  grid.innerHTML = filteredItems.map(item => {
     const qty = currentCart[item.id] || 0;
-    const displayName = item.name || 'Unnamed Item';
-    const displayPrice = item.price || 0;
-    const displayCategory = item.category || 'General';
-    const displayDesc = item.description || 'Delicious traditional preparation';
-    const imageUrl = item.image || 'banana.jpg';
+    const badgeClass = `badge-${item.category}`;
     
     return `
       <div class="card menu-card">
-        <img src="${imageUrl}" onerror="this.src='banana.jpg'" alt="${displayName}">
+        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" alt="${item.name}">
         <div class="menu-card-content">
-          <span class="badge-type badge-lunch">${displayCategory}</span>
-          <h4 style="font-family:'Playfair Display', serif; font-size:1.2rem; margin-bottom:0.25rem; text-transform:capitalize;">${displayName}</h4>
-          <p style="color:var(--deep-red); font-weight:700; margin-bottom:0.5rem;">₹${parseFloat(displayPrice).toFixed(2)}</p>
-          <p style="font-size:0.85rem; color:#555; margin-bottom:1rem;">${displayDesc}</p>
+          <span class="badge-type ${badgeClass}">${item.category}</span>
+          <h3 style="font-family:Playfair Display,serif; margin:0.5rem 0;">${item.name}</h3>
+          <p style="color:var(--deep-red); font-size:1.25rem; font-weight:bold;">₹${item.price.toFixed(2)}</p>
+          <p style="font-size:0.85rem; color:#666; margin:0.5rem 0;">${item.description || 'Delicious traditional preparation'}</p>
           <div class="qty-control">
-            <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', -1)">-</button>
-            <strong style="width:30px; text-align:center;" id="qty-lbl-${item.id.replace(/[^a-zA-Z0-9]/g, '_')}">${qty}</strong>
-            <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', 1)">+</button>
+            <button class="qty-btn" onclick="updateCart('${item.id}', -1)">−</button>
+            <strong style="min-width:40px; text-align:center;">${qty}</strong>
+            <button class="qty-btn" onclick="updateCart('${item.id}', 1)">+</button>
           </div>
         </div>
       </div>
@@ -517,77 +769,164 @@ function renderCustomerSelectionView() {
   }).join('');
 }
 
-function updateCartQty(id, change) {
-  let qty = currentCart[id] || 0;
-  qty += change;
-  if (qty <= 0) delete currentCart[id];
-  else currentCart[id] = qty;
-
-  const safeId = id.replace(/[^a-zA-Z0-9]/g, '_');
-  const lbl = document.getElementById(`qty-lbl-${safeId}`);
-  if (lbl) lbl.textContent = currentCart[id] || 0;
-  updateCartIndicators();
-}
-
-function updateCartIndicators() {
-  let total = 0;
-  Object.values(currentCart).forEach(v => total += v);
-  const indicator = document.getElementById('cart-count');
-  if (indicator) indicator.textContent = total;
-}
-
-function proceedToCheckout() {
-  if (!document.getElementById('order-date').value) {
-    alert("Please assign a valid transaction date using the calendar picker.");
-    return;
-  }
-  if (Object.keys(currentCart).length === 0) {
-    alert("Please allocate items prior to proceeding to checkout.");
+function renderAdminMenu() {
+  const grid = document.getElementById('admin-menu-grid');
+  if (!grid) return;
+  
+  if (menuItems.length === 0) {
+    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem;">No menu items. Click "Add New Item" to get started!</p>';
     return;
   }
   
-  // Display checkout summary
-  const checkoutList = document.getElementById('checkout-summary-list');
-  let totalCost = 0;
+  grid.innerHTML = menuItems.map(item => `
+    <div class="card menu-card">
+      <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" alt="${item.name}">
+      <div class="menu-card-content">
+        <h3>${item.name}</h3>
+        <p style="color:var(--deep-red); font-weight:bold;">₹${item.price.toFixed(2)}</p>
+        <p style="font-size:0.8rem; color:#666;">${item.category}</p>
+        <p style="font-size:0.8rem; margin:0.5rem 0;">${item.description || ''}</p>
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button class="btn btn-danger" style="flex:1; padding:0.3rem;" onclick="deleteMenuItem('${item.id}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function handleItemFormSubmit(e) {
+  e.preventDefault();
+  const fileInput = document.getElementById('item-file');
+  const itemName = document.getElementById('item-name').value;
+  const itemPrice = document.getElementById('item-price').value;
+  const itemCategory = document.getElementById('item-category').value;
+  const itemDesc = document.getElementById('item-description').value;
+  
+  if (!fileInput.files[0]) {
+    alert('Please select an image for the menu item!');
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.append('image', fileInput.files[0]);
+  formData.append('name', itemName);
+  formData.append('price', itemPrice);
+  formData.append('category', itemCategory);
+  formData.append('description', itemDesc);
+  formData.append('mealType', itemCategory);
+  formData.append('isCombo', itemCategory === 'Combo' ? 'true' : 'false');
+  
+  try {
+    const response = await fetch('/api/upload-item', { method: 'POST', body: formData });
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('Menu item added successfully!');
+      closeModal('item-modal');
+      document.getElementById('item-file').value = '';
+      document.getElementById('item-name').value = '';
+      document.getElementById('item-price').value = '';
+      document.getElementById('item-description').value = '';
+      await loadMenuItems();
+    } else {
+      alert('Failed to upload: ' + (data.error || 'Unknown error'));
+    }
+  } catch (error) {
+    alert('Error uploading item: ' + error.message);
+  }
+}
+
+async function deleteMenuItem(itemId) {
+  if (!confirm('Delete this menu item permanently?')) return;
+  
+  try {
+    const response = await fetch('/api/delete-item', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ itemId: itemId })
+    });
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('Item deleted successfully!');
+      await loadMenuItems();
+    } else {
+      alert('Delete failed!');
+    }
+  } catch (error) {
+    alert('Error deleting item: ' + error.message);
+  }
+}
+
+// ── CART MANAGEMENT ───────────────────────────────────────────
+function updateCart(itemId, change) {
+  let qty = currentCart[itemId] || 0;
+  qty += change;
+  if (qty <= 0) delete currentCart[itemId];
+  else currentCart[itemId] = qty;
+  
+  updateCartCount();
+  renderUserMenu();
+}
+
+function updateCartCount() {
+  const total = Object.values(currentCart).reduce((sum, qty) => sum + qty, 0);
+  const cartSpan = document.getElementById('cart-count');
+  if (cartSpan) cartSpan.textContent = total;
+}
+
+function proceedToCheckout() {
+  const orderDate = document.getElementById('order-date').value;
+  if (!orderDate) {
+    alert('Please select the occasion date!');
+    return;
+  }
+  
+  if (Object.keys(currentCart).length === 0) {
+    alert('Please add items to your cart before checkout!');
+    return;
+  }
+  
+  let total = 0;
   let itemsHtml = '<ul style="list-style:none; padding:0;">';
   
   for (const [id, qty] of Object.entries(currentCart)) {
     const item = menuItems.find(i => i.id === id);
     if (item) {
       const itemTotal = item.price * qty;
-      totalCost += itemTotal;
-      itemsHtml += `<li style="padding:0.5rem 0; border-bottom:1px solid #eee;">
-        <strong>${item.name}</strong> x ${qty} = ₹${itemTotal.toFixed(2)}
-      </li>`;
+      total += itemTotal;
+      itemsHtml += `
+        <li style="padding:0.5rem 0; border-bottom:1px solid #eee;">
+          <strong>${item.name}</strong> x ${qty} = ₹${itemTotal.toFixed(2)}
+        </li>
+      `;
     }
   }
   itemsHtml += '</ul>';
-  checkoutList.innerHTML = itemsHtml;
-  document.getElementById('checkout-total').textContent = `₹${totalCost.toFixed(2)}`;
   
+  document.getElementById('checkout-summary-list').innerHTML = itemsHtml;
+  document.getElementById('checkout-total').textContent = `₹${total.toFixed(2)}`;
   switchPage('page-checkout');
 }
 
-function submitFinalOrder(e) {
+async function submitFinalOrder(e) {
   e.preventDefault();
   
-  // Create order object
   const order = {
-    id: Date.now(),
+    orderId: 'ORD' + Date.now(),
     user: authenticatedUser,
-    date: document.getElementById('order-date').value,
+    orderDate: document.getElementById('order-date').value,
     occasion: document.getElementById('order-occasion').value,
-    mealType: document.getElementById('order-meal-type').value,
-    remarks: document.getElementById('order-remarks').value,
-    paymentMethod: document.getElementById('order-payment-method').value,
-    callbackRequested: document.getElementById('order-callback').checked,
+    mealType: document.getElementById('meal-type-filter').value,
     items: {},
     totalCost: 0,
+    paymentMethod: document.getElementById('order-payment-method').value,
+    remarks: document.getElementById('order-remarks').value,
+    callbackRequested: document.getElementById('order-callback').checked,
     status: 'pending',
-    timestamp: new Date().toISOString()
+    createdAt: new Date().toISOString()
   };
   
-  // Calculate totals and add items
   for (const [id, qty] of Object.entries(currentCart)) {
     const item = menuItems.find(i => i.id === id);
     if (item) {
@@ -601,50 +940,24 @@ function submitFinalOrder(e) {
     }
   }
   
-  // Save order to localStorage
-  let orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
+  // Save to localStorage for cross-device sync
+  const orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
   orders.push(order);
   localStorage.setItem('catering_orders', JSON.stringify(orders));
   
-  alert("Catering Request submitted successfully!");
-  currentCart = {};
-  updateCartIndicators();
+  alert(`Order placed successfully!\nOrder ID: ${order.orderId}\nTotal: ₹${order.totalCost.toFixed(2)}\nWe will contact you soon!`);
   
-  // Clear form fields
+  currentCart = {};
+  updateCartCount();
   document.getElementById('order-remarks').value = '';
   document.getElementById('order-callback').checked = false;
   
-  synchronizeApplicationState();
   switchPage('page-user-dashboard');
+  await loadMenuItems();
 }
 
-// ── MASTER ADMIN SECTOR RENDER ENGINE ─────────────────────────
-function renderAdminWorkspaceView() {
-  const grid = document.getElementById('admin-menu-grid');
-  if (grid) {
-    if (menuItems.length === 0) {
-      grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No menu items available. Click "Add Menu / Combo Item" to get started!</p>`;
-    } else {
-      grid.innerHTML = menuItems.map(item => `
-        <div class="card menu-card">
-          <img src="${item.image}" onerror="this.src='banana.jpg'" alt="${item.name}">
-          <div class="menu-card-content">
-            <h4 style="text-transform:capitalize;">${item.name}</h4>
-            <p style="font-size:0.85rem; color:#555; margin:0.5rem 0;">${item.description || 'No description'}</p>
-            <p style="font-weight:bold; color:var(--deep-red);">₹${(item.price || 0).toFixed(2)}</p>
-            <p style="font-size:0.75rem; color:#888;">Category: ${item.category || 'General'}</p>
-            <button class="btn btn-danger" style="padding:0.4rem; font-size:0.8rem; margin-top:1rem;" onclick="deleteOfferingItem('${item.id}')">Delete Item</button>
-          </div>
-        </div>
-      `).join('');
-    }
-  }
-  
-  // Render orders in admin panel
-  renderAdminOrders();
-}
-
-function renderAdminOrders() {
+// ── ORDER MANAGEMENT ──────────────────────────────────────────
+function loadOrders() {
   const orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
   const orderCount = document.getElementById('admin-order-count');
   if (orderCount) orderCount.textContent = orders.length;
@@ -653,153 +966,93 @@ function renderAdminOrders() {
   if (!tableBody) return;
   
   if (orders.length === 0) {
-    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders received yet</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No orders received yet</td></tr>';
     return;
   }
   
   tableBody.innerHTML = orders.map(order => `
     <tr>
-      <td>
-        <strong>${order.user?.name || 'Guest'}</strong><br>
-        <small>${order.user?.email || 'No email'}</small><br>
-        <small>${order.user?.phone || 'No phone'}</small>
-      </td>
-      <td>
-        Date: ${order.date}<br>
-        Occasion: ${order.occasion}<br>
-        Meal: ${order.mealType}
-      </td>
-      <td>
-        ${Object.values(order.items).map(item => 
-          `${item.name} x ${item.quantity}`
-        ).join('<br>')}
-      </td>
+      <td><strong>${order.orderId}</strong><br><small>${new Date(order.createdAt).toLocaleDateString()}</small></td>
+      <td>${order.user?.name || 'Guest'}<br><small>${order.user?.phone || '-'}</small></td>
+      <td>${order.occasion}<br><small>${order.orderDate}</small></td>
+      <td>${Object.values(order.items).map(i => `${i.name} x${i.quantity}`).join('<br>')}</td>
       <td><strong>₹${order.totalCost.toFixed(2)}</strong></td>
-      <td>
-        <span class="status-flag flag-pending">${order.status}</span>
-        ${order.callbackRequested ? '<br><small>📞 Callback Requested</small>' : ''}
-      </td>
-      <td>
-        <button class="btn btn-saffron" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="markOrderComplete(${order.id})">Mark Complete</button>
+      <td><span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></td>
+      <td class="order-actions">
+        <button class="btn btn-success" onclick="updateOrderStatus('${order.orderId}', 'completed')">✓ Complete</button>
+        <button class="btn btn-saffron" onclick="updateOrderStatus('${order.orderId}', 'paid')">💰 Paid</button>
+        <button class="btn btn-danger" onclick="deleteOrder('${order.orderId}')">🗑 Delete</button>
       </td>
     </tr>
   `).join('');
 }
 
-function markOrderComplete(orderId) {
-  let orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
-  const orderIndex = orders.findIndex(o => o.id === orderId);
+function updateOrderStatus(orderId, newStatus) {
+  const orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
+  const orderIndex = orders.findIndex(o => o.orderId === orderId);
   if (orderIndex !== -1) {
-    orders[orderIndex].status = 'completed';
+    orders[orderIndex].status = newStatus;
     localStorage.setItem('catering_orders', JSON.stringify(orders));
-    renderAdminOrders();
-    alert('Order marked as completed!');
+    loadOrders();
+    alert(`Order ${orderId} marked as ${newStatus}!`);
   }
 }
 
-function openMenuModal() { 
-  // Reset form
+function deleteOrder(orderId) {
+  if (!confirm(`Delete order ${orderId} permanently?`)) return;
+  const orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
+  const filtered = orders.filter(o => o.orderId !== orderId);
+  localStorage.setItem('catering_orders', JSON.stringify(filtered));
+  loadOrders();
+  alert('Order deleted successfully!');
+}
+
+// ── ADMIN SETTINGS ────────────────────────────────────────────
+function openMenuModal() {
+  document.getElementById('modal-title').textContent = 'Add Menu Item';
   document.getElementById('item-edit-id').value = '';
   document.getElementById('item-name').value = '';
-  document.getElementById('item-type').value = 'Breakfast';
+  document.getElementById('item-category').value = 'Breakfast';
   document.getElementById('item-price').value = '';
   document.getElementById('item-description').value = '';
   document.getElementById('item-file').value = '';
-  openModal('item-modal'); 
+  openModal('item-modal');
 }
 
-async function handleItemFormSubmit(e) {
-  e.preventDefault();
-  const fileSelector = document.getElementById('item-file');
-  const itemName = document.getElementById('item-name').value.trim();
-  const itemPrice = document.getElementById('item-price').value;
-  const itemType = document.getElementById('item-type').value;
-  const itemDesc = document.getElementById('item-description').value;
-  
-  if (!fileSelector.files || !fileSelector.files[0]) {
-    alert("Please select an image file for the menu item.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('image', fileSelector.files[0]);
-  formData.append('name', itemName);
-  formData.append('price', itemPrice);
-  formData.append('category', itemType);
-  formData.append('description', itemDesc);
-
-  const saveBtn = document.getElementById('item-save-btn');
-  saveBtn.disabled = true;
-  saveBtn.textContent = "Uploading to Cloud...";
-
-  try {
-    const response = await fetch('/api/upload-image', { 
-      method: 'POST', 
-      body: formData 
-    });
-    const data = await response.json();
-    
-    if (data.success) {
-      alert("Menu item uploaded successfully!");
-      closeModal('item-modal');
-      await synchronizeApplicationState();
-    } else {
-      alert("Upload failed: " + (data.error || "Unknown error"));
-    }
-  } catch (err) {
-    console.error("Upload error:", err);
-    alert("Upload failed. Check your connection.");
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save Offering";
-  }
+function openPasswordModal() {
+  openModal('password-modal');
 }
-
-async function deleteOfferingItem(filename) {
-  if (!confirm("Permanently delete this menu item? This action cannot be undone.")) return;
-  
-  try {
-    const response = await fetch('/api/delete-image', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename: filename })
-    });
-    const data = await response.json();
-    
-    if (data.success) {
-      alert("Item deleted successfully!");
-      await synchronizeApplicationState();
-    } else {
-      alert("Deletion failed: " + (data.error || "Unknown error"));
-    }
-  } catch (err) {
-    console.error("Delete error:", err);
-    alert("Deletion failed. Check your connection.");
-  }
-}
-
-function openPasswordModal() { openModal('password-modal'); }
 
 function handlePasswordChange(e) {
   e.preventDefault();
-  currentAdminPass = document.getElementById('new-admin-pass').value;
-  alert("Admin password updated successfully!");
+  const newPass = document.getElementById('new-admin-pass').value;
+  if (newPass.length < 3) {
+    alert('Password must be at least 3 characters!');
+    return;
+  }
+  currentAdminPass = newPass;
+  alert('Admin password updated successfully!');
   closeModal('password-modal');
   document.getElementById('new-admin-pass').value = '';
 }
 
-function openModal(id) { 
-  document.getElementById(id).classList.add('open'); 
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
 }
 
-function closeModal(id) { 
-  document.getElementById(id).classList.remove('open'); 
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
 }
 
-// ── SYSTEM COLD BOOT ATTACHMENT ────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  synchronizeApplicationState();
+// ── INITIALIZATION ────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadMenuItems();
   renderNavigation();
+  
+  // Set default date to today
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('order-date');
+  if (dateInput) dateInput.value = today;
 });
 </script>
 </body>
