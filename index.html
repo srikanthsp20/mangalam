@@ -408,7 +408,7 @@ footer strong { color: var(--white); }
 </footer>
 
 <script>
- // ── SYSTEM STATE ENGINE ───────────────────────────────────────
+
 // ── SYSTEM STATE ENGINE ───────────────────────────────────────
 let menuItems = [];
 let receivedOrders = [];
@@ -461,16 +461,14 @@ function handleLogout() {
   switchPage('page-home');
 }
 
-// ── FIXED CLOUDINARY STRING PARSER ENGINE ─────────────────────
+// ── CLOUDINARY DATA FETCH SYNC ENGINE ─────────────────────────
 function synchronizeApplicationState() {
   fetch('/api/images') 
     .then(res => res.json())
     .then(data => {
       if (data.images && data.images.length > 0) {
         menuItems = data.images.map((img, index) => {
-          // Extract just the safe filename without folder prefixes
           const baseFilename = img.filename.split('/').pop(); 
-          // Find the position of the first dash separating the timestamp prefix
           const dashIndex = baseFilename.indexOf('-');
           
           let cleanName = "Special Offering";
@@ -480,7 +478,6 @@ function synchronizeApplicationState() {
             cleanName = baseFilename.replace(/_/g, ' ').replace(/-/g, ' ');
           }
 
-          // Generate dynamic parameters based on item naming context
           let assignedCategory = "Lunch";
           const lowerName = cleanName.toLowerCase();
           if (lowerName.includes('breakfast') || lowerName.includes('tiffin')) assignedCategory = "Breakfast";
@@ -488,9 +485,9 @@ function synchronizeApplicationState() {
           else if (lowerName.includes('combo') || lowerName.includes('pack')) assignedCategory = "Combo";
 
           return {
-            id: img.filename, // Keep public_id intact for server delete queries
+            id: img.filename, 
             name: cleanName || `Menu Item ${index + 1}`,
-            price: 150 + (index * 20), // Standard layout pricing assignment
+            price: 150 + (index * 20), 
             category: assignedCategory,
             description: "Authentic traditional catering service preparation option.",
             image: img.url
@@ -507,7 +504,7 @@ function synchronizeApplicationState() {
     });
 }
 
-// ── DEVICE AGNOSTIC REGISTRATION SYSTEM ───────────────────────
+// ── ACCOUNT AUTHORIZATION HANDLING ───────────────────────────
 function handleRegister(e) {
   e.preventDefault();
   const nameValue = document.getElementById('reg-name').value.trim();
@@ -553,7 +550,6 @@ function handleUserLogin(e) {
     switchPage('page-user-dashboard');
     e.target.reset();
   } else {
-    // Cross-device fallback option to instantly compile a clean display name if logging from a blank device browser
     const extractedName = email.split('@')[0].replace(/[^a-zA-Z]/g, ' ');
     authenticatedUser = { name: extractedName || "Valued Guest", email: email };
     document.getElementById('user-display-name').textContent = authenticatedUser.name;
@@ -576,7 +572,7 @@ function handleAdminLogin(e) {
   }
 }
 
-// ── CUSTOMER MENU MANAGEMENT ─────────────────────────────────
+// ── CUSTOMER DASHBOARD CARDS MAPPING ─────────────────────────
 function renderCustomerSelectionView() {
   const grid = document.getElementById('user-menu-grid');
   if (!grid) return;
@@ -654,7 +650,7 @@ function submitFinalOrder(e) {
     .catch(() => alert("Network submission connection dropped. Try again."));
 }
 
-// ── ADMIN WORKSPACE MATRIX RENDERER ───────────────────────────
+// ── FIXED ADMIN PORTAL WITH TIMEOUT FOR CLOUDINARY INDEXING ──
 function renderAdminWorkspaceView() {
   const grid = document.getElementById('admin-menu-grid');
   if (!grid) return;
@@ -694,7 +690,6 @@ function handleItemFormSubmit(e) {
   saveBtn.textContent = "Uploading to Cloudinary...";
 
   const formData = new FormData();
-  // Format the text string into clean underscores so path.basename doesn't corrupt it
   const formatName = rawName.replace(/[^a-zA-Z0-9]/g, '_');
   formData.append('image', fileSelector.files[0], `${formatName}.jpg`);
 
@@ -705,13 +700,21 @@ function handleItemFormSubmit(e) {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert("Catering offering uploaded and synced across all mobile & desktop devices!");
+      alert("Catering offering uploaded safely! Synchronizing cloud grids...");
       closeModal('item-modal');
+      
+      // Clear out input values immediately
       document.getElementById('item-name').value = '';
       fileSelector.value = '';
-      synchronizeApplicationState();
+      
+      // FIXED: Add a 1-second delay before calling sync. This stops the blank panel bug by 
+      // giving Cloudinary's search index engine a brief window to register the new upload asset.
+      setTimeout(function() {
+        synchronizeApplicationState();
+      }, 1000);
+
     } else {
-      alert("Server registration drop: " + (data.error || "Unknown response state"));
+      alert("Server registration error: " + (data.error || "Unknown response state"));
     }
   })
   .catch(err => {
@@ -725,12 +728,15 @@ function handleItemFormSubmit(e) {
 }
 
 function deleteOfferingItem(filename) {
-  if (!confirm("Are you sure you want to permanently delete this item from the Cloudinary media index?")) return;
+  if (!confirm("Are you sure you want to permanently delete this item from Cloudinary?")) return;
   fetch('/api/delete-image', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename: filename })
-  }).then(() => synchronizeApplicationState());
+  }).then(() => {
+    // Also include a minor delay upon deletion to let Cloudinary drop the asset cleanly
+    setTimeout(synchronizeApplicationState, 800);
+  });
 }
 
 function openPasswordModal() { openModal('password-modal'); }
@@ -741,6 +747,7 @@ function handlePasswordChange(e) {
   closeModal('password-modal');
 }
 
+// ── UTILITY WINDOW CONTROL CLOSURES ───────────────────────────
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
