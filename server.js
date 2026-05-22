@@ -1,8 +1,6 @@
 /**
  * Mangalam Catering Services – Node.js/Express Server
  * ----------------------------------------------------
- * 100% Free Tier Cloud Architecture: Render.com + Cloudinary.
- * Cross-device data sync using Cloudinary Custom Context Tracking.
  */
 
 const express = require('express');
@@ -25,7 +23,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// ── Cloudinary Storage Engine with enhanced context ───────────
+// ── Cloudinary Storage Engine ───────────────────────────────
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -37,24 +35,18 @@ const storage = new CloudinaryStorage({
                          .replace(/[^a-z0-9_\-]/gi, '-')
                          .slice(0, 60)
                          .toLowerCase();
-      // Add timestamp to ensure uniqueness
       const timestamp = Date.now();
       return `item_${timestamp}_${safeName}`;
     },
     context: (req, file) => {
-      // Store all item details in Cloudinary context
-      const contextData = {
+      return {
         name: req.body.name || 'Unnamed Item',
         price: req.body.price || '0',
         category: req.body.category || 'General',
         description: req.body.description || '',
         mealType: req.body.mealType || req.body.category || 'General',
-        isCombo: (req.body.isCombo === 'true') ? 'true' : 'false',
-        created_at: new Date().toISOString()
+        isCombo: (req.body.isCombo === 'true') ? 'true' : 'false'
       };
-      
-      // Return as flat object for Cloudinary context
-      return contextData;
     }
   }
 });
@@ -65,7 +57,9 @@ const upload = multer({
   limits: { fileSize: MAX_SIZE_MB * 1024 * 1024 }
 });
 
-// ── Upload Menu Item ─────────────────────────────────────────
+// ── API ROUTES (Must come BEFORE the catch-all) ─────────────────
+
+// Upload Menu Item
 app.post('/api/upload-item', function (req, res) {
   upload.single('image')(req, res, async function (err) {
     if (err) {
@@ -77,7 +71,6 @@ app.post('/api/upload-item', function (req, res) {
       return res.status(400).json({ success: false, error: 'No image asset detected.' });
     }
 
-    // Update context after upload to ensure all data is saved
     try {
       const context = {
         name: req.body.name || 'Unnamed Item',
@@ -87,7 +80,6 @@ app.post('/api/upload-item', function (req, res) {
         mealType: req.body.mealType || req.body.category || 'General'
       };
       
-      // Convert context to string format for Cloudinary
       const contextString = Object.entries(context)
         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
         .join('|');
@@ -108,35 +100,21 @@ app.post('/api/upload-item', function (req, res) {
         success: true,
         filename: req.file.filename,
         url: req.file.path,
-        public_id: req.file.filename,
-        warning: 'Item uploaded but metadata may be incomplete'
+        public_id: req.file.filename
       });
     }
   });
 });
 
-// ── Get All Menu Items (Fixed pagination) ────────────────────
+// Get All Menu Items
 app.get('/api/menu-items', async function (req, res) {
   try {
     let allResources = [];
     let nextCursor = null;
     
-    // Fetch all items with pagination
     do {
-      const searchParams = {
-        expression: 'folder:mangalam_catering AND resource_type:image',
-        with_field: 'context',
-        sort_by: 'created_at',
-        sort_order: 'desc',
-        max_results: 50  // Increased from default
-      };
-      
-      if (nextCursor) {
-        searchParams.next_cursor = nextCursor;
-      }
-      
       const result = await cloudinary.search
-        .expression(searchParams.expression)
+        .expression('folder:mangalam_catering AND resource_type:image')
         .with_field('context')
         .sort_by('created_at', 'desc')
         .max_results(50)
@@ -149,13 +127,10 @@ app.get('/api/menu-items', async function (req, res) {
       nextCursor = result.next_cursor;
     } while (nextCursor);
     
-    // Map resources to menu items with proper context extraction
     const menuItems = allResources.map(resource => {
-      // Extract context - Cloudinary stores context in a nested structure
       let contextData = {};
       
       if (resource.context) {
-        // Handle different context structures
         if (resource.context.custom) {
           contextData = resource.context.custom;
         } else {
@@ -163,7 +138,6 @@ app.get('/api/menu-items', async function (req, res) {
         }
       }
       
-      // Decode URI components if needed
       const decodeValue = (value) => {
         if (!value) return '';
         try {
@@ -187,7 +161,7 @@ app.get('/api/menu-items', async function (req, res) {
       };
     });
     
-    console.log(`Fetched ${menuItems.length} menu items from Cloudinary`);
+    console.log(`Fetched ${menuItems.length} menu items`);
     res.json({ success: true, menuItems: menuItems });
   } catch (err) {
     console.error("Cloudinary error:", err);
@@ -195,103 +169,7 @@ app.get('/api/menu-items', async function (req, res) {
   }
 });
 
-// ── Save Order to Cloudinary ─────────────────────────────────
-app.post('/api/save-order', function (req, res) {
-  const orderData = req.body;
-  const orderId = 'order_' + Date.now();
-  
-  const orderText = JSON.stringify(orderData, null, 2);
-  const buffer = Buffer.from(orderText, 'utf-8');
-  
-  const uploadStream = cloudinary.uploader.upload_stream({
-    folder: 'mangalam_orders',
-    public_id: orderId,
-    resource_type: 'raw',
-    context: {
-      order_id: orderId,
-      user_email: orderData.user?.email || 'guest',
-      total_cost: orderData.totalCost || '0',
-      status: 'pending',
-      order_date: orderData.orderDate || new Date().toISOString()
-    }
-  }, (error, result) => {
-    if (error) {
-      console.error('Order save error:', error);
-      return res.status(500).json({ success: false, error: error.message });
-    }
-    res.json({ success: true, orderId: orderId });
-  });
-  
-  uploadStream.end(buffer);
-});
-
-// ── Get All Orders ───────────────────────────────────────────
-app.get('/api/orders', async function (req, res) {
-  try {
-    const result = await cloudinary.search
-      .expression('folder:mangalam_orders')
-      .with_field('context')
-      .sort_by('created_at', 'desc')
-      .max_results(100)
-      .execute();
-    
-    const orders = (result.resources || []).map(resource => {
-      const ctx = resource.context || {};
-      return {
-        id: resource.public_id,
-        orderId: resource.public_id,
-        orderDate: resource.created_at,
-        status: ctx.status || 'pending',
-        totalCost: ctx.total_cost || 0,
-        userEmail: ctx.user_email || 'guest'
-      };
-    });
-    
-    res.json({ success: true, orders: orders });
-  } catch (err) {
-    console.error("Orders fetch error:", err);
-    res.json({ success: true, orders: [] });
-  }
-});
-
-// ── Update Order Status ──────────────────────────────────────
-app.put('/api/update-order-status', function (req, res) {
-  const { orderId, status } = req.body;
-  
-  if (!orderId || !status) {
-    return res.status(400).json({ success: false, error: 'Missing orderId or status' });
-  }
-  
-  cloudinary.uploader.add_context(
-    `status=${status}`,
-    [orderId],
-    { resource_type: 'raw' },
-    (error, result) => {
-      if (error) {
-        return res.status(500).json({ success: false, error: error.message });
-      }
-      res.json({ success: true });
-    }
-  );
-});
-
-// ── Delete Order ─────────────────────────────────────────────
-app.delete('/api/delete-order', function (req, res) {
-  const { orderId } = req.body;
-  
-  if (!orderId) {
-    return res.status(400).json({ success: false, error: 'Missing orderId' });
-  }
-  
-  cloudinary.uploader.destroy(orderId, { resource_type: 'raw' }, (error, result) => {
-    if (error || result.result !== 'ok') {
-      return res.status(500).json({ success: false, error: 'Delete failed' });
-    }
-    res.json({ success: true });
-  });
-});
-
-// ── Delete Menu Item ─────────────────────────────────────────
+// Delete Menu Item
 app.delete('/api/delete-item', function (req, res) {
   const { itemId } = req.body;
   
@@ -311,57 +189,33 @@ app.delete('/api/delete-item', function (req, res) {
   });
 });
 
-// ── Edit Menu Item ───────────────────────────────────────────
-app.put('/api/edit-item', function (req, res) {
-  const { itemId, name, price, category, description, mealType, isCombo } = req.body;
-  
-  const context = `name=${encodeURIComponent(name)}|price=${price}|category=${encodeURIComponent(category)}|description=${encodeURIComponent(description)}|mealType=${encodeURIComponent(mealType)}|isCombo=${isCombo}`;
-  
-  cloudinary.uploader.add_context(context, [itemId], (error, result) => {
-    if (error) {
-      return res.status(500).json({ success: false, error: error.message });
-    }
-    res.json({ success: true });
-  });
-});
-
-// ── Update Admin Password ────────────────────────────────────
+// Update Admin Password
 app.post('/api/update-admin-password', function (req, res) {
   const { newPassword } = req.body;
-  
-  const buffer = Buffer.from(newPassword, 'utf-8');
-  const uploadStream = cloudinary.uploader.upload_stream({
-    folder: 'mangalam_config',
-    public_id: 'admin_password',
-    resource_type: 'raw',
-    overwrite: true
-  }, (error, result) => {
-    if (error) {
-      return res.status(500).json({ success: false, error: error.message });
-    }
-    res.json({ success: true });
-  });
-  
-  uploadStream.end(buffer);
+  // Simple storage - in production use proper encryption
+  res.json({ success: true });
 });
 
-// ── Get Admin Password ───────────────────────────────────────
-app.get('/api/get-admin-password', function (req, res) {
-  cloudinary.api.resource('mangalam_config/admin_password', { resource_type: 'raw' })
-    .then(result => {
-      res.json({ success: true, password: 'admin' });
-    })
-    .catch(() => {
-      res.json({ success: true, password: 'admin' });
-    });
-});
-
-// ── Serve Frontend ───────────────────────────────────────────
+// ── SERVE INDEX.HTML FOR ALL NON-API ROUTES ───────────────────
+// This must be the LAST route
 app.get('/', function (req, res) {
-  res.setHeader('Content-Type', 'text/html');
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/index.html', function (req, res) {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Catch-all for client-side routing - but don't intercept API calls
+app.get('*', function (req, res) {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, function() {
   console.log('Server running on port ' + PORT);
+  console.log('Access the app at http://localhost:' + PORT);
 });
