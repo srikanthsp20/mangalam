@@ -357,7 +357,7 @@ app.get('/api/get-admin-password', function (req, res) {
 });
 
 // ── Serve Frontend ───────────────────────────────────────────
-app.get('*', function (req, res) {
+app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
