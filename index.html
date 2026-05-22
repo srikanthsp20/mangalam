@@ -345,318 +345,462 @@
     </div>
   </div>
 
-  <script>
-    // System Event Override Hook to inject dynamic parameter passing safely
-    window.handleRegister = function(e) { if(e) e.preventDefault(); runRegisterLogic(); };
-    window.handleUserLogin = function(e) { if(e) e.preventDefault(); runLoginLogic(); };
-    window.handleAdminLogin = function(e) { if(e) e.preventDefault(); runAdminLoginLogic(); };
-    window.handleItemFormSubmit = function(e) { if(e) e.preventDefault(); runItemUploadLogic(); };
-    window.handlePasswordChange = function(e) { if(e) e.preventDefault(); runPasswordChangeLogic(); };
+<script>
+// ── SYSTEM STATE ENGINE ───────────────────────────────────────
+let menuItems = [];
+let receivedOrders = [];
+let currentCart = {};
+let authenticatedUser = null;
+let currentAdminPass = "admin"; // Default password
 
-    // ── SYSTEM STATE ENGINE
-    let menuItems = [];
-    let currentCart = {};
-    let authenticatedUser = null;
-    let currentAdminPass = "admin";
+// ── APP ROUTING AND NAVIGATION CONTROLLERS ────────────────────
+function switchPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) targetPage.classList.add('active');
+  renderNavigation();
+}
 
-    function switchPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      const targetPage = document.getElementById(pageId);
-      if (targetPage) targetPage.classList.add('active');
-      renderNavigation();
+function routeHome() {
+  if (authenticatedUser) switchPage('page-user-dashboard');
+  else if (sessionStorage.getItem('isAdmin') === 'true') switchPage('page-admin-dashboard');
+  else switchPage('page-home');
+}
+
+function renderNavigation() {
+  const container = document.getElementById('header-nav');
+  if (!container) return;
+  
+  if (authenticatedUser) {
+    container.innerHTML = `
+      <button class="nav-btn" onclick="switchPage('page-user-dashboard')">Catering Menu</button>
+      <button class="nav-btn" onclick="handleLogout()">Sign Out (${authenticatedUser.name})</button>
+    `;
+  } else if (sessionStorage.getItem('isAdmin') === 'true') {
+    container.innerHTML = `
+      <button class="nav-btn" onclick="switchPage('page-admin-dashboard')">Admin Dashboard</button>
+      <button class="nav-btn" onclick="handleLogout()">Logout Portal</button>
+    `;
+  } else {
+    container.innerHTML = `
+      <button class="nav-btn" onclick="switchPage('page-login')">Login</button>
+      <button class="nav-btn" onclick="switchPage('page-register')">Register</button>
+      <button class="nav-btn" onclick="switchPage('page-admin-login')">Admin</button>
+    `;
+  }
+}
+
+function handleLogout() {
+  authenticatedUser = null;
+  sessionStorage.removeItem('isAdmin');
+  currentCart = {};
+  updateCartIndicators();
+  switchPage('page-home');
+}
+
+// ── CORE DATA SYNC: FETCH FROM API (DATABASE/CLOUDINARY) ──────
+async function synchronizeApplicationState() {
+  try {
+    // Fetch Menu Items from the server API
+    const response = await fetch('/api/menu');
+    const data = await response.json();
+    
+    if (data.success && data.menuItems) {
+      menuItems = data.menuItems;
+      console.log('Loaded menu items:', menuItems);
+    } else {
+      console.warn('No menu items received from API');
+      menuItems = [];
     }
+    
+    renderCustomerSelectionView();
+    renderAdminWorkspaceView();
+  } catch (err) {
+    console.error("Cloud sync error:", err);
+    menuItems = [];
+    renderCustomerSelectionView();
+    renderAdminWorkspaceView();
+  }
+}
 
-    function routeHome() {
-      if (authenticatedUser) switchPage('page-user-dashboard');
-      else if (sessionStorage.getItem('isAdmin') === 'true') switchPage('page-admin-dashboard');
-      else switchPage('page-home');
-    }
+// ── SHARED ONLINE REGISTRATION MANAGEMENT ─────────────────────
+function handleRegister(e) {
+  e.preventDefault();
+  const userObj = {
+    name: document.getElementById('reg-name').value,
+    phone: document.getElementById('reg-phone').value,
+    address: document.getElementById('reg-address').value,
+    email: document.getElementById('reg-email').value.toLowerCase().trim(),
+    pass: document.getElementById('reg-password').value
+  };
 
-    function renderNavigation() {
-      const container = document.getElementById('header-nav');
-      if (!container) return;
-      
-      if (authenticatedUser) {
-        container.innerHTML = `
-          <button class="nav-btn" onclick="switchPage('page-user-dashboard')">Catering Menu</button>
-          <button class="nav-btn" onclick="handleLogout()">Sign Out (${authenticatedUser.name})</button>
-        `;
-      } else if (sessionStorage.getItem('isAdmin') === 'true') {
-        container.innerHTML = `
-          <button class="nav-btn" onclick="switchPage('page-admin-dashboard')">Admin Dashboard</button>
-          <button class="nav-btn" onclick="handleLogout()">Logout Portal</button>
-        `;
-      } else {
-        container.innerHTML = `
-          <button class="nav-btn" onclick="switchPage('page-login')">Login</button>
-          <button class="nav-btn" onclick="switchPage('page-register')">Register</button>
-          <button class="nav-btn" onclick="switchPage('page-admin-login')">Admin</button>
-        `;
-      }
-    }
+  // Store user in localStorage for persistence
+  let users = JSON.parse(localStorage.getItem('catering_users') || '[]');
+  users.push(userObj);
+  localStorage.setItem('catering_users', JSON.stringify(users));
+  
+  authenticatedUser = userObj;
+  document.getElementById('user-display-name').textContent = userObj.name;
+  currentCart = {};
+  updateCartIndicators();
+  switchPage('page-user-dashboard');
+  alert("Registration successful!");
+}
 
-    function handleLogout() {
-      authenticatedUser = null;
-      sessionStorage.removeItem('isAdmin');
-      currentCart = {};
-      updateCartIndicators();
-      switchPage('page-home');
-    }
+function handleUserLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.toLowerCase().trim();
+  const password = document.getElementById('login-password').value;
+  
+  let users = JSON.parse(localStorage.getItem('catering_users') || '[]');
+  const user = users.find(u => u.email === email && u.pass === password);
+  
+  if (user) {
+    authenticatedUser = user;
+    document.getElementById('user-display-name').textContent = user.name;
+    currentCart = {};
+    updateCartIndicators();
+    switchPage('page-user-dashboard');
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-password').value = '';
+  } else {
+    alert("Invalid credentials. Please register first.");
+  }
+}
 
-    // ── CLOUDINARY MULTI-DEVICE PARSE SYNC ENGINE
-    function synchronizeApplicationState() {
-      fetch('/api/images') 
-        .then(res => res.json())
-        .then(data => {
-          if (data.images && data.images.length > 0) {
-            menuItems = data.images.map((img, index) => {
-              const baseFilename = img.filename.split('/').pop(); 
-              const dashIndex = baseFilename.indexOf('-');
-              
-              let cleanName = "Special Offering";
-              if (dashIndex !== -1) {
-                cleanName = baseFilename.substring(dashIndex + 1).replace(/_/g, ' ').replace(/-/g, ' ');
-              } else {
-                cleanName = baseFilename.replace(/_/g, ' ').replace(/-/g, ' ');
-              }
+function handleAdminLogin(e) {
+  e.preventDefault();
+  const inputPass = document.getElementById('admin-pass').value;
+  if (inputPass === currentAdminPass) {
+    sessionStorage.setItem('isAdmin', 'true');
+    switchPage('page-admin-dashboard');
+    e.target.reset();
+  } else {
+    alert("Access Denied: Incorrect Admin Password.");
+  }
+}
 
-              let assignedCategory = "Lunch";
-              const lowerName = cleanName.toLowerCase();
-              if (lowerName.includes('breakfast') || lowerName.includes('tiffin')) assignedCategory = "Breakfast";
-              else if (lowerName.includes('dinner') || lowerName.includes('supper')) assignedCategory = "Dinner";
-              else if (lowerName.includes('combo') || lowerName.includes('pack')) assignedCategory = "Combo";
+// ── OPERATIONS & BASKET WORKFLOWS ──────────────────────────────
+function renderCustomerSelectionView() {
+  const grid = document.getElementById('user-menu-grid');
+  if (!grid) return;
 
-              return {
-                id: img.filename, 
-                name: cleanName || `Menu Item ${index + 1}`,
-                price: 150 + (index * 20), 
-                category: assignedCategory,
-                description: "Authentic traditional catering service preparation option.",
-                image: img.url
-              };
-            });
-          } else {
-            menuItems = [];
-          }
-          renderCustomerSelectionView();
-          renderAdminWorkspaceView();
-        })
-        .catch(err => console.error("Cloud synchronizer down:", err));
-    }
+  if (menuItems.length === 0) {
+    grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No active items found on server storage. Go to Admin Portal to upload food menu pictures!</p>`;
+    return;
+  }
 
-    // ── REGISTRATION & AUTHORIZATION DRIVERS
-    function runRegisterLogic() {
-      const nameValue = document.getElementById('reg-name').value.trim();
-      const emailValue = document.getElementById('reg-email').value.toLowerCase().trim();
-
-      const userObj = {
-        name: nameValue,
-        phone: document.getElementById('reg-phone').value,
-        address: document.getElementById('reg-address').value,
-        email: emailValue,
-        pass: document.getElementById('reg-password').value
-      };
-
-      let systemUsers = JSON.parse(localStorage.getItem('mangalam_registered_users') || '[]');
-      if (systemUsers.find(u => u.email === emailValue)) {
-        alert("This email handle is already registered across network endpoints.");
-        return;
-      }
-      systemUsers.push(userObj);
-      localStorage.setItem('mangalam_registered_users', JSON.stringify(systemUsers));
-
-      authenticatedUser = userObj;
-      document.getElementById('user-display-name').textContent = userObj.name;
-      currentCart = {};
-      updateCartIndicators();
-      switchPage('page-user-dashboard');
-    }
-
-    function runLoginLogic() {
-      const email = document.getElementById('login-email').value.toLowerCase().trim();
-      const pass = document.getElementById('login-password').value;
-      let systemUsers = JSON.parse(localStorage.getItem('mangalam_registered_users') || '[]');
-      const match = systemUsers.find(u => u.email === email && u.pass === pass);
-
-      if (match) {
-        authenticatedUser = match;
-        document.getElementById('user-display-name').textContent = match.name;
-        currentCart = {};
-        updateCartIndicators();
-        switchPage('page-user-dashboard');
-      } else {
-        const extractedName = email.split('@')[0].replace(/[^a-zA-Z]/g, ' ');
-        authenticatedUser = { name: extractedName || "Valued Guest", email: email };
-        document.getElementById('user-display-name').textContent = authenticatedUser.name;
-        currentCart = {};
-        updateCartIndicators();
-        switchPage('page-user-dashboard');
-      }
-    }
-
-    function runAdminLoginLogic() {
-      const inputPass = document.getElementById('admin-pass').value;
-      if (inputPass === currentAdminPass) {
-        sessionStorage.setItem('isAdmin', 'true');
-        switchPage('page-admin-dashboard');
-        document.getElementById('form-admin-login').reset();
-      } else {
-        alert("Access Denied: Faulty credential configuration variable.");
-      }
-    }
-
-    // ── RENDER ENGINE FOR THE USER DASHBOARD MATRIX
-    function renderCustomerSelectionView() {
-      const grid = document.getElementById('user-menu-grid');
-      if (!grid) return;
-
-      if (menuItems.length === 0) {
-        grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No menu offerings available online yet. Open Admin dashboard to upload dishes!</p>`;
-        return;
-      }
-
-      grid.innerHTML = menuItems.map(item => {
-        const qty = currentCart[item.id] || 0;
-        return `
-          <div class="card menu-card">
-            <img src="${item.image}" onerror="this.src='banana.jpg'" alt="${item.name}">
-            <div class="menu-card-content">
-              <span class="badge-type">${item.category}</span>
-              <h4 style="font-size:1.2rem; margin-bottom:0.25rem; text-transform:capitalize;">${item.name}</h4>
-              <p style="color:var(--deep-red); font-weight:700; margin-bottom:0.5rem;">₹${parseFloat(item.price).toFixed(2)}</p>
-              <p style="font-size:0.85rem; color:#555; margin-bottom:1rem;">${item.description}</p>
-              <div class="qty-control">
-                <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', -1)">-</button>
-                <strong style="width:30px; text-align:center;" id="qty-lbl-${item.id}">${qty}</strong>
-                <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', 1)">+</button>
-              </div>
-            </div>
+  grid.innerHTML = menuItems.map(item => {
+    const qty = currentCart[item.id] || 0;
+    const displayName = item.name || 'Unnamed Item';
+    const displayPrice = item.price || 0;
+    const displayCategory = item.category || 'General';
+    const displayDesc = item.description || 'Delicious traditional preparation';
+    const imageUrl = item.image || 'banana.jpg';
+    
+    return `
+      <div class="card menu-card">
+        <img src="${imageUrl}" onerror="this.src='banana.jpg'" alt="${displayName}">
+        <div class="menu-card-content">
+          <span class="badge-type badge-lunch">${displayCategory}</span>
+          <h4 style="font-family:'Playfair Display', serif; font-size:1.2rem; margin-bottom:0.25rem; text-transform:capitalize;">${displayName}</h4>
+          <p style="color:var(--deep-red); font-weight:700; margin-bottom:0.5rem;">₹${parseFloat(displayPrice).toFixed(2)}</p>
+          <p style="font-size:0.85rem; color:#555; margin-bottom:1rem;">${displayDesc}</p>
+          <div class="qty-control">
+            <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', -1)">-</button>
+            <strong style="width:30px; text-align:center;" id="qty-lbl-${item.id.replace(/[^a-zA-Z0-9]/g, '_')}">${qty}</strong>
+            <button class="qty-btn" type="button" onclick="updateCartQty('${item.id}', 1)">+</button>
           </div>
-        `;
-      }).join('');
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateCartQty(id, change) {
+  let qty = currentCart[id] || 0;
+  qty += change;
+  if (qty <= 0) delete currentCart[id];
+  else currentCart[id] = qty;
+
+  const safeId = id.replace(/[^a-zA-Z0-9]/g, '_');
+  const lbl = document.getElementById(`qty-lbl-${safeId}`);
+  if (lbl) lbl.textContent = currentCart[id] || 0;
+  updateCartIndicators();
+}
+
+function updateCartIndicators() {
+  let total = 0;
+  Object.values(currentCart).forEach(v => total += v);
+  const indicator = document.getElementById('cart-count');
+  if (indicator) indicator.textContent = total;
+}
+
+function proceedToCheckout() {
+  if (!document.getElementById('order-date').value) {
+    alert("Please assign a valid transaction date using the calendar picker.");
+    return;
+  }
+  if (Object.keys(currentCart).length === 0) {
+    alert("Please allocate items prior to proceeding to checkout.");
+    return;
+  }
+  
+  // Display checkout summary
+  const checkoutList = document.getElementById('checkout-summary-list');
+  let totalCost = 0;
+  let itemsHtml = '<ul style="list-style:none; padding:0;">';
+  
+  for (const [id, qty] of Object.entries(currentCart)) {
+    const item = menuItems.find(i => i.id === id);
+    if (item) {
+      const itemTotal = item.price * qty;
+      totalCost += itemTotal;
+      itemsHtml += `<li style="padding:0.5rem 0; border-bottom:1px solid #eee;">
+        <strong>${item.name}</strong> x ${qty} = ₹${itemTotal.toFixed(2)}
+      </li>`;
     }
+  }
+  itemsHtml += '</ul>';
+  checkoutList.innerHTML = itemsHtml;
+  document.getElementById('checkout-total').textContent = `₹${totalCost.toFixed(2)}`;
+  
+  switchPage('page-checkout');
+}
 
-    function updateCartQty(id, change) {
-      let qty = currentCart[id] || 0;
-      qty += change;
-      if (qty <= 0) delete currentCart[id];
-      else currentCart[id] = qty;
-      const lbl = document.getElementById(`qty-lbl-${id}`);
-      if (lbl) lbl.textContent = currentCart[id] || 0;
-      updateCartIndicators();
+function submitFinalOrder(e) {
+  e.preventDefault();
+  
+  // Create order object
+  const order = {
+    id: Date.now(),
+    user: authenticatedUser,
+    date: document.getElementById('order-date').value,
+    occasion: document.getElementById('order-occasion').value,
+    mealType: document.getElementById('order-meal-type').value,
+    remarks: document.getElementById('order-remarks').value,
+    paymentMethod: document.getElementById('order-payment-method').value,
+    callbackRequested: document.getElementById('order-callback').checked,
+    items: {},
+    totalCost: 0,
+    status: 'pending',
+    timestamp: new Date().toISOString()
+  };
+  
+  // Calculate totals and add items
+  for (const [id, qty] of Object.entries(currentCart)) {
+    const item = menuItems.find(i => i.id === id);
+    if (item) {
+      order.items[id] = {
+        name: item.name,
+        price: item.price,
+        quantity: qty,
+        total: item.price * qty
+      };
+      order.totalCost += item.price * qty;
     }
+  }
+  
+  // Save order to localStorage
+  let orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('catering_orders', JSON.stringify(orders));
+  
+  alert("Catering Request submitted successfully!");
+  currentCart = {};
+  updateCartIndicators();
+  
+  // Clear form fields
+  document.getElementById('order-remarks').value = '';
+  document.getElementById('order-callback').checked = false;
+  
+  synchronizeApplicationState();
+  switchPage('page-user-dashboard');
+}
 
-    function updateCartIndicators() {
-      let total = 0;
-      Object.values(currentCart).forEach(v => total += v);
-      const indicator = document.getElementById('cart-count');
-      if (indicator) indicator.textContent = total;
-    }
-
-    function proceedToCheckout() {
-      if (!document.getElementById('order-date').value) {
-        alert("Please assign a valid calendar date for delivery parameters.");
-        return;
-      }
-      if (Object.keys(currentCart).length === 0) {
-        alert("Please allocate package choices prior to navigating checkpoints.");
-        return;
-      }
-      switchPage('page-checkout');
-    }
-
-    function submitFinalOrder(e) {
-      const formData = new FormData();
-      formData.append('image', new Blob(['Request Payload'], {type: 'text/plain'}), `Order_By_${authenticatedUser?.name || 'Customer'}.txt`);
-
-      fetch('/api/upload-image', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(() => {
-          alert("Catering Request successfully logged to server pipeline database!");
-          currentCart = {};
-          updateCartIndicators();
-          synchronizeApplicationState();
-          switchPage('page-user-dashboard');
-        })
-        .catch(() => alert("Network pipeline drop occurred during submission."));
-    }
-
-    // ── ADMIN WORKSPACE PANEL METHODS
-    function renderAdminWorkspaceView() {
-      const grid = document.getElementById('admin-menu-grid');
-      if (!grid) return;
-      if (menuItems.length === 0) {
-        grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:2rem; color:#777;">No active catering offerings cataloged on Cloudinary indexes.</p>`;
-        return;
-      }
+// ── MASTER ADMIN SECTOR RENDER ENGINE ─────────────────────────
+function renderAdminWorkspaceView() {
+  const grid = document.getElementById('admin-menu-grid');
+  if (grid) {
+    if (menuItems.length === 0) {
+      grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">No menu items available. Click "Add Menu / Combo Item" to get started!</p>`;
+    } else {
       grid.innerHTML = menuItems.map(item => `
         <div class="card menu-card">
           <img src="${item.image}" onerror="this.src='banana.jpg'" alt="${item.name}">
           <div class="menu-card-content">
-            <span class="badge-type">${item.category}</span>
-            <h4 style="text-transform:capitalize; margin-bottom:0.5rem;">${item.name}</h4>
-            <p style="font-weight:bold; color:var(--deep-red);">₹${item.price.toFixed(2)}</p>
-            <button class="btn btn-danger" style="padding:0.4rem; font-size:0.8rem; margin-top:1rem; width:100%;" onclick="deleteOfferingItem('${item.id}')">Delete Item</button>
+            <h4 style="text-transform:capitalize;">${item.name}</h4>
+            <p style="font-size:0.85rem; color:#555; margin:0.5rem 0;">${item.description || 'No description'}</p>
+            <p style="font-weight:bold; color:var(--deep-red);">₹${(item.price || 0).toFixed(2)}</p>
+            <p style="font-size:0.75rem; color:#888;">Category: ${item.category || 'General'}</p>
+            <button class="btn btn-danger" style="padding:0.4rem; font-size:0.8rem; margin-top:1rem;" onclick="deleteOfferingItem('${item.id}')">Delete Item</button>
           </div>
         </div>
       `).join('');
     }
+  }
+  
+  // Render orders in admin panel
+  renderAdminOrders();
+}
 
-    function runItemUploadLogic() {
-      const fileSelector = document.getElementById('item-file');
-      const rawName = document.getElementById('item-name').value.trim();
-      
-      if (!fileSelector.files || !fileSelector.files[0]) {
-        alert("Please choose a valid layout asset photo file.");
-        return;
-      }
+function renderAdminOrders() {
+  const orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
+  const orderCount = document.getElementById('admin-order-count');
+  if (orderCount) orderCount.textContent = orders.length;
+  
+  const tableBody = document.getElementById('admin-orders-table');
+  if (!tableBody) return;
+  
+  if (orders.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders received yet</td></tr>';
+    return;
+  }
+  
+  tableBody.innerHTML = orders.map(order => `
+    <tr>
+      <td>
+        <strong>${order.user?.name || 'Guest'}</strong><br>
+        <small>${order.user?.email || 'No email'}</small><br>
+        <small>${order.user?.phone || 'No phone'}</small>
+      </td>
+      <td>
+        Date: ${order.date}<br>
+        Occasion: ${order.occasion}<br>
+        Meal: ${order.mealType}
+      </td>
+      <td>
+        ${Object.values(order.items).map(item => 
+          `${item.name} x ${item.quantity}`
+        ).join('<br>')}
+      </td>
+      <td><strong>₹${order.totalCost.toFixed(2)}</strong></td>
+      <td>
+        <span class="status-flag flag-pending">${order.status}</span>
+        ${order.callbackRequested ? '<br><small>📞 Callback Requested</small>' : ''}
+      </td>
+      <td>
+        <button class="btn btn-saffron" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="markOrderComplete(${order.id})">Mark Complete</button>
+      </td>
+    </tr>
+  `).join('');
+}
 
-      const saveBtn = document.getElementById('item-save-btn');
-      saveBtn.disabled = true; saveBtn.textContent = "Uploading to Cloudinary...";
+function markOrderComplete(orderId) {
+  let orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
+  const orderIndex = orders.findIndex(o => o.id === orderId);
+  if (orderIndex !== -1) {
+    orders[orderIndex].status = 'completed';
+    localStorage.setItem('catering_orders', JSON.stringify(orders));
+    renderAdminOrders();
+    alert('Order marked as completed!');
+  }
+}
 
-      const formData = new FormData();
-      const formatName = rawName.replace(/[^a-zA-Z0-9]/g, '_');
-      formData.append('image', fileSelector.files[0], `${formatName}.jpg`);
+function openMenuModal() { 
+  // Reset form
+  document.getElementById('item-edit-id').value = '';
+  document.getElementById('item-name').value = '';
+  document.getElementById('item-type').value = 'Breakfast';
+  document.getElementById('item-price').value = '';
+  document.getElementById('item-description').value = '';
+  document.getElementById('item-file').value = '';
+  openModal('item-modal'); 
+}
 
-      fetch('/api/upload-image', { method: 'POST', body: formData })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          alert("Offering saved successfully across all active mobile grids!");
-          closeModal('item-modal');
-          document.getElementById('item-name').value = '';
-          fileSelector.value = '';
-          setTimeout(synchronizeApplicationState, 1500); // Increased buffer slightly for secure cross-device rendering
-        } else {
-          alert("Upload failed: " + (data.error || "Unknown response state"));
-        }
-      })
-      .catch(() => alert("Network translation exception encountered."))
-      .finally(() => { saveBtn.disabled = false; saveBtn.textContent = "Save Offering"; });
-    }
+async function handleItemFormSubmit(e) {
+  e.preventDefault();
+  const fileSelector = document.getElementById('item-file');
+  const itemName = document.getElementById('item-name').value.trim();
+  const itemPrice = document.getElementById('item-price').value;
+  const itemType = document.getElementById('item-type').value;
+  const itemDesc = document.getElementById('item-description').value;
+  
+  if (!fileSelector.files || !fileSelector.files[0]) {
+    alert("Please select an image file for the menu item.");
+    return;
+  }
 
-    function deleteOfferingItem(filename) {
-      if (!confirm("Permanently strip this item from Cloudinary media storage libraries?")) return;
-      fetch('/api/delete-image', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: filename })
-      }).then(() => setTimeout(synchronizeApplicationState, 1000));
-    }
+  const formData = new FormData();
+  formData.append('image', fileSelector.files[0]);
+  formData.append('name', itemName);
+  formData.append('price', itemPrice);
+  formData.append('category', itemType);
+  formData.append('description', itemDesc);
 
-    function runPasswordChangeLogic() {
-      currentAdminPass = document.getElementById('new-admin-pass').value;
-      alert("Session management pass updated.");
-      closeModal('password-modal');
-    }
+  const saveBtn = document.getElementById('item-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Uploading to Cloud...";
 
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    // INITIAL COLD BOOT SYNCHRONIZATION
-    document.addEventListener('DOMContentLoaded', function() {
-      synchronizeApplicationState();
+  try {
+    const response = await fetch('/api/upload-image', { 
+      method: 'POST', 
+      body: formData 
     });
-  </script>
+    const data = await response.json();
+    
+    if (data.success) {
+      alert("Menu item uploaded successfully!");
+      closeModal('item-modal');
+      await synchronizeApplicationState();
+    } else {
+      alert("Upload failed: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error("Upload error:", err);
+    alert("Upload failed. Check your connection.");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save Offering";
+  }
+}
+
+async function deleteOfferingItem(filename) {
+  if (!confirm("Permanently delete this menu item? This action cannot be undone.")) return;
+  
+  try {
+    const response = await fetch('/api/delete-image', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: filename })
+    });
+    const data = await response.json();
+    
+    if (data.success) {
+      alert("Item deleted successfully!");
+      await synchronizeApplicationState();
+    } else {
+      alert("Deletion failed: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("Deletion failed. Check your connection.");
+  }
+}
+
+function openPasswordModal() { openModal('password-modal'); }
+
+function handlePasswordChange(e) {
+  e.preventDefault();
+  currentAdminPass = document.getElementById('new-admin-pass').value;
+  alert("Admin password updated successfully!");
+  closeModal('password-modal');
+  document.getElementById('new-admin-pass').value = '';
+}
+
+function openModal(id) { 
+  document.getElementById(id).classList.add('open'); 
+}
+
+function closeModal(id) { 
+  document.getElementById(id).classList.remove('open'); 
+}
+
+// ── SYSTEM COLD BOOT ATTACHMENT ────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  synchronizeApplicationState();
+  renderNavigation();
+});
+</script>
 </body>
 </html>
