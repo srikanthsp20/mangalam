@@ -21,7 +21,6 @@ app.use(express.json());
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // ── Cloudinary Configuration ───────────────────────────────────
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -72,7 +71,8 @@ app.post('/api/upload-image', function (req, res) {
     res.json({
       success: true,
       filename: req.file.filename,
-      url: req.file.path
+      url: req.file.path,
+      public_id: req.file.filename
     });
   });
 });
@@ -93,10 +93,10 @@ app.get('/api/menu', function (req, res) {
         const ctx = resource.context || {};
         return {
           id: resource.public_id,
-          name: ctx.name || 'Unnamed Item',
-          price: parseFloat(ctx.price) || 0,
-          category: ctx.category || 'General',
-          description: ctx.description || '',
+          name: ctx.custom && ctx.custom.name ? ctx.custom.name : (ctx.name || 'Unnamed Item'),
+          price: parseFloat(ctx.custom && ctx.custom.price ? ctx.custom.price : (ctx.price || 0)),
+          category: ctx.custom && ctx.custom.category ? ctx.custom.category : (ctx.category || 'General'),
+          description: ctx.custom && ctx.custom.description ? ctx.custom.description : (ctx.description || ''),
           image: resource.secure_url,
           cloudinary_id: resource.public_id
         };
@@ -106,6 +106,28 @@ app.get('/api/menu', function (req, res) {
     .catch(err => {
       console.error("Cloudinary data retrieval error:", err);
       res.json({ success: false, menuItems: [] });
+    });
+});
+
+// Alias endpoint for compatibility with frontend
+app.get('/api/images', function (req, res) {
+  cloudinary.search
+    .expression('folder:mangalam_catering')
+    .with_field('context')
+    .sort_by('public_id', 'desc')
+    .max_results(100)
+    .execute()
+    .then(result => {
+      const images = result.resources.map(resource => ({
+        filename: resource.public_id,
+        url: resource.secure_url,
+        context: resource.context || {}
+      }));
+      res.json({ success: true, images: images });
+    })
+    .catch(err => {
+      console.error("Cloudinary data retrieval error:", err);
+      res.json({ success: false, images: [] });
     });
 });
 
@@ -124,16 +146,8 @@ app.delete('/api/delete-image', function (req, res) {
   });
 });
 
-/* ── Safe Catch-all fallback middleware ────────────────────────── 
-   Using app.use ensures that whether users hit '/', '/admin', or refresh 
-   the page, the application loads safely without breaking your layout.
-─────────────────────────────────────────────────────────────── */
-
-
-/* ── Catch-all: serve index.html for Single Page Routing ──────── 
-   Forces Content-Type to text/html so browsers parse the document accurately.
-─────────────────────────────────────────────────────────────── */
-app.get('/', function (req, res) {
+/* ── Catch-all: serve index.html for Single Page Routing ──────── */
+app.get('*', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
