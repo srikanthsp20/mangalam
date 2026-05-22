@@ -147,7 +147,7 @@ app.delete('/api/delete-image', function (req, res) {
 });
 
 /* ── Catch-all: serve index.html for Single Page Routing ──────── */
-app.get('*', function (req, res) {
+app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'text/html');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
