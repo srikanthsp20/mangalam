@@ -29,7 +29,7 @@
       flex-direction: column;
     }
 
-    /* ── NAVIGATION NAVIGATION COMPONENTS ────────────────────── */
+    /* ── NAVIGATION COMPONENTS ────────────────────── */
     header {
       background-color: var(--deep-red);
       border-bottom: 4px solid var(--gold);
@@ -212,8 +212,7 @@
 
   <header>
     <div class="brand-title" onclick="routeHome()" style="cursor:pointer;">Mangalam Catering</div>
-    <div class="nav-group" id="header-nav">
-      </div>
+    <div class="nav-group" id="header-nav"></div>
   </header>
 
   <div class="container">
@@ -233,7 +232,7 @@
     <div id="page-register" class="page">
       <div class="card" style="max-width: 500px; margin: 0 auto;">
         <h3>Client Registration Portal</h3>
-        <form id="form-register" onsubmit="handleRegister(e)">
+        <form id="form-register" onsubmit="handleRegister(event)">
           <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" class="form-control" required></div>
           <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone" class="form-control" required></div>
           <div class="form-group"><label>Event Location Address</label><input type="text" id="reg-address" class="form-control" required></div>
@@ -247,7 +246,7 @@
     <div id="page-login" class="page">
       <div class="card" style="max-width: 500px; margin: 0 auto;">
         <h3>Customer Sign In</h3>
-        <form id="form-login" onsubmit="handleUserLogin(e)">
+        <form id="form-login" onsubmit="handleUserLogin(event)">
           <div class="form-group"><label>Email Address</label><input type="email" id="login-email" class="form-control" required></div>
           <div class="form-group"><label>Password</label><input type="password" id="login-password" class="form-control" required></div>
           <button type="submit" class="btn btn-primary" style="width:100%;">Sign Into Account</button>
@@ -258,7 +257,7 @@
     <div id="page-admin-login" class="page">
       <div class="card" style="max-width: 500px; margin: 0 auto;">
         <h3>Management Security Gate</h3>
-        <form id="form-admin-login" onsubmit="handleAdminLogin(e)">
+        <form id="form-admin-login" onsubmit="handleAdminLogin(event)">
           <div class="form-group"><label>Administrative Password Key</label><input type="password" id="admin-pass" class="form-control" required></div>
           <button type="submit" class="btn btn-primary" style="width:100%;">Unlock Dashboard</button>
         </form>
@@ -310,17 +309,19 @@
       <div class="card" style="max-width: 600px; margin: 0 auto;">
         <h3>Catering Order Summary Confirmation</h3>
         <p style="margin-bottom: 1rem; color:#666;">Confirm items and details below to log your booking directly to administrative pipeline databases.</p>
-        <form onsubmit="submitFinalOrder(e)">
+        <form onsubmit="submitFinalOrder(event)">
           <button type="submit" class="btn btn-success" style="width:100%; padding:1rem; margin-top:1.5rem;">Securely Transmit Catering Order Request</button>
           <button type="button" class="btn btn-danger" style="width:100%; margin-top:0.5rem; background:#aaa;" onclick="switchPage('page-user-dashboard')">Return to Offerings Grid</button>
         </form>
       </div>
     </div>
 
-  </div> <div id="item-modal" class="modal">
+  </div> 
+
+  <div id="item-modal" class="modal">
     <div class="modal-content">
       <h3>Add Catering Menu / Combo Item</h3>
-      <form id="form-add-item" onsubmit="handleItemFormSubmit(e)">
+      <form id="form-add-item" onsubmit="handleItemFormSubmit(event)">
         <div class="form-group"><label>Dish or Package Display Label Name</label><input type="text" id="item-name" class="form-control" placeholder="e.g., Luxury Marriage Veg Combo" required></div>
         <div class="form-group"><label>Choose Local Device Image Asset File</label><input type="file" id="item-file" class="form-control" accept="image/*" required></div>
         <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
@@ -334,7 +335,7 @@
   <div id="password-modal" class="modal">
     <div class="modal-content">
       <h3>Alter Administrative Portal Access Key</h3>
-      <form id="form-change-pass" onsubmit="handlePasswordChange(e)">
+      <form id="form-change-pass" onsubmit="handlePasswordChange(event)">
         <div class="form-group"><label>New Security Pass Key String</label><input type="password" id="new-admin-pass" class="form-control" required></div>
         <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
           <button type="button" class="btn" style="background:#ccc;" onclick="closeModal('password-modal')">Cancel</button>
@@ -345,12 +346,12 @@
   </div>
 
   <script>
-    // System Event Override Hook to inject dynamic parameter passing
-    window.handleRegister = function(e) { e ? e.preventDefault() : window.event.preventDefault(); runRegisterLogic(); };
-    window.handleUserLogin = function(e) { e ? e.preventDefault() : window.event.preventDefault(); runLoginLogic(); };
-    window.handleAdminLogin = function(e) { e ? e.preventDefault() : window.event.preventDefault(); runAdminLoginLogic(); };
-    window.handleItemFormSubmit = function(e) { e ? e.preventDefault() : window.event.preventDefault(); runItemUploadLogic(); };
-    window.handlePasswordChange = function(e) { e ? e.preventDefault() : window.event.preventDefault(); runPasswordChangeLogic(); };
+    // System Event Override Hook to inject dynamic parameter passing safely
+    window.handleRegister = function(e) { if(e) e.preventDefault(); runRegisterLogic(); };
+    window.handleUserLogin = function(e) { if(e) e.preventDefault(); runLoginLogic(); };
+    window.handleAdminLogin = function(e) { if(e) e.preventDefault(); runAdminLoginLogic(); };
+    window.handleItemFormSubmit = function(e) { if(e) e.preventDefault(); runItemUploadLogic(); };
+    window.handlePasswordChange = function(e) { if(e) e.preventDefault(); runPasswordChangeLogic(); };
 
     // ── SYSTEM STATE ENGINE
     let menuItems = [];
@@ -504,7 +505,7 @@
       }
     }
 
-    // ── RENDER ENGINE FOR THE MISSING USER DASHBOARD MATRIX
+    // ── RENDER ENGINE FOR THE USER DASHBOARD MATRIX
     function renderCustomerSelectionView() {
       const grid = document.getElementById('user-menu-grid');
       if (!grid) return;
@@ -565,7 +566,6 @@
     }
 
     function submitFinalOrder(e) {
-      if(e) e.preventDefault();
       const formData = new FormData();
       formData.append('image', new Blob(['Request Payload'], {type: 'text/plain'}), `Order_By_${authenticatedUser?.name || 'Customer'}.txt`);
 
@@ -626,7 +626,7 @@
           closeModal('item-modal');
           document.getElementById('item-name').value = '';
           fileSelector.value = '';
-          setTimeout(synchronizeApplicationState, 1000); // 1-second delay for Cloudinary indexing
+          setTimeout(synchronizeApplicationState, 1500); // Increased buffer slightly for secure cross-device rendering
         } else {
           alert("Upload failed: " + (data.error || "Unknown response state"));
         }
@@ -641,7 +641,7 @@
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename: filename })
-      }).then(() => setTimeout(synchronizeApplicationState, 800));
+      }).then(() => setTimeout(synchronizeApplicationState, 1000));
     }
 
     function runPasswordChangeLogic() {
@@ -653,7 +653,7 @@
     function openModal(id) { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-    // COLD COLD BOOT APPLICATION ATTACHMENTS
+    // INITIAL COLD BOOT SYNCHRONIZATION
     document.addEventListener('DOMContentLoaded', function() {
       synchronizeApplicationState();
     });
