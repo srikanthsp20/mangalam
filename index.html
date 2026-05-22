@@ -39,7 +39,7 @@ body::before {
   bottom: 0;
   background: url('https://res.cloudinary.com/demo/image/upload/v1312461206/banana.jpg') no-repeat center center fixed;
   background-size: cover;
-  opacity: 0.3;
+  opacity: 0.25;
   z-index: -2;
 }
 
@@ -50,7 +50,7 @@ body::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(232, 245, 233, 0.95);
+  background: rgba(232, 245, 233, 0.92);
   z-index: -1;
 }
 
@@ -90,7 +90,7 @@ header h1 {
 }
 
 .nav-btn:hover, .nav-btn.active {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15);
   color: var(--gold);
 }
 
@@ -380,7 +380,7 @@ footer strong { color: var(--white); }
 
 <div class="container">
   <!-- HOME PAGE -->
-  <main id="page-home" class="page active">
+  <div id="page-home" class="page active">
     <div class="welcome-panel">
       <h2>Authentic Traditional Catering</h2>
       <p>Experience exquisite South Indian culinary traditions curated for your special occasions.</p>
@@ -390,10 +390,10 @@ footer strong { color: var(--white); }
         <button class="btn btn-secondary" onclick="switchPage('page-admin-login')">Admin Portal</button>
       </div>
     </div>
-  </main>
+  </div>
 
   <!-- REGISTER PAGE -->
-  <section id="page-register" class="page">
+  <div id="page-register" class="page">
     <div class="form-box">
       <h2>Create Account</h2>
       <form onsubmit="handleRegister(event)">
@@ -405,10 +405,10 @@ footer strong { color: var(--white); }
         <button type="submit" class="btn" style="width:100%;">Register</button>
       </form>
     </div>
-  </section>
+  </div>
 
   <!-- LOGIN PAGE -->
-  <section id="page-login" class="page">
+  <div id="page-login" class="page">
     <div class="form-box">
       <h2>User Login</h2>
       <form onsubmit="handleUserLogin(event)">
@@ -417,10 +417,10 @@ footer strong { color: var(--white); }
         <button type="submit" class="btn" style="width:100%;">Login</button>
       </form>
     </div>
-  </section>
+  </div>
 
   <!-- ADMIN LOGIN PAGE -->
-  <section id="page-admin-login" class="page">
+  <div id="page-admin-login" class="page">
     <div class="form-box">
       <h2>Admin Authentication</h2>
       <form onsubmit="handleAdminLogin(event)">
@@ -428,10 +428,10 @@ footer strong { color: var(--white); }
         <button type="submit" class="btn" style="width:100%;">Access Dashboard</button>
       </form>
     </div>
-  </section>
+  </div>
 
   <!-- USER DASHBOARD -->
-  <section id="page-user-dashboard" class="page">
+  <div id="page-user-dashboard" class="page">
     <div style="background:white; padding:1.5rem; border-radius:8px; margin-bottom:2rem;">
       <h3>Welcome, <span id="user-display-name">Guest</span>!</h3>
       
@@ -463,10 +463,10 @@ footer strong { color: var(--white); }
     </div>
 
     <div class="grid-3" id="user-menu-grid"></div>
-  </section>
+  </div>
 
   <!-- CHECKOUT PAGE -->
-  <section id="page-checkout" class="page">
+  <div id="page-checkout" class="page">
     <h2>Order Summary & Checkout</h2>
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:2rem; margin-top:1.5rem;">
       <div class="card">
@@ -509,10 +509,10 @@ footer strong { color: var(--white); }
         </form>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- ADMIN DASHBOARD -->
-  <section id="page-admin-dashboard" class="page">
+  <div id="page-admin-dashboard" class="page">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
       <h2>Admin Control Panel</h2>
       <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
@@ -529,7 +529,7 @@ footer strong { color: var(--white); }
             <tr>
               <th>Order ID</th>
               <th>Customer</th>
-              <th>Date & Occasion</th>
+              <th>Details</th>
               <th>Items</th>
               <th>Total</th>
               <th>Status</th>
@@ -545,7 +545,7 @@ footer strong { color: var(--white); }
       <h3>🍽️ Menu Items Management</h3>
       <div class="grid-3" id="admin-menu-grid"></div>
     </div>
-  </section>
+  </div>
 </div>
 
 <!-- MODALS -->
@@ -592,7 +592,7 @@ footer strong { color: var(--white); }
 </div>
 
 <footer>
-  <p>Contact: <strong>sairamkumarmr@gosssysas.in</strong> | Mangalam Catering Services, Kumbakonam | Authentic Traditional Catering Since 1985</p>
+  <p>Contact: <strong>mangalam.catering@example.com</strong> | Mangalam Catering Services, Kumbakonam | Authentic Traditional Catering Since 1985</p>
 </footer>
 
 <script>
@@ -605,16 +605,30 @@ let currentFilter = "All";
 
 // ── NAVIGATION ────────────────────────────────────────────────
 function switchPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  console.log('Switching to page:', pageId);
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+  });
+  // Show target page
   const targetPage = document.getElementById(pageId);
-  if (targetPage) targetPage.classList.add('active');
+  if (targetPage) {
+    targetPage.classList.add('active');
+    console.log('Page activated:', pageId);
+  } else {
+    console.error('Page not found:', pageId);
+  }
   renderNavigation();
 }
 
 function routeHome() {
-  if (authenticatedUser) switchPage('page-user-dashboard');
-  else if (sessionStorage.getItem('isAdmin') === 'true') switchPage('page-admin-dashboard');
-  else switchPage('page-home');
+  if (authenticatedUser) {
+    switchPage('page-user-dashboard');
+  } else if (sessionStorage.getItem('isAdmin') === 'true') {
+    switchPage('page-admin-dashboard');
+  } else {
+    switchPage('page-home');
+  }
 }
 
 function renderNavigation() {
@@ -624,7 +638,7 @@ function renderNavigation() {
   if (authenticatedUser) {
     container.innerHTML = `
       <button class="nav-btn" onclick="switchPage('page-user-dashboard')">📋 Menu</button>
-      <button class="nav-btn" onclick="handleLogout()">🚪 Logout (${escapeHtml(authenticatedUser.name)})</button>
+      <button class="nav-btn" onclick="handleLogout()">🚪 Logout (${escapeHtml(authenticatedUser.name.split(' ')[0])})</button>
     `;
   } else if (sessionStorage.getItem('isAdmin') === 'true') {
     container.innerHTML = `
@@ -642,7 +656,7 @@ function renderNavigation() {
 
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
+  return String(str).replace(/[&<>]/g, function(m) {
     if (m === '&') return '&amp;';
     if (m === '<') return '&lt;';
     if (m === '>') return '&gt;';
@@ -711,7 +725,7 @@ function handleUserLogin(e) {
     switchPage('page-user-dashboard');
     document.getElementById('login-email').value = '';
     document.getElementById('login-password').value = '';
-    loadMenuItems(); // Refresh menu items
+    loadMenuItems();
   } else {
     alert('Invalid credentials! Please register first.');
   }
@@ -744,7 +758,7 @@ async function loadMenuItems() {
       renderUserMenu();
       renderAdminMenu();
     } else {
-      console.warn('No menu items received:', data);
+      console.warn('No menu items received');
       menuItems = [];
       renderUserMenu();
       renderAdminMenu();
@@ -877,14 +891,12 @@ async function handleItemFormSubmit(e) {
       alert(`Menu item "${itemName}" added successfully!`);
       closeModal('item-modal');
       
-      // Clear form
       document.getElementById('item-file').value = '';
       document.getElementById('item-name').value = '';
       document.getElementById('item-price').value = '';
       document.getElementById('item-description').value = '';
       document.getElementById('item-category').value = 'Breakfast';
       
-      // Reload menu items
       await loadMenuItems();
     } else {
       alert('Failed to upload: ' + (data.error || 'Unknown error'));
@@ -1004,9 +1016,8 @@ function submitFinalOrder(e) {
     }
   }
   
-  // Save to localStorage
   const orders = JSON.parse(localStorage.getItem('catering_orders') || '[]');
-  orders.unshift(order); // Add to beginning
+  orders.unshift(order);
   localStorage.setItem('catering_orders', JSON.stringify(orders));
   
   alert(`Order placed successfully!\nOrder ID: ${order.orderId}\nTotal: ₹${order.totalCost.toFixed(2)}\nWe will contact you soon!`);
@@ -1017,7 +1028,7 @@ function submitFinalOrder(e) {
   document.getElementById('order-callback').checked = false;
   
   switchPage('page-user-dashboard');
-  await loadMenuItems();
+  loadMenuItems();
 }
 
 // ── ORDER MANAGEMENT ──────────────────────────────────────────
@@ -1042,8 +1053,7 @@ function loadOrders() {
       </td>
       <td style="vertical-align:top;">
         ${escapeHtml(order.user?.name || 'Guest')}<br>
-        <small>${escapeHtml(order.user?.phone || '-')}</small><br>
-        <small>${escapeHtml(order.user?.email || '-')}</small>
+        <small>${escapeHtml(order.user?.phone || '-')}</small>
       </td>
       <td style="vertical-align:top;">
         <strong>${order.occasion}</strong><br>
@@ -1133,15 +1143,14 @@ document.addEventListener('click', function(e) {
 
 // ── INITIALIZATION ────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('App initializing...');
   await loadMenuItems();
   renderNavigation();
   
-  // Set default date to today
   const today = new Date().toISOString().split('T')[0];
   const dateInput = document.getElementById('order-date');
   if (dateInput) dateInput.value = today;
   
-  // Refresh orders every 5 seconds if admin is logged in
   setInterval(() => {
     if (sessionStorage.getItem('isAdmin') === 'true') {
       loadOrders();
