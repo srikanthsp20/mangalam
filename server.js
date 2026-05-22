@@ -207,7 +207,7 @@ app.get('/index.html', function (req, res) {
 });
 
 // Catch-all for client-side routing - but don't intercept API calls
-app.get('*', function (req, res) {
+app.get('/', function (req, res) {
   // Skip API routes
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
